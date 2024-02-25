@@ -1,1 +1,1 @@
-from .star_file import StarFile
+from .star_file import LgStarFile

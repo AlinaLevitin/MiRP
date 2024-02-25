@@ -53,8 +53,8 @@ class LgGui(tk.Tk):
             file_entry.delete(0, tk.END)
             file_entry.insert(0, file_path)
 
-    def add_star_file_entry(self, row):
-        label = tk.Label(self, text='Select a star file', font=('Ariel', 12))
+    def add_star_file_entry(self, entry_name, row):
+        label = tk.Label(self, text=entry_name, font=('Ariel', 12))
         label.grid(row=row, column=0, padx=5, pady=5)
 
         star_entry = tk.Entry(self, width=50)
@@ -65,3 +65,11 @@ class LgGui(tk.Tk):
 
         return star_entry
 
+    def add_number_entry(self, entry_name, row):
+        label = tk.Label(self, text=entry_name, font=('Ariel', 12))
+        label.grid(row=row, column=0, padx=5, pady=5)
+
+        number_entry = tk.Entry(self, width=10)
+        number_entry.grid(row=row, column=1, padx=5, pady=5)
+
+        return number_entry
