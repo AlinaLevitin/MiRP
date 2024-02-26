@@ -2,33 +2,50 @@
 Author: Alina Levitin
 Date: 26/02/24
 Version: 1.0
-"""
 
+Class to generate GUIs LG-style.
+Need to provide a title and an image(optional)
+"""
 import tkinter as tk
 from tkinter import filedialog
 import pkg_resources
-from PIL import ImageTk, Image #pillow
+from PIL import ImageTk, Image  # pillow
 
 
 class LgGui(tk.Tk):
-    def __init__(self, title_name: str = "empty", image_name: str = "missing image", **kwargs):
+    """
+    A class to create GUI's LG-style
+    Inherits from tkinter (tk) Tk class
+    """
+    def __init__(self, title_name: str = "empty", image_name: str = "missing image"):
         super().__init__()
-
-        # self.geometry("630x800")
+        # Adding the title, job name and exit button as base GUI
         self.title(title_name)
         self.add_job_name(title_name)
         self.add_exit_button()
 
-        self.image = self.resize_image(image_name, 600)
+        # sets the default image for directory browse as base for GUI (while also resizing it)
         self.browse_image = self.resize_image('directory_icon.png', 20)
 
+        # Adds the images (while also resizing them) - needs to use them as class attributes because of PhotoImage
+        # (otherwise it will be garbage collected)
+        self.image = self.resize_image(image_name, 600)
         self.add_image()
 
-    def add_job_name(self, title):
+    def add_job_name(self, title: str):
+        """
+        Adds the name of the job to the GUI window (always first)
+
+        :param title: string of the job name
+        """
         label = tk.Label(self, text=title, font=('Ariel', 18))
         label.grid(row=0, column=0, columnspan=3, padx=5, pady=5)
 
     def add_image(self, row: int = 10):
+        """
+        Adds the resized image to the GUI window, row is set to 10
+        :param row: int in which row of Tk GUI (as grid) the image will appear
+        """
 
         image_label = tk.Label(self, image=self.image)
         image_label.grid(row=row, column=0, columnspan=5, padx=5, pady=5)
@@ -71,7 +88,7 @@ class LgGui(tk.Tk):
 
         return star_entry
 
-    def add_directory_entry(self,entry_name, row):
+    def add_directory_entry(self, entry_name, row):
 
         label = tk.Label(self, text=entry_name, font=('Ariel', 12))
         label.grid(row=row, column=0, padx=5, pady=5)
@@ -108,6 +125,3 @@ class LgGui(tk.Tk):
             new_image = ImageTk.PhotoImage(resized_image)
 
             return new_image
-
-
-

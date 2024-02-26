@@ -13,7 +13,7 @@ segment_average_generation_gui.add_run_button(lambda: LG_MiRP.scale(input_star_f
 
 segment_average_generation_gui.add_sub_job_name('Segment average generation', row=6)
 
-directory = segment_average_generation_gui.add_directory_entry('Select directory containing extracted particles (Extract)',row=7)
+directory = segment_average_generation_gui.add_directory_entry('Select directory containing extracted particles in Extract',row=7)
 
 segment_average_generation_gui.add_run_button(lambda: LG_MiRP.preprocess_segment_averages(directory), row=8)
 
