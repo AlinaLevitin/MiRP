@@ -1,8 +1,16 @@
+"""
+Author: Alina Levitin
+Date: 26/02/24
+Version: 1.0
+"""
+
 import starfile
 import os
 
 
-def scale_helical_track_length(star_file, upscale_factor):
+def scale_helical_track_length(star_file, bin):
+
+    scale_factor = float(1/bin)
     # Read STAR file using starfile package
     try:
         data = starfile.read(star_file)
@@ -19,10 +27,10 @@ def scale_helical_track_length(star_file, upscale_factor):
 
     # Modify the column containing helical track length
     df = data['particles']
-    df.loc[:, 'rlnHelicalTrackLengthAngst'] = df.loc[:, 'rlnHelicalTrackLengthAngst'] * upscale_factor
+    df.loc[:, 'rlnHelicalTrackLengthAngst'] = df.loc[:, 'rlnHelicalTrackLengthAngst'] * scale_factor
 
     # Write modified data to a new STAR file
-    output_file = f'scaled_helical_track_length_scale_{upscale_factor}.star'
+    output_file = f'scaled_helical_track_length_binning_{bin}.star'
     if output_file not in os.listdir(os.getcwd()):
         try:
             starfile.write(data, output_file)
@@ -33,12 +41,11 @@ def scale_helical_track_length(star_file, upscale_factor):
         print(f'File named {os.getcwd()}\\{output_file} already exists')
 
 
-def scale(star_entry, factor_entry=0.25):
+def scale(star_entry, bin: int=4):
     # Get input values from GUI
     star_file = star_entry.get()
-    upscale_factor = float(factor_entry)
 
     # Call function to scale helical track length
-    scale_helical_track_length(star_file, upscale_factor)
+    scale_helical_track_length(star_file, bin)
 
 
