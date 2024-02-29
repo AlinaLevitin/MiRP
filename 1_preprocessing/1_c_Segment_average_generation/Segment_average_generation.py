@@ -9,13 +9,13 @@ input_star_file = segment_average_generation_gui.add_file_entry('star', 'Select 
 
 scale_entry = segment_average_generation_gui.add_number_entry("Binning (example: 4)", row=4)
 
-segment_average_generation_gui.add_run_button(lambda: LG_MiRP.scale(input_star_file, float(scale_entry.get())), row=5)
+segment_average_generation_gui.add_run_button(lambda: LG_MiRP.scale(input_star_file, int(scale_entry.get())), row=5)
 
 segment_average_generation_gui.add_sub_job_name('Segment average generation', row=6)
 
 directory = segment_average_generation_gui.add_directory_entry('Select directory containing extracted particles in Extract',row=7)
 
-segment_average_generation_gui.add_run_button(lambda: LG_MiRP.preprocess_segment_averages(directory), row=8)
+segment_average_generation_gui.add_run_button(lambda: LG_MiRP.preprocess_segment_averages(directory, input_star_file), row=8)
 
 segment_average_generation_gui.mainloop()
 
