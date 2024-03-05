@@ -13,11 +13,11 @@ import starfile
 import mrcfile
 
 
-def preprocess_segment_averages(directory, particles_star_file, binning):
+def preprocess_segment_averages(input_directory, output_directory, particles_star_file, binning):
     """
 
     :param binning:
-    :param directory:
+    :param input_directory:
     :param particles_star_file:
     :param helical_rise: (in angstrem)
     :param box_size: (in pixels, ~600A (432 pixels if 1.39A/pixel) ->
@@ -38,7 +38,7 @@ def preprocess_segment_averages(directory, particles_star_file, binning):
     background_box_radius = 0.75 * box_size / 2
 
     # The input is a directory entry - .get() will get the path from the entry
-    path = directory.get()
+    path = input_directory.get()
 
     # Setting an empty list for the final averages-normalized mrcs files that will be saved in new_particles.star file
     new_image_name = []
@@ -62,7 +62,7 @@ def preprocess_segment_averages(directory, particles_star_file, binning):
             star_data = starfile.read(star_file_path)
             # Finds the maximum number of MTs in each star file using rlnHelicalTubeID
             number_of_MTs_in_stack = star_data['rlnHelicalTubeID'].max()
-            print(f'{micrograph_stack_file} contains {number_of_MTs_in_stack} MTs')
+            print(f'{micrograph_stack_file} contains {number_of_MTs_in_stack} MTs\n', '-' * 100)
 
             # loops over the MTs in the mrcs file according to their ID (rlnHelicalTubeID)
             for MT in range(1, number_of_MTs_in_stack + 1):
@@ -79,7 +79,7 @@ def preprocess_segment_averages(directory, particles_star_file, binning):
                       f' from {MT_start} to {MT_end}')
                 # selects the corresponding micrographs assuming theis numbering are the same as the DataFrame index
                 # uses the starting and ending points of each MT and the helical rise divided by pixels
-                # this is temporary since in my play-data I didn't have helical rise
+                # this is temporary since in my practice-data I didn't have helical rise
 
                 # Temporary: (delete this for real data)
                 helical_rise: int = 82
@@ -101,11 +101,11 @@ def preprocess_segment_averages(directory, particles_star_file, binning):
                 avg_file = f'{micrograph_stack_file}_avg_MT_#{MT}.mrcs'
 
                 # Saving the new mrc files (numpy matrix) using mrcfile library
-                with mrcfile.new(f'{avg_file}', overwrite=True) as mrcs:
+                with mrcfile.new(os.path.join(output_directory.get(), avg_file), overwrite=True) as mrcs:
                     # Write the NumPy array to the MRC file
                     mrcs.set_data(MT_stack_norm_average_array)
                     print(f'Finished averaging MT {MT} in {micrograph_stack_file}\n'
-                          f'File was saved to {os.path.join(os.getcwd(), avg_file)}')
+                          f'File was saved to {os.path.join(output_directory.get(), avg_file)}')
 
                 # Normalization
 
@@ -124,7 +124,7 @@ def preprocess_segment_averages(directory, particles_star_file, binning):
                                                "--operate_out",
                                                str(norm_file)]
 
-                # subprocess.run(relion_preprocess_norm_args)
+                subprocess.run(relion_preprocess_norm_args)
 
                 for index, row in particles_dataframe.iterrows():
                     if micrograph_stack_file in row['rlnImageName'] and MT == row['rlnHelicalTubeID']:
@@ -132,9 +132,12 @@ def preprocess_segment_averages(directory, particles_star_file, binning):
 
                 print(f'Finished working on MT {MT} in {micrograph_stack_file} \n', '-' * 100)
 
-        print(f'Finished working on {micrograph_stack_file} \n', '=' * 100)
+            print(f'Finished working on {micrograph_stack_file} \n', '=' * 100)
 
     particles_dataframe['rlnImageName'] = new_image_name
-    print(particles_dataframe['rlnImageName'])
+
+    new_particles_star_file_data = {'optics': data_optics_dataframe, 'particles':particles_dataframe}
+    output_file = os.path.join(output_directory.get(), 'segment_average.star')
+    starfile.write(new_particles_star_file_data, output_file)
 
     print("Processing complete.")
