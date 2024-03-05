@@ -58,7 +58,11 @@ class LgGui(tk.Tk):
         label = tk.Label(self, text=name, font=('Ariel', 16))
         label.grid(row=row, column=0, padx=5, pady=5)
 
-    def add_run_button(self, command, row):
+    def add_run_button(self, command, row, text=None,):
+        if text:
+            label = tk.Label(self, text=text, font=('Ariel', 16))
+            label.grid(row=row, column=0, columnspan=1, padx=5, pady=5)
+
         button = tk.Button(self, text='Run', command=command)
         button.grid(row=row, column=1, columnspan=1, padx=5, pady=5)
 
