@@ -1,0 +1,24 @@
+name: LG_MiRP
+dependencies:
+    - python=3.10
+    - pip
+    - cycler
+    - openmpi
+    - mpi4py
+    - matplotlib
+    - tkinter
+    - numpy
+    - pandas
+    - olefile
+    - Pillow
+    - pyparsing
+    - python-dateutil
+    - scipy
+    - six
+    - pytz
+    - tqdm
+    - pip:
+            - mrcfile
+            - starfile
+            - tensorflow
+            

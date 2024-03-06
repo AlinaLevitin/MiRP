@@ -24,6 +24,7 @@ def preprocess_segment_averages(input_directory, output_directory, particles_sta
     Re-scaled size (pixels): *Original particle box size/4* 432/4=108)
     :return:
     """
+    # ==================================================================================================================
     # Initializing:
 
     # Reading the particles.star file
@@ -38,18 +39,31 @@ def preprocess_segment_averages(input_directory, output_directory, particles_sta
     background_box_radius = 0.75 * box_size / 2
 
     # The input is a directory entry - .get() will get the path from the entry
-    path = input_directory.get()
+    input_path = input_directory.get()
+    output_path = os.path.join(output_directory.get(), "segment_averages")
+
+    # Creating a new directory for the outputs
+    os.mkdir(output_path)
+
+    avg_path = os.path.join(output_path, "average_mrcs")
+    os.mkdir(avg_path)
+
+    norm_path = os.path.join(output_path, "norm_mrcs")
+    os.mkdir(norm_path)
+
+
+    # ==================================================================================================================
 
     # Setting an empty list for the final averages-normalized mrcs files that will be saved in new_particles.star file
     new_image_name = []
 
     # Iterate over each micrograph stack in the directory path
-    for micrograph_stack_file in os.listdir(path):
+    for micrograph_stack_file in os.listdir(input_path):
 
         # for all mrcs files in the directory path
         if micrograph_stack_file.endswith(".mrcs"):
             # Generates a path for the mrcs file
-            micrograph_stack_path = os.path.join(path, micrograph_stack_file)
+            micrograph_stack_path = os.path.join(input_path, micrograph_stack_file)
             # Using mrcfile library, opens the mrcs file and converts it to a tensorFlow tensor
             with mrcfile.open(micrograph_stack_path) as mrc:
                 mrc_data = tf.convert_to_tensor(mrc.data, dtype=tf.float32)
@@ -98,22 +112,20 @@ def preprocess_segment_averages(input_directory, output_directory, particles_sta
                 MT_stack_norm_average_array = normalized_matrix.numpy()
 
                 # The new mrcs files of the averages:
-                avg_file = f'{micrograph_stack_file}_avg_MT_#{MT}.mrcs'
+                avg_file = os.path.join(avg_path, f'{micrograph_stack_file}_avg_MT_{MT}.mrcs')
 
                 # Saving the new mrc files (numpy matrix) using mrcfile library
-                with mrcfile.new(os.path.join(output_directory.get(), avg_file), overwrite=True) as mrcs:
+                with mrcfile.new(avg_file, overwrite=True) as mrcs:
                     # Write the NumPy array to the MRC file
                     mrcs.set_data(MT_stack_norm_average_array)
                     print(f'Finished averaging MT {MT} in {micrograph_stack_file}\n'
-                          f'File was saved to {os.path.join(output_directory.get(), avg_file)}')
+                          f'File was saved to {avg_file}')
 
                 # Normalization
 
-                # relion_preprocess --norm true --bg_radius $background_box_radius
-                # --operate_on f'{micrograph_stack_file}_avg_MT_#{MT}.mrc'
-                # --operate_out f'{micrograph_stack_file}_norm_MT_#{MT}.mrc'
+                # relion_preprocess --norm true --bg_radius $background_box_radius --operate_on $final_stack --operate_out $final_stack:r_norm.mrcs
 
-                norm_file = f'{micrograph_stack_file}_norm_MT_#{MT}.mrcs'
+                norm_file = os.path.join(norm_path, f'{micrograph_stack_file}_norm_MT_{MT}.mrcs')
 
                 relion_preprocess_norm_args = ["relion_preprocess",
                                                "--norm", "true",
@@ -128,16 +140,18 @@ def preprocess_segment_averages(input_directory, output_directory, particles_sta
 
                 for index, row in particles_dataframe.iterrows():
                     if micrograph_stack_file in row['rlnImageName'] and MT == row['rlnHelicalTubeID']:
-                        new_image_name.append(row['rlnImageName'].replace(micrograph_stack_file, avg_file))
+                        new_image_name.append(row['rlnImageName'].replace(micrograph_stack_file, norm_file))
 
                 print(f'Finished working on MT {MT} in {micrograph_stack_file} \n', '-' * 100)
 
             print(f'Finished working on {micrograph_stack_file} \n', '=' * 100)
 
+    # Generating a new star file
     particles_dataframe['rlnImageName'] = new_image_name
-
     new_particles_star_file_data = {'optics': data_optics_dataframe, 'particles':particles_dataframe}
-    output_file = os.path.join(output_directory.get(), 'segment_average.star')
+
+    os.chdir(output_path)
+    output_file = 'segment_average.star'
     starfile.write(new_particles_star_file_data, output_file)
 
     print("Processing complete.")
