@@ -3,26 +3,25 @@ Author: Alina Levitin
 Date: 26/02/24
 Version: 1.0
 
-Class to generate GUIs LG-style.
-Need to provide a title and an image(optional)
+Class to generate Frames LG-style.
+Need to provide a sub_job_name and an image(optional)
 """
 import tkinter as tk
 from tkinter import filedialog
+from tkinter import ttk
 import pkg_resources
 from PIL import ImageTk, Image  # pillow
 
 
-class LgGui(tk.Tk):
+class LgFrameBase(ttk.Frame):
     """
     A class to create GUI's LG-style
     Inherits from tkinter (tk) Tk class
     """
-    def __init__(self, title_name: str = "empty", image_name: str = "missing image"):
+    def __init__(self, master, sub_job_name: str = "empty", image_name: str = "missing image"):
         super().__init__()
-        # Adding the title, job name and exit button as base GUI
-        self.title(title_name)
-        self.add_job_name(title_name)
-        self.add_exit_button()
+        self.master = master
+        self.sub_job_name = sub_job_name
 
         # sets the default image for directory browse as base for GUI (while also resizing it)
         self.browse_image = self.resize_image('directory_icon.png', 20)
@@ -31,15 +30,6 @@ class LgGui(tk.Tk):
         # (otherwise it will be garbage collected)
         self.image = self.resize_image(image_name, 600)
         self.add_image()
-
-    def add_job_name(self, title: str):
-        """
-        Adds the name of the job to the GUI window (always first)
-
-        :param title: string of the job name
-        """
-        label = tk.Label(self, text=title, font=('Ariel', 18))
-        label.grid(row=0, column=0, columnspan=3, padx=5, pady=5)
 
     def add_image(self, row: int = 10):
         """
@@ -50,12 +40,8 @@ class LgGui(tk.Tk):
         image_label = tk.Label(self, image=self.image)
         image_label.grid(row=row, column=0, columnspan=5, padx=5, pady=5)
 
-    def add_exit_button(self, row: int = 11):
-        button = tk.Button(self, text='Exit', command=self.destroy)
-        button.grid(row=row, column=5, columnspan=1, padx=5, pady=5)
-
-    def add_sub_job_name(self, name: str = 'test', row: int = 2):
-        label = tk.Label(self, text=name, font=('Ariel', 16))
+    def add_sub_job_name(self, row: int = 0):
+        label = tk.Label(self, text=self.sub_job_name, font=('Ariel', 16))
         label.grid(row=row, column=0, padx=5, pady=5)
 
     def add_run_button(self, command, row, text=None,):

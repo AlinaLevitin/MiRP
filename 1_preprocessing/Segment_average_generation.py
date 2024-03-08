@@ -8,7 +8,7 @@ Version: 1.0
 import LG_MiRP
 
 
-segment_average_generation_gui = LG_MiRP.LgGui(title_name="Segment Average", image_name="segment_average.jpg")
+segment_average_generation_gui = LG_MiRP.LgMasterGui(title_name="Segment Average", image_name="segment_average.jpg")
 
 segment_average_generation_gui.add_sub_job_name('Segment average generation', row=2)
 

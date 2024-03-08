@@ -15,13 +15,10 @@ import mrcfile
 
 def preprocess_segment_averages(input_directory, output_directory, particles_star_file, binning):
     """
-
-    :param binning:
     :param input_directory:
+    :param output_directory:
     :param particles_star_file:
-    :param helical_rise: (in angstrem)
-    :param box_size: (in pixels, ~600A (432 pixels if 1.39A/pixel) ->
-    Re-scaled size (pixels): *Original particle box size/4* 432/4=108)
+    :param binning:
     :return:
     """
     # ==================================================================================================================
@@ -41,16 +38,18 @@ def preprocess_segment_averages(input_directory, output_directory, particles_sta
     # The input is a directory entry - .get() will get the path from the entry
     input_path = input_directory.get()
     output_path = os.path.join(output_directory.get(), "segment_averages")
-
-    # Creating a new directory for the outputs
-    os.mkdir(output_path)
-
     avg_path = os.path.join(output_path, "average_mrcs")
-    os.mkdir(avg_path)
-
     norm_path = os.path.join(output_path, "norm_mrcs")
-    os.mkdir(norm_path)
 
+    # Creating a new directories for the outputs
+    if "segment_averages" not in os.listdir(output_directory.get()):
+        os.mkdir(output_path)
+
+    if "average_mrcs" not in os.listdir(output_path):
+        os.mkdir(avg_path)
+
+    if "norm_mrcs" not in os.listdir(output_path):
+        os.mkdir(norm_path)
 
     # ==================================================================================================================
 
@@ -140,7 +139,9 @@ def preprocess_segment_averages(input_directory, output_directory, particles_sta
 
                 for index, row in particles_dataframe.iterrows():
                     if micrograph_stack_file in row['rlnImageName'] and MT == row['rlnHelicalTubeID']:
-                        new_image_name.append(row['rlnImageName'].replace(micrograph_stack_file, norm_file))
+                        old_number = row['rlnImageName'].split("@")[0]
+                        new_relative_path = [old_number, "@", f'segment_averages\\norm_mrcs\\{micrograph_stack_file}_norm_MT_{MT}.mrcs']
+                        new_image_name.append("".join(new_relative_path))
 
                 print(f'Finished working on MT {MT} in {micrograph_stack_file} \n', '-' * 100)
 
