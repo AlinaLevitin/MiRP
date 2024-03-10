@@ -54,7 +54,7 @@ def preprocess_segment_averages(input_directory, output_directory, particles_sta
     # ==================================================================================================================
 
     # Setting an empty list for the final averages-normalized mrcs files that will be saved in new_particles.star file
-    new_image_name = []
+    new_avg_norm_images_names = []
 
     # Iterate over each micrograph stack in the directory path
     for micrograph_stack_file in os.listdir(input_path):
@@ -141,14 +141,14 @@ def preprocess_segment_averages(input_directory, output_directory, particles_sta
                     if micrograph_stack_file in row['rlnImageName'] and MT == row['rlnHelicalTubeID']:
                         old_number = row['rlnImageName'].split("@")[0]
                         new_relative_path = [old_number, "@", f'segment_averages\\norm_mrcs\\{micrograph_stack_file}_norm_MT_{MT}.mrcs']
-                        new_image_name.append("".join(new_relative_path))
+                        new_avg_norm_images_names.append("".join(new_relative_path))
 
                 print(f'Finished working on MT {MT} in {micrograph_stack_file} \n', '-' * 100)
 
             print(f'Finished working on {micrograph_stack_file} \n', '=' * 100)
 
     # Generating a new star file
-    particles_dataframe['rlnImageName'] = new_image_name
+    particles_dataframe['rlnImageName'] = new_avg_norm_images_names
     new_particles_star_file_data = {'optics': data_optics_dataframe, 'particles':particles_dataframe}
 
     os.chdir(output_path)

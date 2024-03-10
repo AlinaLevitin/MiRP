@@ -19,17 +19,15 @@ class LgMasterGui(tk.Tk):
     """
     def __init__(self, title_name: str = "empty"):
         super().__init__()
-        # Adding the title, job name and exit button as base GUI
-        self.title_name = title_name
-        self.add_job_name()
-        self.title(title_name)
+        # Adding exit button as base GUI
         self.add_exit_button()
 
-    def add_job_name(self):
+    def add_job_name(self, title_name):
         """
         Adds the name of the job to the GUI window (always first)
         """
-        label = tk.Label(self, text=self.title_name, font=('Ariel', 18))
+        self.title(title_name)
+        label = tk.Label(self, text=title_name, font=('Ariel', 18))
         label.grid(row=0, column=0, columnspan=3, padx=5, pady=5)
 
     def add_frame(self, frame, row=1):
