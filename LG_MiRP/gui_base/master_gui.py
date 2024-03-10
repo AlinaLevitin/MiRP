@@ -4,7 +4,6 @@ Date: 26/02/24
 Version: 1.0
 
 Class to generate GUIs LG-style.
-Need to provide a title and an image(optional)
 """
 import tkinter as tk
 from tkinter import filedialog

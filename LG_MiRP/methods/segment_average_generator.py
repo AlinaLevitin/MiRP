@@ -1,48 +1,26 @@
+"""
+Author: Alina Levitin
+Date: 05/03/24
+Updated: 10/3/24
+
+Method to generate averages of segments of MTs after manual particle picking
+(Not written as a class since it was too complicated)
+
+TODO: Remove temporary pixel size and rise
+"""
 import os
 import subprocess
 import tensorflow as tf
 import starfile
 import mrcfile
 
-from LG_MiRP import LgFrameBase
-from LG_MiRP import LgMasterGui
 
-
-class SegmentAverageGui(LgMasterGui):
-    def __init__(self):
-        super().__init__()
-        self.add_job_name("Segment Average Generation")
-        frame = SegmentAverageFrame(self)
-        frame.grid(row=1, column=0)
-
-
-class SegmentAverageFrame(LgFrameBase):
-    def __init__(self, master):
-        super().__init__(master)
-
-        self.add_sub_job_name("Segment Average Generation", row=0)
-
-        input_star_file = self.add_file_entry('star', 'Select a particles.star file', row=1)
-        bins_entry = self.add_number_entry("Binning (example: 4)", row=2)
-        input_directory = self.add_directory_entry('Select directory containing extracted particles in Extract', row=3)
-        output_directory = self.add_directory_entry('Select output directory', row=4)
-        self.add_run_button(lambda: preprocess_segment_averages(input_directory,
-                                                                output_directory,
-                                                                input_star_file,
-                                                                binning=bins_entry),
-                            row=5)
-
-        image = self.open_image("segment_average.jpg")
-        new_image = self.resize_image(image)
-        self.add_image(new_image, row=6)
-
-
-def preprocess_segment_averages(input_directory, output_directory, particles_star_file, binning):
+def segment_average_generator(input_directory, output_directory, particles_star_file, binning):
     """
-    :param input_directory:
-    :param output_directory:
-    :param particles_star_file:
-    :param binning:
+    :param input_directory: input directory from entry
+    :param output_directory: output directory from entry - usually the project directory
+    :param particles_star_file: particles star file from entry
+    :param binning: binning from entry - used to calculate the background_box_radius
     :return:
     """
     # ==================================================================================================================
@@ -76,6 +54,8 @@ def preprocess_segment_averages(input_directory, output_directory, particles_sta
         os.mkdir(norm_path)
 
     # ==================================================================================================================
+
+    # Starting to iterate over mrcs files
 
     # Setting an empty list for the final averages-normalized mrcs files that will be saved in new_particles.star file
     new_avg_norm_images_names = []
@@ -112,9 +92,8 @@ def preprocess_segment_averages(input_directory, output_directory, particles_sta
                 # marks the starting and ending points of each MT according to the pandas DataFrame index
                 MT_start = MT_star_data.index[0]
                 MT_end = MT_star_data.index[-1]
-                print(
-                    f'MT number {MT} in {micrograph_stack_file} contains {MT_number_of_segments} number of segments'
-                    f' from {MT_start} to {MT_end}')
+                print(f'MT number {MT} in {micrograph_stack_file} contains {MT_number_of_segments} number of segments'
+                      f' from {MT_start} to {MT_end}')
                 # selects the corresponding micrographs assuming theis numbering are the same as the DataFrame index
                 # uses the starting and ending points of each MT and the helical rise divided by pixels
                 # this is temporary since in my practice-data I didn't have helical rise
@@ -123,14 +102,16 @@ def preprocess_segment_averages(input_directory, output_directory, particles_sta
                 helical_rise: int = 82
                 pixel = 1.1
 
+                # slicing the dataframe according to  the start and end of a microtubule
                 MT_stack = mrc_data[MT_start:MT_end:int(helical_rise / pixel), :]
                 # performs a "Z-stack" according to the mean intensity in each pixel
 
                 # Averaging the intensity of pixels in the mrcs stack file
                 MT_stack_average = tf.reduce_mean(MT_stack, axis=0)
 
+                # Normalization so all values will be between 0 and 1 and removing background (minimum intensity)
                 normalized_matrix = (MT_stack_average - tf.reduce_min(MT_stack_average)) / (
-                        tf.reduce_max(MT_stack_average) - tf.reduce_min(MT_stack_average))
+                            tf.reduce_max(MT_stack_average) - tf.reduce_min(MT_stack_average))
 
                 # converts the tensorFlow tensor to numpy - this is the new mrc containing all the segments of a
                 # specific MT according to its ID (rlnHelicalTubeID) in a mrcs file of extracted particles from relion
@@ -146,23 +127,34 @@ def preprocess_segment_averages(input_directory, output_directory, particles_sta
                     print(f'Finished averaging MT {MT} in {micrograph_stack_file}\n'
                           f'File was saved to {avg_file}')
 
+                # =======================================================================================================
+
                 # Normalization
 
-                # relion_preprocess --norm true --bg_radius $background_box_radius --operate_on $final_stack --operate_out $final_stack:r_norm.mrcs
-
+                # setting a normalized file name
                 norm_file = os.path.join(norm_path, f'{micrograph_stack_file}_norm_MT_{MT}.mrcs')
 
-                relion_preprocess_norm_args = ["relion_preprocess",
-                                               "--norm", "true",
-                                               "--bg_radius",
-                                               str(background_box_radius),
-                                               "--operate_on",
-                                               str(avg_file),
-                                               "--operate_out",
-                                               str(norm_file)]
+                # checking if relion is installed (I was testing it on my personal computer that didn't have relion
+                # and was to lazy to comment this out everytime I changed computers)
 
-                subprocess.run(relion_preprocess_norm_args)
+                if is_relion_installed():
+                    relion_preprocess_norm_args = ["relion_preprocess",
+                                                   "--norm",
+                                                   "true",
+                                                   "--bg_radius",
+                                                   str(background_box_radius),
+                                                   "--operate_on",
+                                                   str(avg_file),
+                                                   "--operate_out",
+                                                   str(norm_file)]
 
+                    subprocess.run(relion_preprocess_norm_args)
+                else:
+                    print("Relion is not installed on this computer.")
+
+                # Updating the file links (_rlnImageName) in the particles.star to the averaged normalized file names
+                # in the following manner:
+                # 000001@segment_averages\norm_mrcs\gc_Cin8_Aug07_18_1000_0000_Aug08_23.09.41_mc2_DW.mrcs_norm_MT_1.mrcs
                 for index, row in particles_dataframe.iterrows():
                     if micrograph_stack_file in row['rlnImageName'] and MT == row['rlnHelicalTubeID']:
                         old_number = row['rlnImageName'].split("@")[0]
@@ -174,7 +166,7 @@ def preprocess_segment_averages(input_directory, output_directory, particles_sta
 
             print(f'Finished working on {micrograph_stack_file} \n', '=' * 100)
 
-    # Generating a new star file
+    # Generating a new star file named segment_average.star in the output directory
     particles_dataframe['rlnImageName'] = new_avg_norm_images_names
     new_particles_star_file_data = {'optics': data_optics_dataframe, 'particles': particles_dataframe}
 
@@ -183,3 +175,23 @@ def preprocess_segment_averages(input_directory, output_directory, particles_sta
     starfile.write(new_particles_star_file_data, output_file)
 
     print("Processing complete.")
+
+
+def is_relion_installed():
+    """
+    A lazy method to check if relion is installed on the computer
+    :return: True or False if relion is installed or not
+    """
+    try:
+        # Run a command to check if relion is installed
+        result = subprocess.run(['relion_refine', '--version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        if result.returncode == 0:
+            # If the return code is 0, it means the command executed successfully, hence Relion is installed
+            return True
+        else:
+            # If the return code is not 0, Relion is likely not installed or the command failed
+            return False
+    except FileNotFoundError:
+        # If FileNotFoundError is raised, it means the command (relion_refine) wasn't found,
+        # hence Relion is not installed
+        return False

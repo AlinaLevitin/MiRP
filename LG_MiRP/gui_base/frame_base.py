@@ -1,10 +1,9 @@
 """
 Author: Alina Levitin
 Date: 26/02/24
-Version: 1.0
+Updated: 10/3/24
 
-Class to generate Frames LG-style.
-Need to provide a sub_job_name and an image(optional)
+Class to generate ttk.Frames LG-style.
 """
 import tkinter as tk
 from tkinter import filedialog
@@ -16,12 +15,17 @@ from PIL import ImageTk, Image  # pillow
 class LgFrameBase(ttk.Frame):
     """
     A class to create GUI's LG-style
-    Inherits from tkinter (tk) Tk class
+    Inherits from tkinter (ttk) Frame class
     """
 
     def __init__(self, master):
         super().__init__(master)
         self.browse_image = self.open_and_resize_browse_image()
+
+    def open_and_resize_job_image(self, image_name: str = "missing image"):
+        image = self.open_image(image_name)
+        resized_image = self.resize_image(image, 600)
+        return resized_image
 
     def add_image(self, image: str = "missing image", row: int = 10):
         """
