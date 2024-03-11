@@ -1,5 +1,9 @@
 """
-Setup file for AIdiet.
+Setup file for LG_MiRP
+
+Author: Alina Levitin
+Date: 10/03/24
+Updated: 11/3/24
 """
 import setuptools
 
@@ -14,5 +18,12 @@ setuptools.setup(
     scripts=[
         "1_preprocessing/segment_average_generation.py",
             ],
-    package_data={'LG_MiRP': ['assets/directory_icon.png', 'assets/segment_average.jpg']}
+    package_data={'LG_MiRP': [
+                            'assets/directory_icon.png',
+                            'assets/segment_average.jpg',
+                            'assets/default_image.jpg',
+                            'assets/pf_number_sorting.jpg',
+                            'assets/complete_pipeline.jpg'
+                              ]
+                  }
                 )

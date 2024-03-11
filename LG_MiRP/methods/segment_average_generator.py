@@ -1,7 +1,7 @@
 """
 Author: Alina Levitin
 Date: 05/03/24
-Updated: 10/3/24
+Updated: 11/3/24
 
 Method to generate averages of segments of MTs after manual particle picking
 (Not written as a class since it was too complicated)
@@ -13,6 +13,7 @@ import subprocess
 import tensorflow as tf
 import starfile
 import mrcfile
+import matplotlib.pyplot as plt
 
 
 def segment_average_generator(input_directory, output_directory, particles_star_file, binning):
@@ -21,13 +22,11 @@ def segment_average_generator(input_directory, output_directory, particles_star_
     :param output_directory: output directory from entry - usually the project directory
     :param particles_star_file: particles star file from entry
     :param binning: binning from entry - used to calculate the background_box_radius
-    :return:
     """
     # ==================================================================================================================
     # Initializing:
 
     # Reading the particles.star file
-    print(particles_star_file.get())
     particles_star_file_data = starfile.read(particles_star_file.get())
     particles_dataframe = particles_star_file_data['particles']
     data_optics_dataframe = particles_star_file_data['optics']
@@ -175,8 +174,8 @@ def segment_average_generator(input_directory, output_directory, particles_star_
     try:
         starfile.write(new_particles_star_file_data, output_file)
     except NameError:
-        return f"File names {output_file} already exists, delete old file and try again"
-
+        print(f"File names {output_file} already exists, delete old file and try again")
+        raise NameError("File already exists")
 
     print("Processing complete.")
 
@@ -199,3 +198,42 @@ def is_relion_installed():
         # If FileNotFoundError is raised, it means the command (relion_refine) wasn't found,
         # hence Relion is not installed
         return False
+
+
+def mt_segment_histogram(particles_star_file):
+    """
+    A method to generate a histogram from number of segments per MT
+
+    :param particles_star_file: particles star file from entry
+    :return: matplotlib histogram fig
+    """
+    particles_star_file_data = starfile.read(particles_star_file.get())
+    particles_dataframe = particles_star_file_data['particles']
+    micrographs = particles_dataframe['rlnMicrographName'].unique()
+
+    mt_segments = []
+    for micrograph in micrographs:
+        mask = particles_dataframe['rlnMicrographName'] == micrograph
+        micrograph_star = particles_dataframe.loc[mask]
+        number_of_MTs = micrograph_star['rlnHelicalTubeID'].max()
+        for mt in range(1, number_of_MTs):
+            mask_mt_number = micrograph_star['rlnHelicalTubeID'] == mt
+            mt_star = micrograph_star.loc[mask_mt_number]
+            number_of_segments_per_mt = mt_star.shape[0]
+            mt_segments.append(number_of_segments_per_mt)
+
+    # Create a Matplotlib figure and axes
+    fig, ax = plt.subplots()
+
+    # Plot histogram
+    ax.hist(mt_segments, color='skyblue', edgecolor='black')
+
+    # Add labels and title
+    ax.set_xlabel('Number of segments')
+    ax.set_ylabel('Frequency')
+    ax.set_title('Histogram of Segments of Microtubules')
+
+    return fig
+
+
+

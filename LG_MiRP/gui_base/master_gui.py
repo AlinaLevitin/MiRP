@@ -1,11 +1,13 @@
 """
 Author: Alina Levitin
 Date: 26/02/24
-Version: 1.0
+Updated: 11/3/24
 
 Class to generate GUIs LG-style.
 """
 import tkinter as tk
+
+from .top_level_base import LGTopLevelBase
 
 
 class LgMasterGui(tk.Tk):
@@ -17,6 +19,8 @@ class LgMasterGui(tk.Tk):
         super().__init__()
         # Adding exit button as base GUI
         self.add_exit_button()
+        button = tk.Button(self, text="Complete Pipeline illustration", command=self.open_complete_pipeline_button)
+        button.grid(row=11, column=0, columnspan=2, padx=5, pady=5, sticky="SE")
 
     def add_job_name(self, title_name):
         """
@@ -41,3 +45,8 @@ class LgMasterGui(tk.Tk):
         """
         button = tk.Button(self, text='Exit', command=self.destroy)
         button.grid(row=row, column=5, columnspan=1, padx=5, pady=5)
+
+    def open_complete_pipeline_button(self):
+        complete_pipeline_top_level = LGTopLevelBase(self)
+        complete_pipeline_top_level.title("Complete Pipeline")
+        complete_pipeline_top_level.add_image("complete_pipeline.jpg", 400)
