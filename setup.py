@@ -12,7 +12,7 @@ setuptools.setup(
     "microtubule structures",
     packages=setuptools.find_packages(),
     scripts=[
-        "1_preprocessing/Segment_average_generation.py",
+        "1_preprocessing/segment_average_generation.py",
             ],
     package_data={'LG_MiRP': ['assets/directory_icon.png', 'assets/segment_average.jpg']}
                 )

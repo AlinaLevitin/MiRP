@@ -172,7 +172,11 @@ def segment_average_generator(input_directory, output_directory, particles_star_
 
     os.chdir(output_path)
     output_file = 'segment_average.star'
-    starfile.write(new_particles_star_file_data, output_file)
+    try:
+        starfile.write(new_particles_star_file_data, output_file)
+    except NameError:
+        return f"File names {output_file} already exists, delete old file and try again"
+
 
     print("Processing complete.")
 

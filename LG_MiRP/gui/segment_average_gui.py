@@ -41,5 +41,4 @@ class SegmentAverageFrame(LgFrameBase):
                             row=5)
 
         # Imports a themed image
-        self.image = self.open_and_resize_job_image("segment_average.jpg")
-        self.add_image(self.image, row=6)
+        self.add_image("segment_average.jpg", new_size=600, row=6)
