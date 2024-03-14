@@ -1,1 +1,2 @@
 from .segment_average_gui import SegmentAverageGui
+from .class_uni_ext_gui import ClassUnificationExtractionGui

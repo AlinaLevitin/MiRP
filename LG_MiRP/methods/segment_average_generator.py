@@ -4,7 +4,6 @@ Date: 05/03/24
 Updated: 11/3/24
 
 Method to generate averages of segments of MTs after manual particle picking
-(Not written as a class since it was too complicated)
 
 TODO: Remove temporary pixel size and rise
 """
