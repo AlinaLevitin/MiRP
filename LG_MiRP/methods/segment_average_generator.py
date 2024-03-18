@@ -103,13 +103,19 @@ def segment_average_generator(input_directory, output_directory, particles_star_
                 # slicing the dataframe according to  the start and end of a microtubule
                 MT_stack = mrc_data[MT_start:MT_end:int(helical_rise / pixel), :]
                 # performs a "Z-stack" according to the mean intensity in each pixel
+                # ========================================================================================================
+
+                # AVERAGE:
 
                 # Averaging the intensity of pixels in the mrcs stack file
                 MT_stack_average = tf.reduce_mean(MT_stack, axis=0)
+                # =======================================================================================================
+
+                # NORMALIZATION
 
                 # Normalization so all values will be between 0 and 1 and removing background (minimum intensity)
                 normalized_matrix = (MT_stack_average - tf.reduce_min(MT_stack_average)) / (
-                            tf.reduce_max(MT_stack_average) - tf.reduce_min(MT_stack_average))
+                        tf.reduce_max(MT_stack_average) - tf.reduce_min(MT_stack_average))
 
                 # converts the tensorFlow tensor to numpy - this is the new mrc containing all the segments of a
                 # specific MT according to its ID (rlnHelicalTubeID) in a mrcs file of extracted particles from relion
@@ -127,7 +133,7 @@ def segment_average_generator(input_directory, output_directory, particles_star_
 
                 # =======================================================================================================
 
-                # Normalization
+                # RELION NORMALIZATION
 
                 # setting a normalized file name
                 norm_file = os.path.join(norm_path, f'{micrograph_stack_file}_norm_MT_{MT}.mrcs')
@@ -206,9 +212,23 @@ def mt_segment_histogram(particles_star_file):
     :param particles_star_file: particles star file from entry
     :return: matplotlib histogram fig
     """
-    particles_star_file_data = starfile.read(particles_star_file.get())
-    particles_dataframe = particles_star_file_data['particles']
-    micrographs = particles_dataframe['rlnMicrographName'].unique()
+
+    try:
+        # Try to read the STAR file
+        particles_star_file_data = starfile.read(particles_star_file.get())
+        particles_dataframe = particles_star_file_data['particles']
+
+        # Access the 'rlnMicrographName' column and get unique values
+        micrographs = particles_dataframe['rlnMicrographName'].unique()
+
+        # Continue with further processing
+        # ...
+
+    except FileNotFoundError:
+        # Handle the case where the specified STAR file does not exist
+        print("Error: The specified STAR file does not exist.")
+        # Optionally, you can raise the error again if needed
+        raise
 
     mt_segments = []
     for micrograph in micrographs:
@@ -233,6 +253,3 @@ def mt_segment_histogram(particles_star_file):
     ax.set_title('Histogram of Segments of Microtubules')
 
     return fig
-
-
-

@@ -13,7 +13,3 @@ import LG_MiRP
 
 # Generating the gui
 segment_average_generation_gui = LG_MiRP.SegmentAverageGui()
-
-# Closing tk main loop
-segment_average_generation_gui.mainloop()
-
