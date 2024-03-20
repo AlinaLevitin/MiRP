@@ -44,7 +44,7 @@ class SegmentAverageFrame(LgFrameBase):
                                   command=lambda: self.show_mt_segment_histogram(input_star_file))
         result_button.grid(row=2, column=0)
         # Creates an entry for binning
-        bins_entry = self.add_number_entry("Binning (example: 4)", row=3)
+        # bins_entry = self.add_number_entry("Binning (example: 4)", row=3)
         # Creates an entry for input directory with mrcs stack files in Extract folder (after particle picking)
         input_directory = self.add_directory_entry('Select directory containing extracted particles in Extract', row=4)
         # Creates an entry for output directory (usually the project folder) there it will save the new mrcs files and
@@ -54,7 +54,7 @@ class SegmentAverageFrame(LgFrameBase):
         self.add_run_button(lambda: segment_average_generator(input_directory,
                                                               output_directory,
                                                               input_star_file,
-                                                              binning=bins_entry),
+                                                              ),
                             row=6)
 
         # Imports a themed image at the bottom
