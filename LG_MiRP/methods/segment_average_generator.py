@@ -5,7 +5,6 @@ Updated: 11/3/24
 
 Method to generate averages of segments of MTs after manual particle picking
 
-TODO: Remove temporary pixel size and rise
 """
 import os
 import subprocess
@@ -143,7 +142,7 @@ def segment_average_generator(input_directory, output_directory, particles_star_
                                 norm_file = os.path.join(norm_path, new_norm_name)
 
                                 # checking if relion is installed (I was testing it on my personal computer that didn't have relion
-                                # and was to lazy to comment this out everytime I changed computers)
+                                # and was too lazy to comment this out everytime I changed computers)
 
                                 if is_relion_installed():
                                     relion_preprocess_norm_args = ["relion_preprocess",
@@ -162,7 +161,7 @@ def segment_average_generator(input_directory, output_directory, particles_star_
 
                                 # Updating the file links (_rlnImageName) in the particles.star to the averaged normalized file names
                                 # in the following manner:
-                                # 000001@segment_averages\norm_mrcs\gc_Cin8_Aug07_18_1000_0000_Aug08_23.09.41_mc2_DW.mrcs_norm_MT_1.mrcs
+                                # 000001@segment_averages/norm_mrcs/gc_Cin8_Aug07_18_1000_0000_Aug08_23.09.41_mc2_DW.mrcs_norm_MT_1.mrcs
                             for index, row in particles_dataframe.iterrows():
                                 if micrograph_stack_file in row['rlnImageName'] and MT == row['rlnHelicalTubeID']:
                                     old_number = row['rlnImageName'].split("@")[0]
@@ -174,9 +173,14 @@ def segment_average_generator(input_directory, output_directory, particles_star_
 
                         print(f'Finished working on {micrograph_stack_file} \n', '=' * 100)
 
+    particles_dataframe['filename'] = particles_dataframe['rlnImageName'].apply(lambda x: x.split('/')[-1])
+
+    particles_dataframe_no_duplicates = particles_dataframe.drop_duplicates(subset=['filename'])
+
+
     # Generating a new star file named segment_average.star in the output directory
     # particles_dataframe['rlnImageName'] = new_avg_norm_images_names
-    new_particles_star_file_data = {'optics': data_optics_dataframe, 'particles': particles_dataframe}
+    new_particles_star_file_data = {'optics': data_optics_dataframe, 'particles': particles_dataframe_no_duplicates}
 
     os.chdir(output_path)
     output_file = 'segment_average.star'
