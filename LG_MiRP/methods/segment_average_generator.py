@@ -1,4 +1,5 @@
 """
+TODO: Do I really need to update the star file? What is the purpose of this step?
 Author: Alina Levitin
 Date: 05/03/24
 Updated: 11/3/24
@@ -164,23 +165,21 @@ def segment_average_generator(input_directory, output_directory, particles_star_
                                 # 000001@segment_averages/norm_mrcs/gc_Cin8_Aug07_18_1000_0000_Aug08_23.09.41_mc2_DW.mrcs_norm_MT_1.mrcs
                             for index, row in particles_dataframe.iterrows():
                                 if micrograph_stack_file in row['rlnImageName'] and MT == row['rlnHelicalTubeID']:
-                                    old_number = row['rlnImageName'].split("@")[0]
                                     new_link = "/".join(['segment_averages', 'norm_mrcs', new_norm_name])
-                                    new_relative_path = [old_number, "@", new_link]
-                                    particles_dataframe.loc[index, 'rlnImageName'] = "".join(new_relative_path)
+                                    particles_dataframe.loc[index, 'rlnMicrographName'] = new_link
 
                             print(f'Finished working on MT {MT} in {micrograph_stack_file} \n', '-' * 100)
 
-                        print(f'Finished working on {micrograph_stack_file} \n', '=' * 100)
+                print(f'Finished working on {micrograph_stack_file} \n', '=' * 100)
 
-    particles_dataframe['filename'] = particles_dataframe['rlnImageName'].apply(lambda x: x.split('/')[-1])
-
-    particles_dataframe_no_duplicates = particles_dataframe.drop_duplicates(subset=['filename'])
+    # particles_dataframe['filename'] = particles_dataframe['rlnImageName'].apply(lambda x: x.split('/')[-1])
+    #
+    # particles_dataframe_no_duplicates = particles_dataframe.drop_duplicates(subset=['filename'])
 
 
     # Generating a new star file named segment_average.star in the output directory
     # particles_dataframe['rlnImageName'] = new_avg_norm_images_names
-    new_particles_star_file_data = {'optics': data_optics_dataframe, 'particles': particles_dataframe_no_duplicates}
+    new_particles_star_file_data = {'optics': data_optics_dataframe, 'particles': particles_dataframe}
 
     os.chdir(output_path)
     output_file = 'segment_average.star'
