@@ -7,9 +7,10 @@ Two GUI classes (master and frame) for segment average generation
 The method of segment averaging is located in LG_MiRP/methods/segment_average_generator
 """
 import tkinter as tk
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-from LG_MiRP import LgFrameBase, LgMasterGui, LGTopLevelBase, segment_average_generator, mt_segment_histogram
+# from LG_MiRP import LgFrameBase, LgMasterGui, LGTopLevelBase, segment_average_generator, mt_segment_histogram
+from ..gui_base import LgFrameBase, LgMasterGui, LGTopLevelBase
+from ..methods import segment_average_generator, mt_segment_histogram
 
 
 class SegmentAverageGui(LgMasterGui):

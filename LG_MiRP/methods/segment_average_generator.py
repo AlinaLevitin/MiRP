@@ -1,5 +1,4 @@
 """
-TODO: Do I really need to update the star file? What is the purpose of this step?
 Author: Alina Levitin
 Date: 05/03/24
 Updated: 11/3/24

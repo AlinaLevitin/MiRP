@@ -9,7 +9,8 @@ The method of ... is located in LG_MiRP/methods/...
 import tkinter as tk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-from LG_MiRP import LgFrameBase, LgMasterGui, LGTopLevelBase, segment_average_generator
+from ..gui_base import LgFrameBase, LgMasterGui, LGTopLevelBase
+from ..methods import segment_average_generator
 
 
 class ClassUnificationExtractionGui(LgMasterGui):
