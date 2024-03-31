@@ -8,7 +8,6 @@ The method of segment averaging is located in LG_MiRP/methods/segment_average_ge
 """
 import tkinter as tk
 
-# from LG_MiRP import LgFrameBase, LgMasterGui, LGTopLevelBase, segment_average_generator, mt_segment_histogram
 from ..gui_base import LgFrameBase, LgMasterGui, LGTopLevelBase
 from ..methods import segment_average_generator, mt_segment_histogram
 
