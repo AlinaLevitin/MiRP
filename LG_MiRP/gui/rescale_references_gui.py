@@ -3,13 +3,13 @@ Author: Alina Levitin
 Date: 28/03/24
 Updated: 28/3/24
 
-Two GUI classes (master and frame) for class unification and extraction
-The method of ... is located in LG_MiRP/methods/...
+Two GUI classes (master and frame) for class reference rescaling
+The method of reference rescaling is located in LG_MiRP/methods/reference_scaler
 """
 import tkinter as tk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-from ..gui_base import LgFrameBase, LgMasterGui
+from ..gui_base import LgFrameBase, LgMasterGui, LGTopLevelBase
 from ..methods import rescale_and_crop_image
 
 
@@ -44,5 +44,31 @@ class RescaleReferenceFrame(LgFrameBase):
                                                            ),
                             row=4)
 
+        mrc_image_button = tk.Button(self, text="Show mrc references", command=lambda: self.display_multiple_mrc_files())
+        mrc_image_button.grid(row=5, column=0)
+
         # Imports a themed image at the bottom
-        self.add_image("default_image.jpg", new_size=600, row=5)
+        self.add_image("default_image.jpg", new_size=600, row=6)
+
+    def display_multiple_mrc_files(self):
+        reference_window = LGTopLevelBase(self)
+        reference_window.title("References")
+        file_paths = ["PF_number_refs_4xbin_tub_only_5-56Apix\\11pf_syn_ref_tubulin_only_6A_5-56Apix.mrc",
+                      "PF_number_refs_4xbin_tub_only_5-56Apix\\12pf_syn_ref_tubulin_only_6A_5-56Apix.mrc",
+                      "PF_number_refs_4xbin_tub_only_5-56Apix\\13pf_syn_ref_tubulin_only_6A_5-56Apix.mrc",
+                      "PF_number_refs_4xbin_tub_only_5-56Apix\\14pf_syn_ref_tubulin_only_6A_5-56Apix.mrc",
+                      "PF_number_refs_4xbin_tub_only_5-56Apix\\15pf_syn_ref_tubulin_only_6A_5-56Apix.mrc",
+                      "PF_number_refs_4xbin_tub_only_5-56Apix\\16pf_syn_ref_tubulin_only_6A_5-56Apix.mrc"]
+
+        slice_indices = [1, 1, 1, 1, 1, 1]
+
+        label_text = ["11 protofilaments",
+                      "12 protofilaments",
+                      "13 protofilaments",
+                      "14 protofilaments",
+                      "15 protofilaments",
+                      "16 protofilaments"
+                      ]
+
+        for i, (file_path, slice_index, label_text) in enumerate(zip(file_paths, slice_indices, label_text)):
+            reference_window.display_mrc_slice(file_path, slice_index, label_text, row=0, column=i)

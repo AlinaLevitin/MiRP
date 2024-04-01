@@ -2,14 +2,15 @@
 """
 Author: Alina Levitin
 Date: 28/03/24
-Updated: 28/3/24
+Updated: 1/4/24
 
-Command to bring up Segment Average Generation GUI
-The method of segment averaging is located in LG_MiRP/methods/segment_average_generator
-The GUI is located in LG_MiRP/gui/segment_average_gui
+Command to bring up Rescale References GUI - input pixel size and box size can be found in the particles.star file after
+subset selection
+The method of rescaling references is located in LG_MiRP/methods/reference_scaler
+The GUI is located in LG_MiRP/gui/rescale_references_gui
 """
 
 import LG_MiRP
 
 # Generating the gui
-segment_average_generation_gui = LG_MiRP.RescaleReferencesGui()
+LG_MiRP.RescaleReferencesGui()

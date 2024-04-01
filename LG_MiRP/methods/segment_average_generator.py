@@ -1,7 +1,7 @@
 """
 Author: Alina Levitin
 Date: 05/03/24
-Updated: 11/3/24
+Updated: 31/3/24
 
 Method to generate averages of segments of MTs after manual particle picking
 
@@ -241,7 +241,7 @@ def mt_segment_histogram(particles_star_file):
         mask = particles_dataframe['rlnMicrographName'] == micrograph
         micrograph_star = particles_dataframe.loc[mask]
         number_of_MTs = micrograph_star['rlnHelicalTubeID'].max()
-        for mt in range(1, number_of_MTs):
+        for mt in range(1, number_of_MTs + 1):
             mask_mt_number = micrograph_star['rlnHelicalTubeID'] == mt
             mt_star = micrograph_star.loc[mask_mt_number]
             number_of_segments_per_mt = mt_star.shape[0]

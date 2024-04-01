@@ -1,7 +1,7 @@
 """
 Author: Alina Levitin
 Date: 11/03/24
-Updated: 11/3/24
+Updated: 1/4/24
 
 Utilization functions for gui_base
 """
@@ -10,6 +10,8 @@ import tkinter as tk
 from tkinter import filedialog
 from pkg_resources import resource_stream
 from PIL import ImageTk, Image  # pillow
+import mrcfile
+import numpy as np
 
 
 def open_image(image_name: str = "missing image"):
@@ -77,3 +79,22 @@ def browse(file_type, file_entry=None):
     if file_path:
         file_entry.delete(0, tk.END)
         file_entry.insert(0, file_path)
+
+
+def display_mrc_image(file_path, slice_index=1):
+    # Open the MRC file
+    with mrcfile.open(file_path, permissive=True) as mrc:
+        # Extract the image data
+        image_data = mrc.data.squeeze()
+        image_data = mrc.data[slice_index, :, :]
+
+    # Normalize the image data to [0, 255]
+    image_data = (image_data - np.min(image_data)) / (np.max(image_data) - np.min(image_data)) * 255
+    image_data = image_data.astype(np.uint8)
+
+    # Convert the image data to PIL Image
+    pil_image = Image.fromarray(image_data)
+    photo = ImageTk.PhotoImage(pil_image)
+
+
+    return image

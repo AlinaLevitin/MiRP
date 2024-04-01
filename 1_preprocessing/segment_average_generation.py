@@ -12,4 +12,4 @@ The GUI is located in LG_MiRP/gui/segment_average_gui
 import LG_MiRP
 
 # Generating the gui
-segment_average_generation_gui = LG_MiRP.SegmentAverageGui()
+LG_MiRP.SegmentAverageGui()
