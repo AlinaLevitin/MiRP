@@ -11,12 +11,13 @@ This method is used in rescale_references_gui
 import subprocess
 import os
 
-from methods_utils import is_relion_installed
+from .methods_utils import is_relion_installed
 
 
-def rescale_and_crop_image(new_pixel_size, new_box_size, output_directory):
+def rescale_and_crop_image(path, new_pixel_size, new_box_size, output_directory):
     """
     A method to rescale and crop the reference images
+    :param path: path for the references
     :param new_pixel_size: selected pixel size after particle extraction
     :param new_box_size: The box size after particle extraction
     :param output_directory: selected directory for output
@@ -24,9 +25,15 @@ def rescale_and_crop_image(new_pixel_size, new_box_size, output_directory):
                 folder
     """
     # Folder with the original references
-    path = "PF_number_refs_4xbin_tub_only_5-56Apix"
+    optional_references = {
+                            "References\\PF_number_refs_4xbin_tub_only_5-56Apix": 5.56,
+                            "References\\13pf\\kinesin_ref": 6.136
+                            }
+
     # Original pixel size
-    original_pixel_size = 5.56
+    original_pixel_size = optional_references[path]
+
+    original_pixel_size_name = str(original_pixel_size).replace(".", "-")
     # generating a new name for the references according to the selected pixel size (new_pixel_size) in a new folder
     # named new_references
     new_pixel_size_name = str(new_pixel_size.get()).replace(".", "-")
@@ -56,7 +63,7 @@ def rescale_and_crop_image(new_pixel_size, new_box_size, output_directory):
             # Checking if there is relion installed on this computer
             if is_relion_installed():
                 # Generating new names for the output files
-                output_file = input_file.replace("5-56Apix", f"{new_pixel_size_name}Apix")
+                output_file = input_file.replace(original_pixel_size_name, new_pixel_size_name)
                 cropped_output_file = output_file.replace('.mrc', f'{new_box_size}_boxed.mrc')
 
                 # Generating paths for the output files

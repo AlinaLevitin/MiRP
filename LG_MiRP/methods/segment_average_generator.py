@@ -13,7 +13,7 @@ import starfile
 import mrcfile
 import matplotlib.pyplot as plt
 
-from methods_utils import is_relion_installed
+from .methods_utils import is_relion_installed
 
 
 def segment_average_generator(input_directory, output_directory, particles_star_file):
