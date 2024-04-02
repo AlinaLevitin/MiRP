@@ -2,7 +2,7 @@
 """
 Author: Alina Levitin
 Date: 28/03/24
-Updated: 1/4/24
+Updated: 01/04/24
 
 Command to bring up Rescale References GUI - input pixel size and box size can be found in the particles.star file after
 subset selection

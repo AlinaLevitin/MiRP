@@ -1,9 +1,9 @@
 """
 Author: Alina Levitin
 Date: 05/03/24
-Updated: 31/3/24
+Updated: 02/04/24
 
-Method to generate averages of segments of MTs after manual particle picking
+Method to generate averages of segments of MTs after manual subset selection
 
 """
 import os
@@ -12,6 +12,8 @@ import tensorflow as tf
 import starfile
 import mrcfile
 import matplotlib.pyplot as plt
+
+from methods_utils import is_relion_installed
 
 
 def segment_average_generator(input_directory, output_directory, particles_star_file):
@@ -89,7 +91,8 @@ def segment_average_generator(input_directory, output_directory, particles_star_
                             if not MT_star_data.empty:
                                 # extracts the number of segments
                                 MT_number_of_segments = MT_star_data.shape[0]
-                                # marks the starting and ending points of each MT according to the pandas DataFrame index
+                                # marks the starting and ending points of each MT according to the pandas DataFrame
+                                # index
                                 MT_start = MT_star_data.index[0]
                                 MT_end = MT_star_data.index[-1]
                                 print(f'MT number {MT} in {micrograph_stack_file} contains {MT_number_of_segments} number of segments'
@@ -115,12 +118,15 @@ def segment_average_generator(input_directory, output_directory, particles_star_
 
                                 # NORMALIZATION
 
-                                # Normalization so all values will be between 0 and 1 and removing background (minimum intensity)
+                                # Normalization so all values will be between 0 and 1 and removing background (minimum
+                                # intensity)
                                 normalized_matrix = (MT_stack_average - tf.reduce_min(MT_stack_average)) / (
                                         tf.reduce_max(MT_stack_average) - tf.reduce_min(MT_stack_average))
 
-                                # converts the tensorFlow tensor to numpy - this is the new mrc containing all the segments of a
-                                # specific MT according to its ID (rlnHelicalTubeID) in a mrcs file of extracted particles from relion
+                                # converts the tensorFlow tensor to numpy - this is the new mrc containing all the
+                                # segments of a
+                                # specific MT according to its ID (rlnHelicalTubeID) in a mrcs file of extracted
+                                # particles from relion
                                 MT_stack_norm_average_array = normalized_matrix.numpy()
 
                                 # The new mrcs files of the averages:
@@ -141,7 +147,8 @@ def segment_average_generator(input_directory, output_directory, particles_star_
                                 new_norm_name = f'{micrograph_stack_file.replace(".mrcs", "")}_norm_MT_{MT}.mrcs'
                                 norm_file = os.path.join(norm_path, new_norm_name)
 
-                                # checking if relion is installed (I was testing it on my personal computer that didn't have relion
+                                # checking if relion is installed (I was testing it on my personal computer that didn't
+                                # have relion
                                 # and was too lazy to comment this out everytime I changed computers)
 
                                 if is_relion_installed():
@@ -159,7 +166,8 @@ def segment_average_generator(input_directory, output_directory, particles_star_
                                 else:
                                     print("Relion is not installed on this computer.")
 
-                                # Updating the file links (_rlnImageName) in the particles.star to the averaged normalized file names
+                                # Updating the file links (_rlnImageName) in the particles.star to the averaged
+                                # normalized file names
                                 # in the following manner:
                                 # 000001@segment_averages/norm_mrcs/gc_Cin8_Aug07_18_1000_0000_Aug08_23.09.41_mc2_DW.mrcs_norm_MT_1.mrcs
                             for index, row in particles_dataframe.iterrows():
@@ -175,7 +183,6 @@ def segment_average_generator(input_directory, output_directory, particles_star_
     #
     # particles_dataframe_no_duplicates = particles_dataframe.drop_duplicates(subset=['filename'])
 
-
     # Generating a new star file named segment_average.star in the output directory
     # particles_dataframe['rlnImageName'] = new_avg_norm_images_names
     new_particles_star_file_data = {'optics': data_optics_dataframe, 'particles': particles_dataframe}
@@ -189,26 +196,6 @@ def segment_average_generator(input_directory, output_directory, particles_star_
         raise NameError("File already exists")
 
     print("Processing complete.")
-
-
-def is_relion_installed():
-    """
-    A lazy method to check if relion is installed on the computer
-    :return: True or False if relion is installed or not
-    """
-    try:
-        # Run a command to check if relion is installed
-        result = subprocess.run(['relion_refine', '--version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        if result.returncode == 0:
-            # If the return code is 0, it means the command executed successfully, hence Relion is installed
-            return True
-        else:
-            # If the return code is not 0, Relion is likely not installed or the command failed
-            return False
-    except FileNotFoundError:
-        # If FileNotFoundError is raised, it means the command (relion_refine) wasn't found,
-        # hence Relion is not installed
-        return False
 
 
 def mt_segment_histogram(particles_star_file):

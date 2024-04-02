@@ -94,7 +94,6 @@ def display_mrc_image(file_path, slice_index=1):
 
     # Convert the image data to PIL Image
     pil_image = Image.fromarray(image_data)
-    photo = ImageTk.PhotoImage(pil_image)
-
+    image = ImageTk.PhotoImage(pil_image)
 
     return image
