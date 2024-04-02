@@ -36,7 +36,7 @@ class RescaleReferenceFrame(LgFrameBase):
         """
         super().__init__(master)
         # Adds the job name at the top row
-        self.add_sub_job_name("Rescale References", row=0)
+        # self.add_sub_job_name("Rescale References", row=0)
 
         input_pixel_size = self.add_number_entry("Pixel size", row=1)
 

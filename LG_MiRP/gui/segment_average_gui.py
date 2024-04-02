@@ -36,7 +36,7 @@ class SegmentAverageFrame(LgFrameBase):
         """
         super().__init__(master)
         # Adds the job name at the top row
-        self.add_sub_job_name("Segment Average Generator", row=0)
+        # self.add_sub_job_name("Segment Average Generator", row=0)
         # Creates an entry for particles.star file
         input_star_file = self.add_file_entry('star', 'Select a particles.star file', row=1)
         # Creates a Show segments histogram to show the distribution of number of segments
