@@ -11,7 +11,6 @@ import subprocess
 import tensorflow as tf
 import starfile
 import mrcfile
-import matplotlib.pyplot as plt
 
 from .methods_utils import is_relion_installed
 
@@ -196,53 +195,3 @@ def segment_average_generator(input_directory, output_directory, particles_star_
         raise NameError("File already exists")
 
     print("Processing complete.")
-
-
-def mt_segment_histogram(particles_star_file):
-    """
-    A method to generate a histogram from number of segments per MT
-
-    :param particles_star_file: particles star file from entry
-    :return: matplotlib histogram fig
-    """
-
-    try:
-        # Try to read the STAR file
-        particles_star_file_data = starfile.read(particles_star_file.get())
-        particles_dataframe = particles_star_file_data['particles']
-
-        # Access the 'rlnMicrographName' column and get unique values
-        micrographs = particles_dataframe['rlnMicrographName'].unique()
-
-        # Continue with further processing
-        # ...
-
-    except FileNotFoundError:
-        # Handle the case where the specified STAR file does not exist
-        print("Error: The specified STAR file does not exist.")
-        # Optionally, you can raise the error again if needed
-        raise
-
-    mt_segments = []
-    for micrograph in micrographs:
-        mask = particles_dataframe['rlnMicrographName'] == micrograph
-        micrograph_star = particles_dataframe.loc[mask]
-        number_of_MTs = micrograph_star['rlnHelicalTubeID'].max()
-        for mt in range(1, number_of_MTs + 1):
-            mask_mt_number = micrograph_star['rlnHelicalTubeID'] == mt
-            mt_star = micrograph_star.loc[mask_mt_number]
-            number_of_segments_per_mt = mt_star.shape[0]
-            mt_segments.append(number_of_segments_per_mt)
-
-    # Create a Matplotlib figure and axes
-    fig, ax = plt.subplots()
-
-    # Plot histogram
-    ax.hist(mt_segments, color='skyblue', edgecolor='black')
-
-    # Add labels and title
-    ax.set_xlabel('Number of segments')
-    ax.set_ylabel('Frequency')
-    ax.set_title('Histogram of Segments of Microtubules')
-
-    return fig

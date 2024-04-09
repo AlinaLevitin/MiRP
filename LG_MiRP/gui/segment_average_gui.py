@@ -9,7 +9,7 @@ The method of segment averaging is located in LG_MiRP/methods/segment_average_ge
 import tkinter as tk
 
 from ..gui_base import LgFrameBase, LgMasterGui, LGTopLevelBase
-from ..methods import segment_average_generator, mt_segment_histogram
+from ..methods import segment_average_generator, methods_utils
 
 
 class SegmentAverageGui(LgMasterGui):
@@ -61,7 +61,7 @@ class SegmentAverageFrame(LgFrameBase):
         self.add_image("segment_average.jpg", new_size=600, row=7)
 
     def show_mt_segment_histogram(self, input_star_file):
-        fig = mt_segment_histogram(input_star_file)
+        fig = methods_utils.mt_segment_histogram(input_star_file)
         histogram_window = LGTopLevelBase(self)
         histogram_window.title("Histogram of number of segments per MT")
         histogram_window.add_plot(fig)

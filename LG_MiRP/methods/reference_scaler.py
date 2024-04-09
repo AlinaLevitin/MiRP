@@ -1,7 +1,7 @@
 """
 Author: Alina Levitin
-Date: 1/04/24
-Updated: 1/04/24
+Date: 01/04/24
+Updated: 09/04/24
 
 Method to rescale the references before 3D-classification
 The method is utilizing relion_image_handler method to first rescale and the crop image
@@ -26,8 +26,8 @@ def rescale_and_crop_image(path, new_pixel_size, new_box_size, output_directory)
     """
     # Folder with the original references
     optional_references = {
-                            "References\\PF_number_refs_4xbin_tub_only_5-56Apix": 5.56,
-                            "References\\13pf\\kinesin_ref": 6.136
+                            "References/PF_number_refs_4xbin_tub_only_5-56Apix": 5.56,
+                            "References/13pf/kinesin_ref": 6.136
                             }
 
     # Original pixel size
