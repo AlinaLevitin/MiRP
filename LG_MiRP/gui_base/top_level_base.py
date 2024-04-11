@@ -52,32 +52,6 @@ class LGTopLevelBase(tk.Toplevel):
         image_label = tk.Label(self, image=self.image)
         image_label.grid(row=row, column=0, padx=5, pady=5)
 
-    def display_mrc_slice(self, file_path, slice_index, label_text, row, column):
-        # Open the MRC file
-        with mrcfile.open(file_path, permissive=True) as mrc:
-            # Extract the image data for the specified slice
-            image_data = mrc.data[slice_index, :, :]
-
-        # Normalize the image data to [0, 255]
-        image_data = (image_data - np.min(image_data)) / (np.max(image_data) - np.min(image_data)) * 255
-        image_data = image_data.astype(np.uint8)
-
-        # Convert the image data to PIL Image
-        pil_image = Image.fromarray(image_data)
-
-        # Convert the PIL Image to Tkinter PhotoImage
-        photo = ImageTk.PhotoImage(pil_image)
-
-        # Create a Tkinter label to display the image
-        label = tk.Label(self, image=photo)
-        label.grid(row=row, column=column)
-
-        text_label = tk.Label(self, text=label_text)
-        text_label.grid(row=row + 1, column=column)  # Adjust the row for the text label
-
-        # Keep a reference to the PhotoImage object to prevent garbage collection
-        label.image = photo
-
     def add_exit_button(self, row: int = 11):
         """
         Adding an exit button to the master gui

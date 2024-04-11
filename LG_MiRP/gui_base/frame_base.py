@@ -5,9 +5,10 @@ Updated: 11/3/24
 
 Class to generate ttk.Frames LG-style.
 """
+import os
+
 import tkinter as tk
 from tkinter import ttk
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from LG_MiRP.gui_base import utils
 
@@ -127,3 +128,20 @@ class LgFrameBase(ttk.Frame):
         number_entry.grid(row=row, column=1, padx=5, pady=5)
 
         return number_entry
+
+    def display_multiple_mrc_files(self, path, row):
+        """
+        A method to show the mrc images of the references in a Tkinter top level window
+        """
+        # File paths
+        file_paths = [os.path.join(path, file) for file in os.listdir(path) if file.endswith(".mrc")]
+
+        # The slices that will be displayed since the references mrs files are stacks
+        slice_indices = [1 for file in os.listdir(path) if file.endswith(".mrc")]
+
+        # labels to be displayed under the images
+        label_text = [file.split("_")[0:2] for file in os.listdir(path) if file.endswith(".mrc")]
+
+        # Shows the mrc images
+        for i, (file_path, slice_index, label_text) in enumerate(zip(file_paths, slice_indices, label_text)):
+            utils.display_mrc_slice(self, file_path, slice_index, label_text, row=row, column=i)

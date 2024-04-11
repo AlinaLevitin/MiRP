@@ -81,19 +81,31 @@ def browse(file_type, file_entry=None):
         file_entry.insert(0, file_path)
 
 
-def display_mrc_image(file_path, slice_index=1):
+def display_mrc_slice(master, file_path, slice_index, label_text, row, column):
     # Open the MRC file
     with mrcfile.open(file_path, permissive=True) as mrc:
-        # Extract the image data
-        image_data = mrc.data.squeeze()
+        # Extract the image data for the specified slice
         image_data = mrc.data[slice_index, :, :]
 
-    # Normalize the image data to [0, 255]
-    image_data = (image_data - np.min(image_data)) / (np.max(image_data) - np.min(image_data)) * 255
-    image_data = image_data.astype(np.uint8)
+        # Normalize the image data to [0, 255]
+        min_value = np.min(image_data)
+        max_value = np.max(image_data)
+        normalized_data = (image_data - min_value) / (max_value - min_value) * 255
+        image_data_uint8 = normalized_data.astype(np.uint8)
 
     # Convert the image data to PIL Image
-    pil_image = Image.fromarray(image_data)
-    image = ImageTk.PhotoImage(pil_image)
+    pil_image = Image.fromarray(image_data_uint8)
 
-    return image
+    # Convert the PIL Image to Tkinter PhotoImage
+    photo = ImageTk.PhotoImage(pil_image)
+
+    # Create a Tkinter label to display the image and place it in the frame
+    image_label = tk.Label(master, image=photo)
+    image_label.grid(row=row, column=column)
+
+    # Create a text label and place it below the image in the frame
+    text_label = tk.Label(master, text=label_text)
+    text_label.grid(row=row + 1, column=column)
+
+    # Keep a reference to the PhotoImage object to prevent garbage collection
+    image_label.photo = photo
