@@ -11,7 +11,7 @@ import os
 import numpy as np
 import starfile
 
-from methods_utils import linear_fit, filter_microtubules_by_length
+from .methods_utils import linear_fit, filter_microtubules_by_length
 
 
 def smooth_angles(star_file_input, id_label, output_path, cutoff=None):
@@ -41,8 +41,16 @@ def smooth_angles(star_file_input, id_label, output_path, cutoff=None):
         top_clstr, outliers = cluster_shallow_slopes(angles, angle_cutoff)
 
         if not top_clstr:
-            print(f'MT {mtIDX} {id_label} cannot be fit, and is discarded')
-            bad_mts.append(mtIDX)
+            print(f'MT {mtIDX[1]} in micrograph {mtIDX[0]}, {id_label} cannot be fit, and is discarded')
+            # Find the rows in `particles_dataframe` where the values of 'rlnMicrographName' and 'rlnHelicalTubeID' match `mtIDX`
+            matching_rows = particles_dataframe[
+                (particles_dataframe['rlnMicrographName'] == mtIDX[0]) &
+                (particles_dataframe['rlnHelicalTubeID'] == mtIDX[1])
+                ]
+
+            # Get the index numbers of the matching rows
+            index_numbers = matching_rows.index
+            bad_mts.append(index_numbers[0])
         else:
             top_clstr_vals = MT.iloc[top_clstr][id_label].to_numpy()
             fitted = linear_fit(np.arange(1, len(top_clstr) + 1), top_clstr_vals)
