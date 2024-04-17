@@ -57,6 +57,8 @@ def smooth_angles(star_file_input, id_label, output_path, cutoff=None):
 
     starfile.write(new_particles_star_file_data, output_file)
 
+    print(f"Updated STAR file saved as: {output_file} at {output_path.get()}")
+
 
 def cluster_shallow_slopes(angles, cutoff):
     # Create an array of all pairwise differences

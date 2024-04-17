@@ -6,7 +6,8 @@ Updated: 02/04/24
 Random utils and methods
 
 """
-
+import os
+import shutil
 import subprocess
 
 import numpy as np
@@ -181,3 +182,24 @@ def is_relion_installed():
         # hence Relion is not installed
         return False
 
+
+def delete_folder_contents(folder_path):
+    # List all contents in the folder
+    contents = os.listdir(folder_path)
+
+    # Iterate through each item in the folder
+    for item in contents:
+        # Create the full path to the item
+        item_path = os.path.join(folder_path, item)
+
+        # Check if the item is a file
+        if os.path.isfile(item_path) or os.path.islink(item_path):
+            # Delete the file or symbolic link
+            os.remove(item_path)
+
+        # Check if the item is a directory
+        elif os.path.isdir(item_path):
+            # Recursively delete the directory and its contents using shutil.rmtree
+            shutil.rmtree(item_path)
+
+    print(f"All contents in {folder_path} have been deleted.")

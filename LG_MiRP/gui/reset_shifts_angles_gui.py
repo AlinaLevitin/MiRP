@@ -43,7 +43,7 @@ class ResetShiftsAnglesFrame(LgFrameBase):
         output_directory = self.add_directory_entry('Select output directory', row=2)
 
         # Creates a "Run" button that uses the class unification and extraction method
-        self.add_run_button(lambda: reset_angles_and_translations(input_star_file, output_directory),
+        self.add_run_button(lambda: reset_angles_and_translations(input_star_file, output_directory, rot='0', x='0', y='0', z='0', psi='prior', tilt='prior'),
                             row=3)
 
         # Imports a themed image at the bottom

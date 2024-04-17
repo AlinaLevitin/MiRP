@@ -11,7 +11,7 @@ shifts: _rlnOriginX, _rlnOriginY, _rlnOriginZ are set to 0
 angles: _rlnAnglePsi, _rlnAngleTilt are set to priors: _rlnAnglePsiPrior, _rlnAngleTiltPrior
 """
 from ..gui_base import LgFrameBase, LgMasterGui
-from ..methods import keep_PHI_reset_angles_and_translations
+from ..methods import reset_angles_and_translations
 
 
 class KeepPHIResetShiftsAnglesGui(LgMasterGui):
@@ -44,7 +44,7 @@ class ResetShiftsAnglesFrame(LgFrameBase):
         output_directory = self.add_directory_entry('Select output directory', row=2)
 
         # Creates a "Run" button that uses the class unification and extraction method
-        self.add_run_button(lambda: keep_PHI_reset_angles_and_translations(input_star_file, output_directory),
+        self.add_run_button(lambda: reset_angles_and_translations(input_star_file, output_directory, rot=None, x='0', y='0', z='0', psi='prior', tilt='prior'),
                             row=3)
 
         # Imports a themed image at the bottom

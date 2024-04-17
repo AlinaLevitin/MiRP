@@ -4,7 +4,7 @@ Date: 15/04/24
 Updated: 15/04/24
 
 Command to bring up Reset Shifts and angles GUI
-The method of shifts and angles reset is located in LG_MiRP/methods/keep_PHI_reset_angles_shifts
+The method of shifts and angles reset is located in LG_MiRP/methods/reset_angles_shifts
 
 shifts: _rlnOriginX, _rlnOriginY, _rlnOriginZ are set to 0
 (_rlnAngleRot is kept same)

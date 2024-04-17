@@ -11,7 +11,7 @@ This method is used in rescale_references_gui
 import subprocess
 import os
 
-from .methods_utils import is_relion_installed
+from .methods_utils import is_relion_installed, delete_folder_contents
 
 
 def rescale_and_crop_image(path, new_pixel_size, new_box_size, output_directory):
@@ -46,12 +46,12 @@ def rescale_and_crop_image(path, new_pixel_size, new_box_size, output_directory)
     # Creating new directories for the outputs
     if "new_references" not in os.listdir(output_directory.get()):
         os.mkdir(output_path)
+    else:
+        delete_folder_contents(output_path)
 
-    if "rescaled_references" not in os.listdir(output_path):
-        os.mkdir(output_scaled_path)
+    os.mkdir(output_scaled_path)
 
-    if "cropped_references" not in os.listdir(output_path):
-        os.mkdir(output_cropped_path)
+    os.mkdir(output_cropped_path)
 
     # Accessing the references
     reference_directory = os.listdir(path)
@@ -60,22 +60,23 @@ def rescale_and_crop_image(path, new_pixel_size, new_box_size, output_directory)
     for input_file in reference_directory:
 
         if input_file.endswith(".mrc"):
+
+            # Generating new names for the output files
+            output_file = input_file.replace(original_pixel_size_name, new_pixel_size_name)
+            cropped_output_file = output_file.replace('.mrc', f'_{str(new_box_size.get())}pix_boxed.mrc')
+
+            # Generating paths for the output files
+            output_scaled_file_path = os.path.join(output_scaled_path, output_file)
+            output_cropped_file_path = os.path.join(output_cropped_path, cropped_output_file)
+
             # Checking if there is relion installed on this computer
             if is_relion_installed():
-                # Generating new names for the output files
-                output_file = input_file.replace(original_pixel_size_name, new_pixel_size_name)
-                cropped_output_file = output_file.replace('.mrc', f'{new_box_size}_boxed.mrc')
-
-                # Generating paths for the output files
-                output_scaled_file_path = os.path.join(output_scaled_path, output_file)
-                output_cropped_file_path = os.path.join(output_cropped_path, cropped_output_file)
-
                 # Rescale the image using relion_image_handles
-                rescale_command = f"relion_image_handler --i {os.path.join(path, input_file)} --angpix {original_pixel_size} --rescale_angpix {float(new_pixel_size.get())} --o {os.path.join(output_scaled_path, output_scaled_file_path)}"
+                rescale_command = f"relion_image_handler --i {os.path.join(path, input_file)} --angpix {original_pixel_size} --rescale_angpix {float(new_pixel_size.get())} --o {output_scaled_file_path}"
                 subprocess.run(rescale_command, shell=True, check=True)
 
                 # Crop the rescaled image using relion_image_handles
-                crop_command = f"relion_image_handler --i {os.path.join(output_scaled_path, output_scaled_file_path)} --new_box {int(new_box_size.get())} --o {os.path.join(output_cropped_path, output_cropped_file_path)}"
+                crop_command = f"relion_image_handler --i {os.path.join(output_scaled_path, output_scaled_file_path)} --new_box {int(new_box_size.get())} --o {output_cropped_file_path}"
                 subprocess.run(crop_command, shell=True, check=True)
 
             else:
