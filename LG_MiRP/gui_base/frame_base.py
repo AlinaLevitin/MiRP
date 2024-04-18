@@ -26,6 +26,7 @@ class LgFrameBase(ttk.Frame):
         super().__init__(master)
 
         self.image = None
+        self.output = None
         # Open and resize a tiny folder icon for browse button
         self.browse_image = utils.open_and_resize_browse_image()
 
@@ -61,7 +62,7 @@ class LgFrameBase(ttk.Frame):
         :param text: text located next to the button (optional)
         """
         if text:
-            label = tk.Label(self, text=text, font=('Ariel', 16))
+            label = tk.Label(self, text=text, font=('Ariel', 12))
             label.grid(row=row, column=0, columnspan=1, padx=5, pady=5)
 
         button = tk.Button(self, text='Run', command=command)
@@ -128,6 +129,10 @@ class LgFrameBase(ttk.Frame):
         number_entry.grid(row=row, column=1, padx=5, pady=5)
 
         return number_entry
+
+    def add_show_results_button(self, command, row, text="Show Results"):
+        button = tk.Button(self, text=text, command=command)
+        button.grid(row=row, column=1, columnspan=1, padx=5, pady=5)
 
     def display_multiple_mrc_files(self, path, row):
         """

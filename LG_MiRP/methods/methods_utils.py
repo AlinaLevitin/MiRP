@@ -87,10 +87,9 @@ def mt_segment_histogram(particles_star_file):
     return fig
 
 
-def plot_angles_and_shifts(star_file_input):
+def plot_angles_and_shifts(data):
 
-    star_data = starfile.read(star_file_input.get())
-    data = star_data['particles']
+    data.reset_index(inplace=True)
 
     fig, axes = plt.subplots(1, 4, figsize=(12, 6))
 
@@ -112,13 +111,13 @@ def plot_angles_and_shifts(star_file_input):
     axes[2].set_ylabel('Psi Angle')
     axes[2].set_title('Psi')
 
-    axes[3].plot(data['rlnOriginX'], 'o', label='Xshift')
-    axes[3].plot(data['rlnOriginY'], 'o', label='Yshift')
+    axes[3].plot(data['rlnOriginXAngst'], 'o', label='Xshift')
+    axes[3].plot(data['rlnOriginYAngst'], 'o', label='Yshift')
     axes[3].set_title('X/Y Shifts')
     axes[3].set_ylabel('Shift (pixels)')
     axes[3].legend(loc='upper right')
 
-    plt.setp(axes, xticks=[i for i in range(1, len(data) + 1, 2)], xlabel='Particle Number')
+    plt.setp(axes, xticks=[i for i in range(1, len(data) + 1, 2)], xlabel='Segment')
 
     return fig
 

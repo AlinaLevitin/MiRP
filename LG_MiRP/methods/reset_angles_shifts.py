@@ -22,26 +22,26 @@ def reset_angles_and_translations(star_file_input, output_directory, rot=None, x
     data_optics_dataframe = data['optics']
 
     # Reset PHI/Rot to 0
-    if rot == '0' and '_rlnAngleRot' in particles_dataframe.columns:
-        particles_dataframe['_rlnAngleRot'] = 0.0
+    if rot == '0' and 'rlnAngleRot' in particles_dataframe.columns:
+        particles_dataframe['rlnAngleRot'] = 0.0
 
     # Reset PSI and TILT to match PRIORS (assuming the prior columns exist in the DataFrame)
     # Adjust column names according to the actual column names in the STAR file
-    if psi == 'prior' and '_rlnAnglePsiPrior' in particles_dataframe.columns:
-        particles_dataframe['_rlnAnglePsi'] = particles_dataframe['_rlnAnglePsiPrior']
+    if psi == 'prior' and 'rlnAnglePsiPrior' in particles_dataframe.columns:
+        particles_dataframe['rlnAnglePsi'] = particles_dataframe['rlnAnglePsiPrior']
 
-    if tilt == 'prior' and '_rlnAngleTiltPrior' in particles_dataframe.columns:
-        particles_dataframe['_rlnAngleTilt'] = particles_dataframe['_rlnAngleTiltPrior']
+    if tilt == 'prior' and 'rlnAngleTiltPrior' in particles_dataframe.columns:
+        particles_dataframe['rlnAngleTilt'] = particles_dataframe['rlnAngleTiltPrior']
 
     # Reset translations to 0
-    if x == '0' and '_rlnOriginX' in particles_dataframe.columns:
-        particles_dataframe['_rlnOriginX'] = 0.0
+    if x == '0' and 'rlnOriginXAngst' in particles_dataframe.columns:
+        particles_dataframe['rlnOriginXAngst'] = 0.0
 
-    if y == '0' and '_rlnOriginY' in particles_dataframe.columns:
-        particles_dataframe['_rlnOriginY'] = 0.0
+    if y == '0' and 'rlnOriginYAngst' in particles_dataframe.columns:
+        particles_dataframe['rlnOriginYAngst'] = 0.0
 
-    if z == '0' and '_rlnOriginZ' in particles_dataframe.columns:
-        particles_dataframe['_rlnOriginZ'] = 0.0
+    if z == '0' and 'rlnOriginZ' in particles_dataframe.columns:
+        particles_dataframe['rlnOriginZAngst'] = 0.0
 
     # Write the modified DataFrame back to a new STAR file
     os.chdir(output_directory.get())

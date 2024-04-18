@@ -1,7 +1,7 @@
 """
 Author: Alina Levitin
 Date: 05/03/24
-Updated: 02/04/24
+Updated: 18/04/24
 
 Method to generate averages of segments of MTs after manual subset selection
 
@@ -195,3 +195,5 @@ def segment_average_generator(input_directory, output_directory, particles_star_
         raise NameError("File already exists")
 
     print("Processing complete.")
+
+    return particles_dataframe

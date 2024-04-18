@@ -40,11 +40,8 @@ class SegmentAverageFrame(LgFrameBase):
         # Creates an entry for particles.star file
         input_star_file = self.add_file_entry('star', 'Select a particles.star file', row=1)
         # Creates a Show segments histogram to show the distribution of number of segments
-        result_button = tk.Button(self, text="Show segments histogram",
-                                  command=lambda: self.show_mt_segment_histogram(input_star_file))
-        result_button.grid(row=2, column=0)
-        # Creates an entry for binning
-        # bins_entry = self.add_number_entry("Binning (example: 4)", row=3)
+        self.add_show_results_button(command=lambda: self.show_mt_segment_histogram(input_star_file),
+                                     row=2, text="Show segments histogram")
         # Creates an entry for input directory with mrcs stack files in Extract folder (after particle picking)
         input_directory = self.add_directory_entry('Select directory containing extracted particles in Extract', row=4)
         # Creates an entry for output directory (usually the project folder) there it will save the new mrcs files and

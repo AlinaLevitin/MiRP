@@ -1,7 +1,7 @@
 """
 Author: Alina Levitin
-Date: 02/04/24
-Updated: 02/04/24
+Date: 16/04/24
+Updated: 18/04/24
 
 Methods for smoothing ROT and PSI
 
@@ -35,8 +35,8 @@ def smooth_angles(star_file_input, id_label, output_path, cutoff=None):
     angle_cutoff = 8
     bad_mts = []
 
-    for mtIDX, MT in particles_dataframe.groupby(['rlnMicrographName', 'rlnHelicalTubeID']):
-        angles = MT[id_label].to_numpy()
+    for mtIDX, MT_dataframe in particles_dataframe.groupby(['rlnMicrographName', 'rlnHelicalTubeID']):
+        angles = MT_dataframe[id_label].to_numpy()
 
         top_clstr, outliers = cluster_shallow_slopes(angles, angle_cutoff)
 
@@ -52,9 +52,9 @@ def smooth_angles(star_file_input, id_label, output_path, cutoff=None):
             index_numbers = matching_rows.index
             bad_mts.append(index_numbers[0])
         else:
-            top_clstr_vals = MT.iloc[top_clstr][id_label].to_numpy()
+            top_clstr_vals = MT_dataframe.iloc[top_clstr][id_label].to_numpy()
             fitted = linear_fit(np.arange(1, len(top_clstr) + 1), top_clstr_vals)
-            particles_dataframe.loc[MT.index, id_label] = fitted
+            particles_dataframe.loc[MT_dataframe.index, id_label] = fitted
 
     particles_dataframe.drop(bad_mts, inplace=True)
 
@@ -66,6 +66,8 @@ def smooth_angles(star_file_input, id_label, output_path, cutoff=None):
     starfile.write(new_particles_star_file_data, output_file)
 
     print(f"Updated STAR file saved as: {output_file} at {output_path.get()}")
+
+    return particles_dataframe
 
 
 def cluster_shallow_slopes(angles, cutoff):
