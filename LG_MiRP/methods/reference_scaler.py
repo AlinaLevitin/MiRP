@@ -27,8 +27,9 @@ def rescale_and_crop_image(path, new_pixel_size, new_box_size, output_directory)
     # Folder with the original references
     optional_references = {
                             "References/PF_number_refs_4xbin_tub_only_5-56Apix": 5.56,
-                            "References/13pf/kinesin_ref": 6.136
-                            }
+                            "References/13pf": 6.136,
+                            "References/13pf/kinesin_ref": 6.13
+                           }
 
     # Original pixel size
     original_pixel_size = optional_references[path]
