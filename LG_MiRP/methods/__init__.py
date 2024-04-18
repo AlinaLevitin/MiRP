@@ -4,4 +4,5 @@ from .class_unifier_extractor import *
 from .reference_scaler import *
 from .reset_angles_shifts import *
 from .angle_smoothing import *
+from .XY_smoothing import *
 from .methods_utils import *

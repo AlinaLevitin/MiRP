@@ -35,17 +35,19 @@ def smooth_angles(star_file_input, id_label, output_path, cutoff=None):
     angle_cutoff = 8
     bad_mts = []
 
-    for mtIDX, MT_dataframe in particles_dataframe.groupby(['rlnMicrographName', 'rlnHelicalTubeID']):
+    grouped_data = particles_dataframe.groupby(['rlnMicrographName', 'rlnHelicalTubeID'])
+
+    for (micrograph, MT), MT_dataframe in grouped_data:
         angles = MT_dataframe[id_label].to_numpy()
 
         top_clstr, outliers = cluster_shallow_slopes(angles, angle_cutoff)
 
         if not top_clstr:
-            print(f'MT {mtIDX[1]} in micrograph {mtIDX[0]}, {id_label} cannot be fit, and is discarded')
+            print(f'MT {MT} in micrograph {micrograph}, {id_label} cannot be fit, and is discarded')
             # Find the rows in `particles_dataframe` where the values of 'rlnMicrographName' and 'rlnHelicalTubeID' match `mtIDX`
             matching_rows = particles_dataframe[
-                (particles_dataframe['rlnMicrographName'] == mtIDX[0]) &
-                (particles_dataframe['rlnHelicalTubeID'] == mtIDX[1])
+                (particles_dataframe['rlnMicrographName'] == micrograph) &
+                (particles_dataframe['rlnHelicalTubeID'] == MT)
                 ]
 
             # Get the index numbers of the matching rows

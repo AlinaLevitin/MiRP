@@ -11,7 +11,7 @@ import os
 import numpy as np
 import starfile
 
-from methods_utils import linear_fit, filter_microtubules_by_length
+from .methods_utils import linear_fit, filter_microtubules_by_length
 
 
 def smooth_xy_shifts(star_file_input, output_path, cutoff=None):
@@ -31,10 +31,10 @@ def smooth_xy_shifts(star_file_input, output_path, cutoff=None):
     smoothed_x_shifts = []
     smoothed_y_shifts = []
 
-    for (micrograph, tube), group in grouped_data:
+    for (micrograph, MT), group in grouped_data:
         # Extract X and Y shifts for the current microtubule
-        x_shifts = group['rlnOriginX'].tolist()
-        y_shifts = group['rlnOriginY'].tolist()
+        x_shifts = group['rlnOriginXAngst'].tolist()
+        y_shifts = group['rlnOriginYAngst'].tolist()
 
         # Smooth X and Y shifts
         smoothed_x = flatten_and_cluster_shifts(x_shifts)
@@ -45,8 +45,8 @@ def smooth_xy_shifts(star_file_input, output_path, cutoff=None):
         smoothed_y_shifts.extend(smoothed_y)
 
     # Assign smoothed shifts to the DataFrame
-    particles_dataframe['rlnOriginX'] = smoothed_x_shifts
-    particles_dataframe['rlnOriginY'] = smoothed_y_shifts
+    particles_dataframe['rlnOriginXAngst'] = smoothed_x_shifts
+    particles_dataframe['rlnOriginYAngst'] = smoothed_y_shifts
 
     new_particles_star_file_data = {'optics': data_optics_dataframe, 'particles': particles_dataframe}
 
@@ -54,6 +54,10 @@ def smooth_xy_shifts(star_file_input, output_path, cutoff=None):
     output_file = f'smoothened_XY_data.star'
 
     starfile.write(new_particles_star_file_data, output_file)
+
+    print(f"Updated STAR file saved as: {output_file} at {output_path.get()}")
+
+    return particles_dataframe
 
 
 def flatten_and_cluster_shifts(shifts):
