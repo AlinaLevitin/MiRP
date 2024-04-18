@@ -10,7 +10,9 @@ import os
 import tkinter as tk
 from tkinter import ttk
 
-from LG_MiRP.gui_base import utils
+from .utils import *
+from .top_level_base import LGTopLevelBase
+from LG_MiRP.methods import plot_angles_and_shifts
 
 
 class LgFrameBase(ttk.Frame):
@@ -28,7 +30,7 @@ class LgFrameBase(ttk.Frame):
         self.image = None
         self.output = None
         # Open and resize a tiny folder icon for browse button
-        self.browse_image = utils.open_and_resize_browse_image()
+        self.browse_image = open_and_resize_browse_image()
 
     def add_image(self, image_name: str = "default_image.jpg", new_size: int = 600, row: int = 10):
         """
@@ -38,8 +40,8 @@ class LgFrameBase(ttk.Frame):
         :param new_size: in case image needs to be resized, default is 600 since it looks nice
         :param row: int in which row of Tk GUI (as grid) the image will appear
         """
-        image_stream = utils.open_image(image_name)
-        self.image = utils.resize_image(image_stream, new_size)
+        image_stream = open_image(image_name)
+        self.image = resize_image(image_stream, new_size)
         image_label = tk.Label(self, image=self.image)
         image_label.grid(row=row, column=0, columnspan=5, padx=5, pady=5)
 
@@ -83,7 +85,7 @@ class LgFrameBase(ttk.Frame):
         file_entry = tk.Entry(self, width=50)
         file_entry.grid(row=row, column=1, padx=5, pady=5)
 
-        browse_button = tk.Button(self, text="Browse", command=lambda: utils.browse(entry_type, file_entry))
+        browse_button = tk.Button(self, text="Browse", command=lambda: browse(entry_type, file_entry))
         browse_button.grid(row=row, column=2, padx=5, pady=5)
 
         browse_label = tk.Label(self, image=self.browse_image)
@@ -106,7 +108,7 @@ class LgFrameBase(ttk.Frame):
         directory = tk.Entry(self, width=50)
         directory.grid(row=row, column=1, padx=5, pady=5)
 
-        browse_button = tk.Button(self, text="Browse", command=lambda: utils.browse('directory', directory))
+        browse_button = tk.Button(self, text="Browse", command=lambda: browse('directory', directory))
         browse_button.grid(row=row, column=2, padx=5, pady=5)
 
         browse_label = tk.Label(self, image=self.browse_image)
@@ -134,6 +136,28 @@ class LgFrameBase(ttk.Frame):
         button = tk.Button(self, text=text, command=command)
         button.grid(row=row, column=1, columnspan=1, padx=5, pady=5)
 
+    def show_result(self, n=5):
+
+        # Assuming 'grouped_data' is the grouped data from a DataFrame
+        grouped_data = self.output.groupby(['rlnMicrographName', 'rlnHelicalTubeID'])
+
+        # Convert the grouped data into a list of tuples (key, grouped DataFrame)
+        grouped_data_list = list(grouped_data)
+
+        # Iterate through the first three items in the grouped data list
+        for index in range(n):
+            # Unpack the key and the grouped DataFrame
+            (micrograph, MT), MT_dataframe = grouped_data_list[index]
+
+            # Plot the data at the first item in each group
+            fig = plot_angles_and_shifts(MT_dataframe)
+
+            # Create a new window for each plot
+            plot_window = LGTopLevelBase(self)
+            plot_window.title("Plot of angles")
+            plot_window.add_title(text=f"MT {MT} in {micrograph}")
+            plot_window.add_plot(fig)
+
     def display_multiple_mrc_files(self, path, row):
         """
         A method to show the mrc images of the references in a Tkinter top level window
@@ -149,4 +173,4 @@ class LgFrameBase(ttk.Frame):
 
         # Shows the mrc images
         for i, (file_path, slice_index, label_text) in enumerate(zip(file_paths, slice_indices, label_text)):
-            utils.display_mrc_slice(self, file_path, slice_index, label_text, row=row, column=i)
+            display_mrc_slice(self, file_path, slice_index, label_text, row=row, column=i)

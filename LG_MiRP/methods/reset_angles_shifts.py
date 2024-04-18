@@ -21,32 +21,40 @@ def reset_angles_and_translations(star_file_input, output_directory, rot=None, x
     particles_dataframe = data['particles']
     data_optics_dataframe = data['optics']
 
+    name = []
+
     # Reset PHI/Rot to 0
     if rot == '0' and 'rlnAngleRot' in particles_dataframe.columns:
         particles_dataframe['rlnAngleRot'] = 0.0
+        name.append('rot_0')
 
     # Reset PSI and TILT to match PRIORS (assuming the prior columns exist in the DataFrame)
     # Adjust column names according to the actual column names in the STAR file
     if psi == 'prior' and 'rlnAnglePsiPrior' in particles_dataframe.columns:
         particles_dataframe['rlnAnglePsi'] = particles_dataframe['rlnAnglePsiPrior']
+        name.append('psi_prior')
 
     if tilt == 'prior' and 'rlnAngleTiltPrior' in particles_dataframe.columns:
         particles_dataframe['rlnAngleTilt'] = particles_dataframe['rlnAngleTiltPrior']
+        name.append('tilt_prior')
 
     # Reset translations to 0
     if x == '0' and 'rlnOriginXAngst' in particles_dataframe.columns:
         particles_dataframe['rlnOriginXAngst'] = 0.0
+        name.append('x_0')
 
     if y == '0' and 'rlnOriginYAngst' in particles_dataframe.columns:
         particles_dataframe['rlnOriginYAngst'] = 0.0
+        name.append('y_0')
 
     if z == '0' and 'rlnOriginZ' in particles_dataframe.columns:
         particles_dataframe['rlnOriginZAngst'] = 0.0
+        name.append('z_0')
 
     # Write the modified DataFrame back to a new STAR file
     os.chdir(output_directory.get())
     new_particles_star_file_data = {'optics': data_optics_dataframe, 'particles': particles_dataframe}
-    new_star_file = star_file_input.get().replace('.star', '_reset_shifts_angles_to_priors.star')
+    new_star_file = star_file_input.get().replace('.star', f'{"_".join(name)}.star')
     starfile.write(new_particles_star_file_data, new_star_file)
 
     print(f"Updated STAR file saved as: {new_star_file} at {output_directory.get()}")

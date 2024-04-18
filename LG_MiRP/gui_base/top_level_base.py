@@ -9,9 +9,6 @@ import tkinter as tk
 
 from LG_MiRP.gui_base import utils
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from PIL import ImageTk, Image  # pillow
-import mrcfile
-import numpy as np
 
 
 class LGTopLevelBase(tk.Toplevel):
@@ -29,7 +26,11 @@ class LGTopLevelBase(tk.Toplevel):
         # Creating an exit button
         self.add_exit_button()
 
-    def add_plot(self, fig, row: int = 0):
+    def add_title(self, text, row=0):
+        label = tk.Label(self, text=text, font=('Ariel', 12))
+        label.grid(row=row, column=0, padx=5, pady=5)
+
+    def add_plot(self, fig, row: int = 1):
         """
         Adding a plot to the secondary window
         :param fig: plt fig
@@ -39,7 +40,7 @@ class LGTopLevelBase(tk.Toplevel):
         canvas.draw()
         canvas.get_tk_widget().grid(row=row, column=0)
 
-    def add_image(self, image_name: str = "default_image.jpg", new_size: int = 600, row: int = 1):
+    def add_image(self, image_name: str = "default_image.jpg", new_size: int = 600, row: int = 2):
         """
         Adds the resized image to the GUI window, row is set to 1
 

@@ -71,8 +71,10 @@ def class_unifier_extractor(star_file_input0, star_file_input1, output_path):
 
     # EXTRACTING THE SEGMENTS TO SEPARATE STAR FILES ACCORDING TO THEIR CLASS
 
-    # Iterates over the number of classes (from 0 to 5) assuming there are 6 classes
-    for i in range(6):
+    number_of_classes = particles_dataframe1['rlnClassNumber'].max()
+
+    # Iterates over the number of classes
+    for i in range(number_of_classes + 1):
 
         # Filtering the datarfame for the specific class i
         mask_class = particles_dataframe0['rlnClassNumber'] == i
