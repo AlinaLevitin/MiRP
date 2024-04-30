@@ -120,6 +120,7 @@ class LgFrameBase(ttk.Frame):
         """
         Adds a numerical entry
 
+        :param column:
         :param entry_name: text to appear next to the entry
         :param row: row in the frame
         :return: numerical tk.Entry for downstream operations
@@ -134,7 +135,7 @@ class LgFrameBase(ttk.Frame):
 
     def add_show_results_button(self, command, row, text="Show Results"):
         button = tk.Button(self, text=text, command=command)
-        button.grid(row=row, column=1, columnspan=1, padx=5, pady=5)
+        button.grid(row=row, column=2, columnspan=1, padx=5, pady=5)
 
     def show_result(self, n=5):
 

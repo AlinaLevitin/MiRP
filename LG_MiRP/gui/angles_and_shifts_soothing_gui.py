@@ -50,7 +50,8 @@ class SmoothingFrame(LgFrameBase):
                                                       output_path=output_path),
                             row=3)
 
-        self.add_show_results_button(command=self.show_result, row=4, text="Show results")
+        result_number = self.add_number_entry(entry_name='Results to show:', row=4)
+        self.add_show_results_button(lambda: self.show_result(int(result_number.get())), row=4, text="Show results")
         # Imports a themed image at the bottom
         self.add_image_by_name(label)
 

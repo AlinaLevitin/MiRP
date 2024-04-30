@@ -38,6 +38,10 @@ def smooth_angles(star_file_input, id_label, output_path, cutoff=None):
     grouped_data = particles_dataframe.groupby(['rlnMicrographName', 'rlnHelicalTubeID'])
 
     for (micrograph, MT), MT_dataframe in grouped_data:
+
+        mask1 = particles_dataframe['rlnMicrographName'] == micrograph
+        mask2 = particles_dataframe['rlnHelicalTubeID'] == MT
+
         angles = MT_dataframe[id_label].to_numpy()
 
         top_clstr, outliers = cluster_shallow_slopes(angles, angle_cutoff)
@@ -45,28 +49,37 @@ def smooth_angles(star_file_input, id_label, output_path, cutoff=None):
         if not top_clstr:
             print(f'MT {MT} in micrograph {micrograph}, {id_label} cannot be fit, and is discarded')
             # Find the rows in `particles_dataframe` where the values of 'rlnMicrographName' and 'rlnHelicalTubeID' match `mtIDX`
-            matching_rows = particles_dataframe[
-                (particles_dataframe['rlnMicrographName'] == micrograph) &
-                (particles_dataframe['rlnHelicalTubeID'] == MT)
-                ]
+            matching_rows = particles_dataframe[mask1 & mask2]
 
             # Get the index numbers of the matching rows
             index_numbers = matching_rows.index
             bad_mts.append(index_numbers[0])
         else:
-            top_clstr_vals = MT_dataframe.iloc[top_clstr][id_label].to_numpy()
-            fitted = linear_fit(np.arange(1, len(top_clstr) + 1), top_clstr_vals)
-            particles_dataframe.loc[MT_dataframe.index, id_label] = fitted
+            print(f'Now fitting MT {MT} in micrograph {micrograph}')
+            MT_dataframe.reset_index(inplace=True)
+            top_clstr_vals = MT_dataframe.loc[top_clstr][id_label].to_numpy()
+
+            fitted = linear_fit(np.arange(1, len(top_clstr_vals) + 1), top_clstr_vals)
+
+            MT_dataframe.loc[top_clstr, id_label] = fitted
+            MT_dataframe.loc[outliers, id_label] = None
+
+            values = MT_dataframe.loc[:, id_label].tolist()
+
+            particles_dataframe.loc[mask1 & mask2, id_label] = values
+            print(particles_dataframe.loc[mask1 & mask2, id_label])
 
     particles_dataframe.drop(bad_mts, inplace=True)
+    particles_dataframe.dropna(inplace=True)
 
     new_particles_star_file_data = {'optics': data_optics_dataframe, 'particles': particles_dataframe}
 
     os.chdir(output_path.get())
-    output_file = f'smoothened_{id_label}_data.star'
+    output_file = f'{star_file_input.get()}_smoothened_{id_label}_data.star'
 
     starfile.write(new_particles_star_file_data, output_file)
 
+    print("=" * 50)
     print(f"Updated STAR file saved as: {output_file} at {output_path.get()}")
 
     return particles_dataframe
