@@ -6,6 +6,7 @@ Updated: 11/3/24
 Class to generate ttk.Frames LG-style.
 """
 import os
+import random
 
 import tkinter as tk
 from tkinter import ttk
@@ -144,9 +145,12 @@ class LgFrameBase(ttk.Frame):
 
         # Convert the grouped data into a list of tuples (key, grouped DataFrame)
         grouped_data_list = list(grouped_data)
+        num_groups = len(grouped_data_list)
+
+        selected_indices = random.sample(range(num_groups), n)
 
         # Iterate through the first three items in the grouped data list
-        for index in range(n):
+        for index in selected_indices:
             # Unpack the key and the grouped DataFrame
             (micrograph, MT), MT_dataframe = grouped_data_list[index]
 
@@ -166,12 +170,9 @@ class LgFrameBase(ttk.Frame):
         # File paths
         file_paths = [os.path.join(path, file) for file in os.listdir(path) if file.endswith(".mrc")]
 
-        # The slices that will be displayed since the references mrs files are stacks
-        slice_indices = [1 for file in os.listdir(path) if file.endswith(".mrc")]
-
         # labels to be displayed under the images
         label_text = [file.split("_")[0:2] for file in os.listdir(path) if file.endswith(".mrc")]
 
         # Shows the mrc images
-        for i, (file_path, slice_index, label_text) in enumerate(zip(file_paths, slice_indices, label_text)):
-            display_mrc_slice(self, file_path, slice_index, label_text, row=row, column=i)
+        for i, (file_path, label_text) in enumerate(zip(file_paths, label_text)):
+            display_mrc_stack(self, file_path, label_text, row=row, column=i)

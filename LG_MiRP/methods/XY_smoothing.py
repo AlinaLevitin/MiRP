@@ -41,18 +41,19 @@ def smooth_xy_shifts(star_file_input, output_path, cutoff=None):
         smoothed_x = flatten_and_cluster_shifts(x_shifts)
         smoothed_y = flatten_and_cluster_shifts(y_shifts)
 
-        # Append smoothed shifts to the lists
-        smoothed_x_shifts.extend(smoothed_x)
-        smoothed_y_shifts.extend(smoothed_y)
+        # # Append smoothed shifts to the lists
+        # smoothed_x_shifts.extend(smoothed_x)
+        # smoothed_y_shifts.extend(smoothed_y)
 
     # Assign smoothed shifts to the DataFrame
-    particles_dataframe['rlnOriginXAngst'] = smoothed_x_shifts
-    particles_dataframe['rlnOriginYAngst'] = smoothed_y_shifts
+    particles_dataframe['rlnOriginXAngst'] = smoothed_x
+    particles_dataframe['rlnOriginYAngst'] = smoothed_y
 
     new_particles_star_file_data = {'optics': data_optics_dataframe, 'particles': particles_dataframe}
 
     os.chdir(output_path.get())
-    output_file = f'{star_file_input.get()}_smoothened_XY_data.star'
+    original_name = star_file_input.get().replace('.star', '')
+    output_file = f'{original_name}_smoothened_XY.star'
 
     starfile.write(new_particles_star_file_data, output_file)
 

@@ -75,7 +75,8 @@ def smooth_angles(star_file_input, id_label, output_path, cutoff=None):
     new_particles_star_file_data = {'optics': data_optics_dataframe, 'particles': particles_dataframe}
 
     os.chdir(output_path.get())
-    output_file = f'{star_file_input.get()}_smoothened_{id_label}_data.star'
+    original_name = star_file_input.get().replace('.star', '')
+    output_file = f'{original_name}_smoothened_{id_label}.star'
 
     starfile.write(new_particles_star_file_data, output_file)
 

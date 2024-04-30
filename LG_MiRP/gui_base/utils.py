@@ -109,3 +109,35 @@ def display_mrc_slice(master, file_path, slice_index, label_text, row, column):
 
     # Keep a reference to the PhotoImage object to prevent garbage collection
     image_label.photo = photo
+
+
+def display_mrc_stack(master, file_path, label_text, row, column):
+    # Open the MRC file
+    with mrcfile.open(file_path, permissive=True) as mrc:
+        # Extract the image data for the specified slice
+        image_data = mrc.data[:, :, :]
+
+        z_projected_image = np.max(image_data, axis=0)
+
+        # Normalize the image data to [0, 255]
+        min_value = np.min(z_projected_image)
+        max_value = np.max(z_projected_image)
+        normalized_data = (z_projected_image- min_value) / (max_value - min_value) * 255
+        image_data_uint8 = normalized_data.astype(np.uint8)
+
+    # Convert the image data to PIL Image
+    pil_image = Image.fromarray(image_data_uint8)
+
+    # Convert the PIL Image to Tkinter PhotoImage
+    photo = ImageTk.PhotoImage(pil_image)
+
+    # Create a Tkinter label to display the image and place it in the frame
+    image_label = tk.Label(master, image=photo)
+    image_label.grid(row=row, column=column)
+
+    # Create a text label and place it below the image in the frame
+    text_label = tk.Label(master, text=label_text)
+    text_label.grid(row=row + 1, column=column)
+
+    # Keep a reference to the PhotoImage object to prevent garbage collection
+    image_label.photo = photo
