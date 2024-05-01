@@ -23,15 +23,131 @@ def linear_fit(xax, vals):
     y = np.array(vals)
 
     # Create the design matrix
-    X = np.column_stack([np.ones_like(x), x])
+    matrix = np.column_stack([np.ones_like(x), x])
 
     # Calculate the least squares solution
-    beta = np.linalg.lstsq(X, y, rcond=None)[0]
+    beta = np.linalg.lstsq(matrix, y, rcond=None)[0]
 
-    # Calculate the fitted values
-    fitted = beta[0] + beta[1] * x
+    slope = beta[1]
+    intercept = beta[0]
 
-    return fitted.tolist()
+    return slope, intercept
+
+
+def fit_clusters(values, top_cluster):
+
+    slope, intercept = linear_fit(np.arange(1, len(top_cluster) + 1), [values[i] for i in top_cluster])
+
+    # Fit linear model to the low weight cluster
+    x = np.array([i for i in range(0, len(values))])
+    linear_fit_values = intercept + slope * x
+
+    return linear_fit_values
+
+
+def cluster_shallow_slopes(angles, cutoff):
+    # Create an array of all pairwise differences
+    diff_matrix = angles[:, None] - angles[None, :]
+
+    # Find the absolute differences within the cutoff range
+    within_cutoff = np.abs(diff_matrix) <= cutoff
+
+    # Create an upper triangular mask to exclude self-comparisons and symmetric pairs
+    mask = np.triu(np.ones_like(within_cutoff), k=1)
+
+    # Apply the mask to keep only the upper triangular part within the cutoff range
+    within_cutoff = within_cutoff & mask
+
+    # Find the indices of the pairs within the cutoff range
+    pairs = np.transpose(np.nonzero(within_cutoff))
+
+    # Initialize a list to store clusters
+    clusters = []
+
+    while pairs.size > 0:
+        # Get the last pair
+        node = pairs[-1]
+
+        # Find all pairs that share a common index with the last pair
+        related_pairs = pairs[(pairs[:, 0] == node[0]) | (pairs[:, 1] == node[0]) |
+                              (pairs[:, 0] == node[1]) | (pairs[:, 1] == node[1])]
+
+        # Merge the related pairs into a single cluster
+        cluster = set(node)
+        for pair in related_pairs:
+            cluster |= set(pair)
+
+        # Add the cluster to the list of clusters
+        clusters.append(sorted(cluster))
+
+        # Remove the pairs belonging to the cluster from the list
+        pairs = pairs[~np.isin(pairs, related_pairs).all(axis=1)]
+
+    # Find the cluster with the maximum length
+    if clusters:
+        top_cluster = max(clusters, key=len)
+        low_weight_cluster = [j for i in clusters if i != top_cluster for j in i]
+    else:
+        top_cluster, low_weight_cluster = None, None
+
+    return top_cluster, low_weight_cluster
+
+
+def flatten_and_cluster_shifts(shifts):
+    # Generate flattening factors
+    flattening_factors = np.arange(-8, 8, 0.25)
+    flatness_score = []
+    b = []
+
+    # Initialize arrays to store flattened shifts and flatness scores
+    flattened_shifts = np.zeros((len(flattening_factors), len(shifts)))
+    flatness_scores = np.zeros(len(flattening_factors))
+
+    for i, factor in enumerate(flattening_factors):
+        # Flatten shifts using broadcasting
+        flattened_shifts[i] = shifts - np.arange(1, len(shifts) + 1) * factor
+
+        # Calculate flatness score
+        flatness_scores[i] = np.sum(np.abs(np.diff(flattened_shifts[i])))
+
+    # Find index of minimum flatness score
+    min_flatness_idx = np.argmin(flatness_scores)
+
+    # Find histogram bins using numpy
+    try:
+        hist, bins = np.histogram(flattened_shifts[min_flatness_idx], bins='auto')
+    except MemoryError:
+        hist, bins = np.histogram(flattened_shifts[min_flatness_idx], bins=5)
+
+    # Cluster shift values
+    clusters = cluster_numpy_bins(flattened_shifts[min_flatness_idx], bins)
+
+    # Find the cluster with the maximum length
+    sorted_clusters = sorted(clusters.items(), key=lambda item: len(item[1]), reverse=True)
+    top_cluster_key, top_cluster = sorted_clusters.pop(0)
+
+    # Find the outliers
+    low_weight_cluster = [value for sublist in sorted_clusters for value in sublist[1]]
+
+    return top_cluster, low_weight_cluster
+
+
+def cluster_numpy_bins(data, bins):
+    bin_ids = np.digitize(data, bins)
+
+    cluster = {}
+
+    for idx, a in enumerate(bin_ids):
+        if a in cluster.keys():
+            for b in cluster.keys():
+                if a == b:
+                    cluster[b].append(idx)
+                else:
+                    pass
+        else:
+            cluster[a] = [idx]
+
+    return cluster
 
 # ======================================================================================================================
 # Plotting functions:

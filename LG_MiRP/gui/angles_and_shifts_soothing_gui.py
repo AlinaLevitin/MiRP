@@ -8,7 +8,7 @@ The method of angle smoothing is in and extraction is located in LG_MiRP/methods
 
 """
 from ..gui_base import LgFrameBase, LgMasterGui
-from ..methods import smooth_angles, smooth_xy_shifts
+from ..methods import smooth_angles_or_shifts
 
 
 class SmoothingGui(LgMasterGui):
@@ -17,13 +17,13 @@ class SmoothingGui(LgMasterGui):
     Inherits from LgMasterGui
     """
 
-    def __init__(self, label):
+    def __init__(self, function):
         super().__init__()
-        if label == 'angles':
+        if function == 'angles':
             self.add_job_name("Angle (PHI/Rot) smoothing")
-        elif label == "shifts":
+        elif function == "shifts":
             self.add_job_name("XY shifts smoothing")
-        frame = SmoothingFrame(self, label)
+        frame = SmoothingFrame(self, function)
         frame.grid(row=1, column=0, sticky="NSEW")
         self.mainloop()
 
@@ -34,19 +34,19 @@ class SmoothingFrame(LgFrameBase):
     Inherits from LgFrameBase
     """
 
-    def __init__(self, master, label):
+    def __init__(self, master, function):
         """
         :param master: the master gui in which the frame will be displayed
         """
         super().__init__(master)
         # Creates an entry for run_it000_data.star file
-        star_file_input = self.add_file_entry('star', 'Select a run_it001_data.star file', row=1)
+        star_file_input = self.add_file_entry('star', 'Select a run_it0xx_data.star file', row=1)
 
         # Creates an entry for output directory
         output_path = self.add_directory_entry('Select output directory', row=2)
 
-        self.add_run_button(lambda: self.run_function(label=label, star_file_input=star_file_input,
-                                                      id_label='rlnAngleRot',
+        self.add_run_button(lambda: self.run_function(function=function,
+                                                      star_file_input=star_file_input,
                                                       output_path=output_path),
                             row=3)
 
@@ -55,17 +55,16 @@ class SmoothingFrame(LgFrameBase):
         self.add_show_results_button(lambda: self.show_result(int(result_number.get())), row=4, text="Show results")
 
         # Imports a themed image at the bottom
-        self.add_image_by_name(label)
+        self.add_image_by_name(function)
 
-    def run_function(self, label, star_file_input, output_path, id_label=None, cutoff=None):
-        if label == 'angles':
-            self.output = smooth_angles(star_file_input=star_file_input, id_label=id_label, output_path=output_path,
-                                        cutoff=cutoff)
-        elif label == 'shifts':
-            self.output = smooth_xy_shifts(star_file_input=star_file_input, output_path=output_path)
+    def run_function(self, function, star_file_input, output_path, cutoff=None):
+        self.output = smooth_angles_or_shifts(star_file_input=star_file_input,
+                                              function=function,
+                                              output_path=output_path,
+                                              cutoff=cutoff)
 
-    def add_image_by_name(self, label):
-        if label == 'angles':
+    def add_image_by_name(self, function):
+        if function == 'angles':
             self.add_image(image_name="rot_unification.jpg", new_size=600, row=5)
-        elif label == 'shifts':
+        elif function == 'shifts':
             self.add_image(image_name="shifts_unification.jpg", new_size=600, row=5)
