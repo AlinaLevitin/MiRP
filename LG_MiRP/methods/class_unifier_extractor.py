@@ -15,7 +15,7 @@ import starfile
 import matplotlib.pyplot as plt
 
 
-def class_unifier_extractor(star_file_input0, star_file_input1, output_path):
+def class_unifier_extractor(star_file_input0, star_file_input1, output_path, step):
 
     # Read data from "run_it000_data.star" using starfile
     data0 = starfile.read(star_file_input0.get())
@@ -69,10 +69,12 @@ def class_unifier_extractor(star_file_input0, star_file_input1, output_path):
                     if micrograph in row['rlnMicrographName'] and row['rlnHelicalTubeID'] == MT:
                         particles_dataframe0.loc[index, 'rlnClassNumber'] = most_common_class
 
+    original_data_star_name = star_file_input1.get()
+
     # EXTRACTING THE SEGMENTS TO SEPARATE STAR FILES ACCORDING TO THEIR CLASS
 
     number_of_classes = particles_dataframe1['rlnClassNumber'].max()
-
+    # TODO: add if step=seam_check(one star) or pf_number(seperate)
     # Iterates over the number of classes
     for i in range(number_of_classes + 1):
 
@@ -88,7 +90,7 @@ def class_unifier_extractor(star_file_input0, star_file_input1, output_path):
         new_particles_star_file_data = {'optics': data_optics_dataframe1, 'particles': class_particles}
 
         os.chdir(output_path.get())
-        output_file = f'run_it001_data_class_{i}.star'
+        output_file = f'{original_data_star_name}_class_{i}.star'
         try:
             starfile.write(new_particles_star_file_data, output_file)
             print(f'Saved STAR file {output_file} at {output_path.get()}')
