@@ -9,6 +9,7 @@ Methods for angles and shifts correction before high resolution reconstruction
 
 import os
 import math
+import pandas as pd
 import starfile
 
 
@@ -19,7 +20,7 @@ def adjust_angles_and_translations(star_file_input, pf_number, output_directory)
     particles_dataframe = data['particles']
     data_optics_dataframe = data['optics']
 
-    pixel_size = float(data_optics_dataframe.loc['rlnImagePixelSize', 0])
+    pixel_size = float(data_optics_dataframe['rlnImagePixelSize'])
 
     pf_number = int(pf_number.get())
 
@@ -27,20 +28,33 @@ def adjust_angles_and_translations(star_file_input, pf_number, output_directory)
     helical_twist = 360 / pf_number
     helical_rise = (3 * 41) / pf_number
 
-    # Iterate through each particle and adjust angles and translations
     for index, row in particles_dataframe.iterrows():
-        class_assignment = int(row.get('rlnClassNumber', 0))
+        if pd.isnull(row['rlnAnglePsi']):
+            pass
+        else:
+            helical_shift = math.radians(row['rlnAnglePsi'])
+            helical_rise_pixels = helical_rise / pixel_size
+            helical_twist_radians = math.radians(helical_twist)
 
-        if 2 <= class_assignment <= 19:
-            rise = class_assignment - 1
-            phi = row.get('rlnAngleRot', 0) + rise * helical_twist
-            cos_val = math.cos(math.radians(-phi))
-            sin_val = math.sin(math.radians(-phi))
+            if row['rlnClassNumber'] in range(1, 14):
+                new_x = row['rlnOriginXAngst'] + math.cos(-helical_shift) * (row['rlnClassNumber'] * helical_rise_pixels)
+                new_y = row['rlnOriginYAngst'] + math.sin(-helical_shift) * (row['rlnClassNumber'] * helical_rise_pixels)
+                new_phi = row['rlnAngleRot'] + helical_twist
 
-            # Calculate and adjust translations
-            row['rlnOriginXAngst'] += cos_val * rise * helical_rise / pixel_size
-            row['rlnOriginYAngst'] += sin_val * rise * helical_rise / pixel_size
-            row['rlnAngleRot'] = phi
+            elif row['rlnClassNumber'] == 14:
+                new_x = row['rlnOriginXAngst'] + -41 * math.cos(-helical_shift) * (row['rlnClassNumber'] * helical_rise_pixels)
+                new_y = row['rlnOriginYAngst'] + -41 * math.sin(-helical_shift) * (row['rlnClassNumber'] * helical_rise_pixels)
+                new_phi = row['rlnAngleRot']
+
+            else:
+                new_x = row['rlnOriginXAngst'] + -41 * math.cos(-helical_shift) + math.cos(-helical_shift) * (row['rlnClassNumber'] * helical_rise_pixels)
+                new_y = row['rlnOriginYAngst'] + -41 * math.sin(-helical_shift) + math.sin(-helical_shift) * (row['rlnClassNumber'] * helical_rise_pixels)
+                new_phi = row['rlnAngleRot'] + helical_twist
+
+            # Update the DataFrame with adjusted coordinates
+            particles_dataframe.loc[index, 'rlnOriginXAngst'] = new_x
+            particles_dataframe.loc[index, 'rlnOriginYAngst'] = new_y
+            particles_dataframe.loc[index, 'rlnAngleRot'] = new_phi
 
     # Write the modified DataFrame back to a new STAR file
     os.chdir(output_directory.get())

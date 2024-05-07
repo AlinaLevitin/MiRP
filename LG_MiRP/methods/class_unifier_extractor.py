@@ -69,7 +69,7 @@ def class_unifier_extractor(star_file_input0, star_file_input1, output_path, ste
                     if micrograph in row['rlnMicrographName'] and row['rlnHelicalTubeID'] == MT:
                         particles_dataframe0.loc[index, 'rlnClassNumber'] = most_common_class
 
-    original_data_star_name = star_file_input1.get()
+    original_data_star_name = star_file_input1.get().replace('.star', '')
 
     if step == 'pf_number_check':
         # EXTRACTING THE SEGMENTS TO SEPARATE STAR FILES ACCORDING TO THEIR CLASS
