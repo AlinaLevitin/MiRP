@@ -71,11 +71,10 @@ def class_unifier_extractor(star_file_input0, star_file_input1, output_path, ste
 
     original_data_star_name = star_file_input1.get()
 
-    # EXTRACTING THE SEGMENTS TO SEPARATE STAR FILES ACCORDING TO THEIR CLASS
-
     if step == 'pf_number_check':
+        # EXTRACTING THE SEGMENTS TO SEPARATE STAR FILES ACCORDING TO THEIR CLASS
         number_of_classes = particles_dataframe1['rlnClassNumber'].max()
-        # TODO: add if step=seam_check(one star) or pf_number(seperate)
+
         # Iterates over the number of classes
         for i in range(number_of_classes + 1):
 
@@ -100,6 +99,7 @@ def class_unifier_extractor(star_file_input0, star_file_input1, output_path, ste
                 raise NameError("File already exists")
 
     elif step == 'seam_check':
+        # EXTRACTING THE SEGMENTS TO A SINGLE STAR FILES WITH CORRECTED CLASSES
         new_particles_star_file_data = {'optics': data_optics_dataframe1, 'particles': particles_dataframe0}
 
         os.chdir(output_path.get())
@@ -110,7 +110,6 @@ def class_unifier_extractor(star_file_input0, star_file_input1, output_path, ste
         except NameError:
             print(f"File names {output_file} already exists, delete old file and try again")
             raise NameError("File already exists")
-
 
 
 def classes_distribution(star_file_input):
