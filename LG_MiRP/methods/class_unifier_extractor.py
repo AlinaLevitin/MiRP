@@ -73,30 +73,44 @@ def class_unifier_extractor(star_file_input0, star_file_input1, output_path, ste
 
     # EXTRACTING THE SEGMENTS TO SEPARATE STAR FILES ACCORDING TO THEIR CLASS
 
-    number_of_classes = particles_dataframe1['rlnClassNumber'].max()
-    # TODO: add if step=seam_check(one star) or pf_number(seperate)
-    # Iterates over the number of classes
-    for i in range(number_of_classes + 1):
+    if step == 'pf_number_check':
+        number_of_classes = particles_dataframe1['rlnClassNumber'].max()
+        # TODO: add if step=seam_check(one star) or pf_number(seperate)
+        # Iterates over the number of classes
+        for i in range(number_of_classes + 1):
 
-        # Filtering the datarfame for the specific class i
-        mask_class = particles_dataframe0['rlnClassNumber'] == i
-        class_particles = particles_dataframe0.loc[mask_class]
+            # Filtering the datarfame for the specific class i
+            mask_class = particles_dataframe0['rlnClassNumber'] == i
+            class_particles = particles_dataframe0.loc[mask_class]
 
-        print(f"There are {class_particles.shape[0]} segments of class {i}")
+            print(f"There are {class_particles.shape[0]} segments of class {i}")
 
-        # Generating a new STAR file using the optics from run_it001_data.star and the new particels (segments) data
-        # with corrected classes after unification
+            # Generating a new STAR file using the optics from run_it001_data.star and the new particels (segments) data
+            # with corrected classes after unification
 
-        new_particles_star_file_data = {'optics': data_optics_dataframe1, 'particles': class_particles}
+            new_particles_star_file_data = {'optics': data_optics_dataframe1, 'particles': class_particles}
+
+            os.chdir(output_path.get())
+            output_file = f'{original_data_star_name}_class_{i}.star'
+            try:
+                starfile.write(new_particles_star_file_data, output_file)
+                print(f'Saved STAR file {output_file} at {output_path.get()}')
+            except NameError:
+                print(f"File names {output_file} already exists, delete old file and try again")
+                raise NameError("File already exists")
+
+    elif step == 'seam_check':
+        new_particles_star_file_data = {'optics': data_optics_dataframe1, 'particles': particles_dataframe0}
 
         os.chdir(output_path.get())
-        output_file = f'{original_data_star_name}_class_{i}.star'
+        output_file = f'{original_data_star_name}_class_corrected.star'
         try:
             starfile.write(new_particles_star_file_data, output_file)
             print(f'Saved STAR file {output_file} at {output_path.get()}')
         except NameError:
             print(f"File names {output_file} already exists, delete old file and try again")
             raise NameError("File already exists")
+
 
 
 def classes_distribution(star_file_input):

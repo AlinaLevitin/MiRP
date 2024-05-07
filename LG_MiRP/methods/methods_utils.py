@@ -235,6 +235,8 @@ def plot_angles_and_shifts(data):
 
     plt.setp(axes, xticks=[i for i in range(1, len(data) + 1, 2)], xlabel='Segment')
 
+    plt.tight_layout()  # Add padding between subplots
+
     return fig
 
 

@@ -19,7 +19,7 @@ def adjust_angles_and_translations(star_file_input, pf_number, output_directory)
     particles_dataframe = data['particles']
     data_optics_dataframe = data['optics']
 
-    pixel_size = float(data_optics_dataframe['rlnImagePixelSize'])
+    pixel_size = float(data_optics_dataframe.loc['rlnImagePixelSize', 0])
 
     pf_number = int(pf_number.get())
 

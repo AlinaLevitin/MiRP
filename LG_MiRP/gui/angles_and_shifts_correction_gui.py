@@ -37,7 +37,7 @@ class AngleShiftsCorrectionFrame(LgFrameBase):
         """
         super().__init__(master)
         # Creates an entry for run_it000_data.star file
-        star_file_input = self.add_file_entry('star', 'Select a run_it001_data.star file', row=1)
+        star_file_input = self.add_file_entry('star', 'Select a run_it0xx_data_class_corrected.star file', row=1)
 
         # Creates an entry for output directory
         output_path = self.add_directory_entry('Select output directory', row=2)
