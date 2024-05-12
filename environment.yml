@@ -21,4 +21,5 @@ dependencies:
             - mrcfile
             - starfile
             - tensorflow
+            - biopython
             

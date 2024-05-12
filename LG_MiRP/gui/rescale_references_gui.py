@@ -16,10 +16,10 @@ class RescaleReferencesGui(LgMasterGui):
     Inherits from LgMasterGui
     """
 
-    def __init__(self, path):
+    def __init__(self, path, method):
         super().__init__()
         self.add_job_name("Rescale References")
-        frame1 = RescaleReferenceFrame(self, path)
+        frame1 = RescaleReferenceFrame(self, path, method=method)
         frame1.grid(row=1, column=0, sticky="NSEW")
         frame2 = LgFrameBase(self)
         frame2.grid(row=2, column=0, sticky="NSEW")
@@ -34,7 +34,7 @@ class RescaleReferenceFrame(LgFrameBase):
     Inherits from LgFrameBase
     """
 
-    def __init__(self, master, path):
+    def __init__(self, master, path, method):
         """
         :param master: the master gui in which the frame will be displayed
         """
@@ -52,6 +52,7 @@ class RescaleReferenceFrame(LgFrameBase):
         self.add_run_button(lambda: rescale_and_crop_image(self.path,
                                                            input_pixel_size,
                                                            input_box_size,
-                                                           output_directory
+                                                           output_directory,
+                                                           method=method
                                                            ),
                             row=4)

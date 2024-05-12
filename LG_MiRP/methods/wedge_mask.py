@@ -1,13 +1,14 @@
 import os
 import numpy as np
 import mrcfile
-from pf_refinement.pdb_util import PDB
+from Bio.PDB import PDBParser
+from Bio.PDB.Structure import Structure
 
 
 def wedge_mask(args, microtubule_volume, microtubule_mask, fit_tubulin_pdb, pf):
-    pdb = PDB()
-    pdb.read_file(fit_tubulin_pdb)
-    com = pdb.calc_center()
+    parser = PDBParser(QUIET=True)
+    structure: Structure = parser.get_structure('tubulin', fit_tubulin_pdb)
+    com = calc_center_of_gravity(structure)
 
     vol = mrcfile.mmap(microtubule_volume, 'r', permissive=True)
     mask = mrcfile.mmap(microtubule_mask, 'r', permissive=True)
@@ -60,18 +61,7 @@ def wedge_mask(args, microtubule_volume, microtubule_mask, fit_tubulin_pdb, pf):
     with mrcfile.new(os.path.join(pf_dir, 'pf_wedge.mrc'), overwrite=True) as mrc:
         mrc.set_data(soft_m.astype(np.float32))
         mrc.voxel_size = voxel_size
-        mrc.header.nxstart, mrc.header.nystart, mrc.header.nzstart = (header.nxstart, header.nystart, header.nzstart)
-        for coord in ['x', 'y', 'z']:
-            mrc.header['origin'][coord] = header['origin'][coord]
-
-    with mrcfile.new(os.path.join(pf_dir, 'pf_masked.mrc'), overwrite=True) as mrc:
-        mrc.set_data(((1 - soft_m) * vol_data).astype(np.float32))
-        mrc.voxel_size = voxel_size
-        mrc.header.nxstart, mrc.header.nystart, mrc.header.nzstart = (header.nxstart, header.nystart, header.nzstart)
-        for coord in ['x', 'y', 'z']:
-            mrc.header['origin'][coord] = header['origin'][coord]
-
-    return True
+        mrc.header.nxstart
 
 
 def spherical_cosmask(n,mask_radius, edge_width, origin=None):
@@ -104,3 +94,28 @@ def spherical_cosmask(n,mask_radius, edge_width, origin=None):
 #    m[ np.where(x*x + y*y + z*z <= mask_radius*mask_radius)] = 1
 
     return m
+
+
+def calc_center_of_gravity(structure):
+    x_sum, y_sum, z_sum = 0, 0, 0
+    total_weight = 0
+
+    for model in structure:
+        for chain in model:
+            for residue in chain:
+                for atom in residue:
+                    # Get the atom coordinates
+                    atom_coord = atom.get_coord()
+                    # Get the atom weight (assuming it's stored in B-factor)
+                    atom_weight = atom.get_bfactor()
+                    # Accumulate the weighted sum of coordinates
+                    x_sum += atom_coord[0] * atom_weight
+                    y_sum += atom_coord[1] * atom_weight
+                    z_sum += atom_coord[2] * atom_weight
+                    # Accumulate the total weight
+                    total_weight += atom_weight
+
+    # Calculate the center of gravity
+    center_of_gravity = np.array([x_sum / total_weight, y_sum / total_weight, z_sum / total_weight])
+
+    return center_of_gravity
