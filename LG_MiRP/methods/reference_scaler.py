@@ -57,20 +57,28 @@ def rescale_and_crop_image(path, new_pixel_size, new_box_size, output_directory,
     # Iterates over the references and selects only mrc files
     for input_file in reference_directory:
 
+
+
         if input_file.endswith(".mrc"):
 
             if method == 'relion':
 
                 relion_rescale(path, output_path, input_file, new_box_size, new_pixel_size)
             else:
-                scipy_rescale(output_path, input_file, new_box_size, new_pixel_size)
+                scipy_rescale(path, output_path, input_file, new_box_size, new_pixel_size)
 
 
-def scipy_rescale(output_path, input_file, new_box_size, new_pixel_size):
+def scipy_rescale(path, output_path, input_file, new_box_size, new_pixel_size):
 
     output_resampled_path = os.path.join(output_path, "resampled_references")
 
-    with mrcfile.open(input_file, 'r', permissive=True) as mrc:
+    input_file_path = os.path.join(path, input_file)
+
+    new_box_size = int(new_box_size.get())
+
+    new_pixel_size = float(new_pixel_size.get())
+
+    with mrcfile.open(input_file_path, 'r', permissive=True) as mrc:
         original_data = mrc.data
         voxel_size = mrc.voxel_size
         voxel_size_array = np.array([voxel_size['x'], voxel_size['y'], voxel_size['z']])
@@ -85,7 +93,7 @@ def scipy_rescale(output_path, input_file, new_box_size, new_pixel_size):
     resampled_data = zoom(original_data, zoom_factors, mode='nearest')
 
     # Calculate the crop or pad sizes to achieve the desired final box size
-    crop_pad_sizes = (np.array(new_box_size) - np.array(resampled_data.shape)) // 2
+    crop_pad_sizes = (np.array(new_box_size, dtype=int) - np.array(resampled_data.shape, dtype=int)) // 2
 
     # Crop or pad the resampled data to achieve the desired final box size
     if np.any(crop_pad_sizes < 0):
@@ -105,11 +113,12 @@ def scipy_rescale(output_path, input_file, new_box_size, new_pixel_size):
         pad_widths = [(max(0, size), max(0, size)) for size in crop_pad_sizes]
         final_data = np.pad(resampled_data, pad_widths, mode='constant')
 
-    original_pixel_size_name = str(voxel_size['x']).replace(".", "_")
-    new_pixel_size_name = str(new_pixel_size.get()).replace(".", "_")
+    voxel_size_rounded = np.round(voxel_size['x'], decimals=4)
+    original_pixel_size_name = str(voxel_size_rounded).replace(".", "-")
+    new_pixel_size_name = str(new_pixel_size).replace(".", "_")
 
     output_file = input_file.replace(original_pixel_size_name, new_pixel_size_name)
-    output_mrc = output_file.replace('.mrc', f'_{str(new_box_size.get())}pix_resampled.mrc')
+    output_mrc = output_file.replace('.mrc', f'_{str(new_box_size)}pix_resampled.mrc')
 
     output_resampled_path_mrc = os.path.join(output_resampled_path, output_mrc)
 
@@ -118,16 +127,23 @@ def scipy_rescale(output_path, input_file, new_box_size, new_pixel_size):
         mrc.set_data(final_data)
         mrc.voxel_size = (new_pixel_size, new_pixel_size, new_pixel_size)
 
+    print(f'{output_resampled_path_mrc} was saved')
+
 
 def relion_rescale(path, output_path, input_file, new_box_size, new_pixel_size):
+
+    input_file_path = os.path.join(path, input_file)
 
     output_scaled_path = os.path.join(output_path, "rescaled_references")
     output_cropped_path = os.path.join(output_path, "cropped_references")
 
-    with mrcfile.open(input_file, 'r', permissive=True) as mrc:
+    with mrcfile.open(input_file_path, 'r', permissive=True) as mrc:
         original_pixel_size = mrc.voxel_size['x']
 
-    original_pixel_size_name = str(original_pixel_size).replace(".", "_")
+    voxel_size_rounded = np.round(original_pixel_size, decimals=4)
+    original_pixel_size_name = str(voxel_size_rounded).replace(".", "-")
+
+    original_pixel_size_name = str(original_pixel_size_name).replace(".", "_")
     # generating a new name for the references according to the selected pixel size (new_pixel_size) in a new folder
     # named new_references
     new_pixel_size_name = str(new_pixel_size.get()).replace(".", "_")
@@ -141,7 +157,7 @@ def relion_rescale(path, output_path, input_file, new_box_size, new_pixel_size):
 
     if is_relion_installed():
         # Rescale the image using relion_image_handles
-        rescale_command = f"relion_image_handler --i {os.path.join(path, input_file)} --angpix {original_pixel_size} --rescale_angpix {float(new_pixel_size.get())} --o {output_scaled_file_path}"
+        rescale_command = f"relion_image_handler --i {input_file_path} --angpix {original_pixel_size} --rescale_angpix {float(new_pixel_size.get())} --o {output_scaled_file_path}"
         subprocess.run(rescale_command, shell=True, check=True)
 
         # Crop the rescaled image using relion_image_handles
