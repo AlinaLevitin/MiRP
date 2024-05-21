@@ -57,15 +57,16 @@ def rescale_and_crop_image(path, new_pixel_size, new_box_size, output_directory,
     # Iterates over the references and selects only mrc files
     for input_file in reference_directory:
 
-
-
         if input_file.endswith(".mrc"):
 
             if method == 'relion':
 
                 relion_rescale(path, output_path, input_file, new_box_size, new_pixel_size)
-            else:
+            elif method == 'scipy':
                 scipy_rescale(path, output_path, input_file, new_box_size, new_pixel_size)
+
+            else:
+                raise ValueError
 
 
 def scipy_rescale(path, output_path, input_file, new_box_size, new_pixel_size):

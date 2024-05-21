@@ -16,10 +16,10 @@ class RescaleReferencesGui(LgMasterGui):
     Inherits from LgMasterGui
     """
 
-    def __init__(self, path, method):
+    def __init__(self, path):
         super().__init__()
         self.add_job_name("Rescale References")
-        frame1 = RescaleReferenceFrame(self, path, method=method)
+        frame1 = RescaleReferenceFrame(self, path)
         frame1.grid(row=1, column=0, sticky="NSEW")
         frame2 = LgFrameBase(self)
         frame2.grid(row=2, column=0, sticky="NSEW")
@@ -34,7 +34,7 @@ class RescaleReferenceFrame(LgFrameBase):
     Inherits from LgFrameBase
     """
 
-    def __init__(self, master, path, method):
+    def __init__(self, master, path):
         """
         :param master: the master gui in which the frame will be displayed
         """
@@ -48,11 +48,14 @@ class RescaleReferenceFrame(LgFrameBase):
         input_box_size = self.add_number_entry("Box size", row=2)
 
         output_directory = self.add_directory_entry('Select output directory', row=3)
+
+        method_var = self.add_method_combobox(row=4)
+
         # Creates a "Run" button that uses the segment average method
         self.add_run_button(lambda: rescale_and_crop_image(self.path,
                                                            input_pixel_size,
                                                            input_box_size,
                                                            output_directory,
-                                                           method=method
+                                                           method=method_var.get()
                                                            ),
-                            row=4)
+                            row=5)
