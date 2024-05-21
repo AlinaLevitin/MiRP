@@ -13,7 +13,7 @@ angles: _rlnAnglePsi, _rlnAngleTilt are set to priors: _rlnAnglePsiPrior, _rlnAn
 The GUI is located in LG_MiRP/gui/reset_angles_shifts_gui
 """
 
-import LG_MiRP
+from LG_MiRP import ResetShiftsAnglesGui
 
 # Generating the gui
-LG_MiRP.ResetShiftsAnglesGui()
+ResetShiftsAnglesGui()

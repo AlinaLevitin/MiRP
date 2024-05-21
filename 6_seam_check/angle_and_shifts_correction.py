@@ -9,7 +9,7 @@ The method of class unification is located in LG_MiRP/methods/angles_and_shifts_
 The GUI is located in LG_MiRP/gui/angles_and_shifts_correction_gui
 
 """
-import LG_MiRP
+from LG_MiRP import AngleShiftsCorrectionGui
 
 
-LG_MiRP.AngleShiftsCorrectionGui()
+AngleShiftsCorrectionGui()

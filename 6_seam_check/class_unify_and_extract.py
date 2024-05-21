@@ -10,7 +10,7 @@ The method of class unification is located in LG_MiRP/methods/class_unifier
 The GUI is located in LG_MiRP/gui/class_uni_ext_gui
 
 """
-import LG_MiRP
+from LG_MiRP import ClassUnificationExtractionGui
 
 
-LG_MiRP.ClassUnificationExtractionGui(step='seam_check')
+ClassUnificationExtractionGui()

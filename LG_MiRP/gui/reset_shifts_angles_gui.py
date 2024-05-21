@@ -10,7 +10,7 @@ shifts: _rlnAngleRot, _rlnOriginX, _rlnOriginY, _rlnOriginZ are set to 0
 angles: _rlnAnglePsi, _rlnAngleTilt are set to priors: _rlnAnglePsiPrior, _rlnAngleTiltPrior
 """
 from ..gui_base import LgFrameBase, LgMasterGui
-from ..methods import reset_angles_and_translations
+from ..methods import ResetAnglesAndShifts
 
 
 class ResetShiftsAnglesGui(LgMasterGui):
@@ -48,3 +48,5 @@ class ResetShiftsAnglesFrame(LgFrameBase):
 
         # Imports a themed image at the bottom
         self.add_image(new_size=600, row=4)
+
+        def run_function()

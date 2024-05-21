@@ -5,4 +5,4 @@ from .reference_scaler import *
 from .reset_angles_shifts import *
 from .angles_shifts_correction import *
 from .angles_and_shifts_smoothing import *
-from .methods_utils import *
+from .method_base import *

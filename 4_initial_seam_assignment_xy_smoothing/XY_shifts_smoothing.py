@@ -14,7 +14,7 @@ angles: _rlnAnglePsi, _rlnAngleTilt are set to priors: _rlnAnglePsiPrior, _rlnAn
 The GUI is located in LG_MiRP/gui/angles_smoothing_gui
 """
 
-import LG_MiRP
+from LG_MiRP import SmoothingGui
 
 # Generating the gui
-LG_MiRP.SmoothingGui(function='shifts')
+SmoothingGui(method='shifts')

@@ -13,139 +13,151 @@ import os
 
 import starfile
 import matplotlib.pyplot as plt
+from .method_base import MethodBase, print_done_decorator
 
 
-def class_unifier_extractor(star_file_input0, star_file_input1, output_path, step):
+class ClassUnifierExtractor(MethodBase):
 
-    # Read data from "run_it000_data.star" using starfile
-    data0 = starfile.read(star_file_input0.get())
-    particles_dataframe0 = data0['particles']
+    def __init__(self, star_file_input0, star_file_input1, output_path, step):
+        self.star_file_input0 = star_file_input0.get()
+        self.star_file_input1 = star_file_input1.get()
+        self.star_file_name = os.path.basename(self.star_file_input1)
+        self.output_path = output_path.get()
+        self.step = step
 
-    # Read data from "run_it001_data.star" using starfile
-    data1 = starfile.read(star_file_input1.get())
-    particles_dataframe1 = data1['particles']
-    data_optics_dataframe1 = data1['optics']
+    @print_done_decorator
+    def class_unifier_extractor(self):
 
-    # Takes only the unique micrographs from the star file
-    micrographs = particles_dataframe1['rlnMicrographName'].unique()
+        # Read data from "run_it000_data.star" using starfile
+        data0 = starfile.read(self.star_file_input0)
+        particles_dataframe0 = data0['particles']
 
-    # Iterates over the micrographs
-    for micrograph in micrographs:
-        # Filters the dataframe according to the micrograph name
-        mask = particles_dataframe1['rlnMicrographName'] == micrograph
-        micrograph_star = particles_dataframe1.loc[mask]
-        # Fines the number of MTs in the micrograph
-        total_number_of_mts = micrograph_star['rlnHelicalTubeID'].max()
-        print(f'{micrograph} contains {total_number_of_mts} MTs')
+        # Read data from "run_it001_data.star" using starfile
+        data1 = starfile.read(self.star_file_input1)
+        particles_dataframe1 = data1['particles']
+        data_optics_dataframe1 = data1['optics']
 
-        # Iterates over the MTs in the micrograph
-        for MT in range(1, total_number_of_mts + 1):
-            # creating a mask to filter only the micrographs for the id of the MT
-            mask2 = micrograph_star['rlnHelicalTubeID'] == MT
-            MT_star_data = micrograph_star.loc[mask2]
+        # Takes only the unique micrographs from the star file
+        micrographs = particles_dataframe1['rlnMicrographName'].unique()
 
-            # Some MTs are missing so to avoid errors we continue only with MTs with data
-            if not MT_star_data.empty:
+        # Iterates over the micrographs
+        for micrograph in micrographs:
+            # Filters the dataframe according to the micrograph name
+            mask = particles_dataframe1['rlnMicrographName'] == micrograph
+            micrograph_star = particles_dataframe1.loc[mask]
+            # Fines the number of MTs in the micrograph
+            total_number_of_mts = micrograph_star['rlnHelicalTubeID'].max()
+            print(f'{micrograph} contains {total_number_of_mts} MTs')
 
-                # Counts how many segments were classified as a specific class
-                classes = MT_star_data['rlnClassNumber'].value_counts()
+            # Iterates over the MTs in the micrograph
+            for MT in range(1, total_number_of_mts + 1):
+                # creating a mask to filter only the micrographs for the id of the MT
+                mask2 = micrograph_star['rlnHelicalTubeID'] == MT
+                MT_star_data = micrograph_star.loc[mask2]
 
-                # Takes the class that appeared the most times
-                most_common_class = classes.idxmax()
+                # Some MTs are missing so to avoid errors we continue only with MTs with data
+                if not MT_star_data.empty:
 
-                # Number of segments classified at this class
-                number_of_appearances = classes.max()
+                    # Counts how many segments were classified as a specific class
+                    classes = MT_star_data['rlnClassNumber'].value_counts()
 
-                # Total number of segments
-                total_number = classes.shape[0]
+                    # Takes the class that appeared the most times
+                    most_common_class = classes.idxmax()
 
-                print(f'For MT {MT}, the most common class is {most_common_class} It appears {number_of_appearances}'
-                      f'out of {total_number} times\n', '=' * 100)
+                    # Number of segments classified at this class
+                    number_of_appearances = classes.max()
 
-                # Iterates over the entire original dataframe and replacing the class with the most common class
-                # for all segments of the MT in the micrograph using all other data from run_it000_data.star
-                # This resets the angles to prior
-                for index, row in particles_dataframe0.iterrows():
-                    if micrograph in row['rlnMicrographName'] and row['rlnHelicalTubeID'] == MT:
-                        particles_dataframe0.loc[index, 'rlnClassNumber'] = most_common_class
+                    # Total number of segments
+                    total_number = len(classes)
 
-    original_data_star_name = star_file_input1.get().replace('.star', '')
+                    print(
+                        f'For MT {MT}, the most common class is {most_common_class} It appears {number_of_appearances} '
+                        f'out of {total_number} times\n', '=' * 100)
 
-    if step == 'pf_number_check':
-        # EXTRACTING THE SEGMENTS TO SEPARATE STAR FILES ACCORDING TO THEIR CLASS
-        number_of_classes = particles_dataframe1['rlnClassNumber'].max()
+                    # Iterates over the entire original dataframe and replacing the class with the most common class
+                    # for all segments of the MT in the micrograph using all other data from run_it000_data.star
+                    # This resets the angles to prior
+                    for index, row in particles_dataframe0.iterrows():
+                        if micrograph in row['rlnMicrographName'] and row['rlnHelicalTubeID'] == MT:
+                            particles_dataframe0.loc[index, 'rlnClassNumber'] = most_common_class
 
-        # Iterates over the number of classes
-        for i in range(number_of_classes + 1):
+        original_data_star_name = self.star_file_name.replace('.star', '')
 
-            # Filtering the datarfame for the specific class i
-            mask_class = particles_dataframe0['rlnClassNumber'] == i
-            class_particles = particles_dataframe0.loc[mask_class]
+        if self.step == 'pf_number_check':
+            # EXTRACTING THE SEGMENTS TO SEPARATE STAR FILES ACCORDING TO THEIR CLASS
+            number_of_classes = particles_dataframe1['rlnClassNumber'].max()
 
-            print(f"There are {class_particles.shape[0]} segments of class {i}")
+            # Iterates over the number of classes
+            for i in range(number_of_classes + 1):
 
-            # Generating a new STAR file using the optics from run_it001_data.star and the new particels (segments) data
-            # with corrected classes after unification
+                # Filtering the datarfame for the specific class i
+                mask_class = particles_dataframe0['rlnClassNumber'] == i
+                class_particles = particles_dataframe0.loc[mask_class]
 
-            new_particles_star_file_data = {'optics': data_optics_dataframe1, 'particles': class_particles}
+                print(f"There are {class_particles.shape[0]} segments of class {i}")
 
-            os.chdir(output_path.get())
-            output_file = f'{original_data_star_name}_class_{i}.star'
+                # Generating a new STAR file using the optics from run_it001_data.star and the new particels (segments) data
+                # with corrected classes after unification
+
+                new_particles_star_file_data = {'optics': data_optics_dataframe1, 'particles': class_particles}
+
+                os.chdir(self.output_path)
+                output_file = f'{original_data_star_name}_class_{i}.star'
+                try:
+                    starfile.write(new_particles_star_file_data, output_file)
+                    print(f'Saved STAR file {output_file} at {self.output_path}')
+                except NameError:
+                    print(f"File names {output_file} already exists, delete old file and try again")
+                    raise NameError("File already exists")
+
+        elif self.step == 'seam_check':
+            # EXTRACTING THE SEGMENTS TO A SINGLE STAR FILES WITH CORRECTED CLASSES
+            new_particles_star_file_data = {'optics': data_optics_dataframe1, 'particles': particles_dataframe0}
+
+            os.chdir(self.output_path.get())
+            output_file = f'{original_data_star_name}_class_corrected.star'
             try:
                 starfile.write(new_particles_star_file_data, output_file)
-                print(f'Saved STAR file {output_file} at {output_path.get()}')
+                print(f'Saved STAR file {output_file} at {self.output_path.get()}')
             except NameError:
                 print(f"File names {output_file} already exists, delete old file and try again")
                 raise NameError("File already exists")
 
-    elif step == 'seam_check':
-        # EXTRACTING THE SEGMENTS TO A SINGLE STAR FILES WITH CORRECTED CLASSES
-        new_particles_star_file_data = {'optics': data_optics_dataframe1, 'particles': particles_dataframe0}
+    @staticmethod
+    def classes_distribution(star_file_input):
+        """
+        A method to generate a histogram from number of segments per MT
 
-        os.chdir(output_path.get())
-        output_file = f'{original_data_star_name}_class_corrected.star'
+        :param star_file_input: particles star file from entry
+        :return: matplotlib pie % fig
+        """
+
         try:
-            starfile.write(new_particles_star_file_data, output_file)
-            print(f'Saved STAR file {output_file} at {output_path.get()}')
-        except NameError:
-            print(f"File names {output_file} already exists, delete old file and try again")
-            raise NameError("File already exists")
+            # Try to read the STAR file
+            particles_star_file_data = starfile.read(star_file_input.get())
+            particles_dataframe = particles_star_file_data['particles']
 
+            # Access the 'rlnClassNumber' column and get unique values
+            classes_value_counts = particles_dataframe['rlnClassNumber'].value_counts()
 
-def classes_distribution(star_file_input):
-    """
-    A method to generate a histogram from number of segments per MT
+        except FileNotFoundError:
+            # Handle the case where the specified STAR file does not exist
+            print("Error: The specified STAR file does not exist.")
+            # Optionally, you can raise the error again if needed
+            raise
 
-    :param star_file_input: particles star file from entry
-    :return: matplotlib pie % fig
-    """
+        # The classes and the nuber of their appearances (values)
+        classes = classes_value_counts.index
+        values = classes_value_counts.values
 
-    try:
-        # Try to read the STAR file
-        particles_star_file_data = starfile.read(star_file_input.get())
-        particles_dataframe = particles_star_file_data['particles']
+        # Create a Matplotlib figure and axes
+        fig, ax = plt.subplots()
 
-        # Access the 'rlnClassNumber' column and get unique values
-        classes_value_counts = particles_dataframe['rlnClassNumber'].value_counts()
+        # Plot pie chart
+        ax.pie(values, labels=classes, autopct='%1.1f%%', startangle=140)
 
-    except FileNotFoundError:
-        # Handle the case where the specified STAR file does not exist
-        print("Error: The specified STAR file does not exist.")
-        # Optionally, you can raise the error again if needed
-        raise
+        # Add labels and title
+        ax.set_xlabel('Classes %')
+        ax.set_title('Class distribution')
 
-    # The classes and the nuber of their appearances (values)
-    classes = classes_value_counts.index
-    values = classes_value_counts.values
-
-    # Create a Matplotlib figure and axes
-    fig, ax = plt.subplots()
-
-    # Plot pie chart
-    ax.pie(values, labels=classes, autopct='%1.1f%%', startangle=140)
-
-    # Add labels and title
-    ax.set_xlabel('Classes %')
-    ax.set_title('Class distribution')
-
-    return fig
+        return fig

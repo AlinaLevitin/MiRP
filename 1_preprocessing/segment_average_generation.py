@@ -9,7 +9,7 @@ The method of segment averaging is located in LG_MiRP/methods/segment_average_ge
 The GUI is located in LG_MiRP/gui/segment_average_gui
 """
 
-import LG_MiRP
+from LG_MiRP import SegmentAverageGui
 
 # Generating the gui
-LG_MiRP.SegmentAverageGui()
+SegmentAverageGui()

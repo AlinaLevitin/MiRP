@@ -8,7 +8,7 @@ Updated: 12/05/24
 import tkinter as tk
 
 from ..gui_base import LgFrameBase, LgMasterGui, LGTopLevelBase
-from ..methods import segment_average_generator, methods_utils
+from ..methods import segment_average_generator, method_base
 
 
 class WedgeMasksGui(LgMasterGui):

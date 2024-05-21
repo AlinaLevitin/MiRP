@@ -7,9 +7,10 @@ Two GUI classes (master and frame) for class unification and extraction
 The method of class unification and extraction is located in LG_MiRP/methods/class_unifier_extractor
 """
 import tkinter as tk
+from tkinter import ttk
 
 from ..gui_base import LgFrameBase, LgMasterGui, LGTopLevelBase
-from ..methods import class_unifier_extractor, classes_distribution
+from ..methods import ClassUnifierExtractor
 
 
 class ClassUnificationExtractionGui(LgMasterGui):
@@ -17,10 +18,10 @@ class ClassUnificationExtractionGui(LgMasterGui):
     ...
     Inherits from LgMasterGui
     """
-    def __init__(self, step):
+    def __init__(self):
         super().__init__()
         self.add_job_name("Class Unification and extraction")
-        frame = ClassUnificationFrame(self, step)
+        frame = ClassUnificationFrame(self)
         frame.grid(row=1, column=0, sticky="NSEW")
         self.mainloop()
 
@@ -30,28 +31,35 @@ class ClassUnificationFrame(LgFrameBase):
     ...
     Inherits from LgFrameBase
     """
-    def __init__(self, master, step):
+    def __init__(self, master):
         """
         :param master: the master gui in which the frame will be displayed
         """
         super().__init__(master)
+
+        options = ['pf_number_check', 'seam_check']
+
+        self.step = self.add_method_combobox(row=1, options=options)
         # Creates an entry for run_it000_data.star file
-        input_star_file0 = self.add_file_entry('star', 'Select a run_it000_data.star file', row=1)
+        self.input_star_file0 = self.add_file_entry('star', 'Select a run_it000_data.star file', row=2)
         # Creates an entry for run_it001_data.star file
-        input_star_file1 = self.add_file_entry('star', 'Select a run_it0xx_data.star file', row=2)
+        self.input_star_file1 = self.add_file_entry('star', 'Select a run_it0xx_data.star file', row=3)
 
         # Creates an entry for output directory
-        output_directory = self.add_directory_entry('Select output directory', row=3)
+        self.output_directory = self.add_directory_entry('Select output directory', row=4)
 
         # Creates a "Run" button that uses the class unification and extraction method
-        self.add_run_button(lambda: class_unifier_extractor(input_star_file0, input_star_file1, output_directory, step=step),
-                            row=4)
+        self.add_run_button(self.run_function, row=5)
         # Creates a button to show the distribution of classes according to 3D classification
-        result_button = tk.Button(self, text="Show Classes Distribution", command=lambda: self.show_class_distribution(input_star_file1))
-        result_button.grid(row=5, column=0)
+        result_button = tk.Button(self, text="Show Classes Distribution", command=lambda: self.show_class_distribution(self.input_star_file1))
+        result_button.grid(row=6, column=0)
 
         # Imports a themed image at the bottom
-        self.add_image(new_size=600, row=6)
+        self.add_image(new_size=600, row=7)
+
+    def run_function(self):
+        function = ClassUnifierExtractor(self.input_star_file0, self.input_star_file1, self.output_directory, self.step.get())
+        function.class_unifier_extractor()
 
     def show_class_distribution(self, input_star_file):
         """
@@ -59,7 +67,7 @@ class ClassUnificationFrame(LgFrameBase):
         :param input_star_file: star file after 3D classification run_it001_data.star
         """
         # Generating a pie chart with percentages of MTs classified in each class
-        fig = classes_distribution(input_star_file)
+        fig = ClassUnifierExtractor.classes_distribution(input_star_file)
         # Generating a Tkinter Top level window
         pie_window = LGTopLevelBase(self)
         # Adding a title to the figure

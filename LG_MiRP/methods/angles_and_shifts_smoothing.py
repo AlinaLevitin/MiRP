@@ -8,80 +8,85 @@ Methods for smoothing X/Y Shifts and angles
 """
 import os
 
-import numpy as np
 import starfile
 
-from .methods_utils import fit_clusters, filter_microtubules_by_length, cluster_shallow_slopes, flatten_and_cluster_shifts
+from .method_base import MethodBase, print_done_decorator
 
 
-def smooth_angles_or_shifts(star_file_input, output_path, function, cutoff=None):
+class SmoothAnglesOrShifts(MethodBase):
 
-    data = starfile.read(star_file_input.get())
+    def __init__(self, star_file_input, output_path, method, cutoff=None):
+        self.star_file_input = star_file_input.get()
+        self.output_path = output_path.get()
+        self.method = method
+        self.cutoff = cutoff
 
-    particles_dataframe = data['particles']
-    data_optics_dataframe = data['optics']
+    @print_done_decorator
+    def smooth_angles_or_shifts(self):
 
-    if cutoff:
-        particles_dataframe = filter_microtubules_by_length(particles_dataframe, cutoff)
+        data = starfile.read(self.star_file_input)
 
-    if function == 'angles':
-        particles_dataframe = process_data(particles_dataframe, id_label='rlnAngleRot')
-    elif function == 'shifts':
-        particles_dataframe = process_data(particles_dataframe, id_label='rlnOriginXAngst')
-        particles_dataframe = process_data(particles_dataframe, id_label='rlnOriginYAngst')
+        particles_dataframe = data['particles']
+        data_optics_dataframe = data['optics']
 
-    new_particles_star_file_data = {'optics': data_optics_dataframe, 'particles': particles_dataframe}
+        if self.cutoff:
+            particles_dataframe = self.filter_microtubules_by_length(particles_dataframe, self.cutoff)
 
-    os.chdir(output_path.get())
-    original_name = star_file_input.get().replace('.star', '')
-    output_file = f'{original_name}_smoothened_{function}.star'
+        if self.method == 'angles':
+            particles_dataframe = self.process_data(particles_dataframe, id_label='rlnAngleRot')
+        elif self.method == 'shifts':
+            particles_dataframe = self.process_data(particles_dataframe, id_label='rlnOriginXAngst')
+            particles_dataframe = self.process_data(particles_dataframe, id_label='rlnOriginYAngst')
 
-    starfile.write(new_particles_star_file_data, output_file)
+        new_particles_star_file_data = {'optics': data_optics_dataframe, 'particles': particles_dataframe}
 
-    print("=" * 50)
-    print(f"Updated STAR file saved as: {output_file} at {output_path.get()}")
+        os.chdir(self.output_path)
+        original_name = self.star_file_input.replace('.star', '')
+        output_file = f'{original_name}_smoothened_{self.method}.star'
 
-    return particles_dataframe
+        starfile.write(new_particles_star_file_data, output_file)
 
+        print("=" * 50)
+        print(f"Updated STAR file saved as: {output_file} at {self.output_path}")
 
-def process_data(particles_dataframe, id_label):
-    print('=' * 50)
-    print(f'Smoothing {id_label}')
-    print('=' * 50)
+        return particles_dataframe
 
-    bad_mts = []
-    grouped_data = particles_dataframe.groupby(['rlnMicrographName', 'rlnHelicalTubeID'])
+    def process_data(self, particles_dataframe, id_label):
+        print('=' * 50)
+        print(f'Smoothing {id_label}')
+        print('=' * 50)
 
-    for (micrograph, MT), MT_dataframe in grouped_data:
-        mask1 = particles_dataframe['rlnMicrographName'] == micrograph
-        mask2 = particles_dataframe['rlnHelicalTubeID'] == MT
+        bad_mts = []
+        grouped_data = particles_dataframe.groupby(['rlnMicrographName', 'rlnHelicalTubeID'])
 
-        values = MT_dataframe[id_label].to_numpy()
+        for (micrograph, MT), MT_dataframe in grouped_data:
+            mask1 = particles_dataframe['rlnMicrographName'] == micrograph
+            mask2 = particles_dataframe['rlnHelicalTubeID'] == MT
 
-        if id_label == 'rlnAngleRot':
-            angle_cutoff = 8
-            top_clstr, outliers = cluster_shallow_slopes(values, angle_cutoff)
-        elif id_label in ['rlnOriginXAngst', 'rlnOriginYAngst']:
-            top_clstr, outliers = flatten_and_cluster_shifts(values)
-        else:
-            raise ValueError("Unsupported id_label")
-        if top_clstr:
-            print(f'Now fitting MT {MT} in micrograph {micrograph}')
-            MT_dataframe.reset_index(inplace=True)
+            values = MT_dataframe[id_label].to_numpy()
 
-            values = MT_dataframe.loc[:, id_label].to_numpy()
-            fitted_values = fit_clusters(values, top_clstr)
+            if id_label == 'rlnAngleRot':
+                angle_cutoff = 8
+                top_clstr, outliers = self.cluster_shallow_slopes(values, angle_cutoff)
+            elif id_label in ['rlnOriginXAngst', 'rlnOriginYAngst']:
+                top_clstr, outliers = self.flatten_and_cluster_shifts(values)
+            else:
+                raise ValueError("Unsupported id_label")
+            if top_clstr:
+                print(f'Now fitting MT {MT} in micrograph {micrograph}')
+                MT_dataframe.reset_index(inplace=True)
 
-            particles_dataframe.loc[mask1 & mask2, id_label] = fitted_values
-        else:
-            print(f'MT {MT} in micrograph {micrograph}, {id_label} cannot be fit, and is discarded')
-            matching_rows = particles_dataframe[mask1 & mask2]
-            index_numbers = matching_rows.index
-            bad_mts.append(index_numbers[0])
+                values = MT_dataframe.loc[:, id_label].to_numpy()
+                fitted_values = self.fit_clusters(values, top_clstr)
 
-    if bad_mts:
-        particles_dataframe.drop(bad_mts, inplace=True)
+                particles_dataframe.loc[mask1 & mask2, id_label] = fitted_values
+            else:
+                print(f'MT {MT} in micrograph {micrograph}, {id_label} cannot be fit, and is discarded')
+                matching_rows = particles_dataframe[mask1 & mask2]
+                index_numbers = matching_rows.index
+                bad_mts.append(index_numbers[0])
 
-    return particles_dataframe
+        if bad_mts:
+            particles_dataframe.drop(bad_mts, inplace=True)
 
-
+        return particles_dataframe

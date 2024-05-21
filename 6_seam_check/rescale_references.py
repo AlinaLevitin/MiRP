@@ -10,7 +10,7 @@ The method of rescaling references is located in LG_MiRP/methods/reference_scale
 The GUI is located in LG_MiRP/gui/rescale_references_gui
 """
 
-import LG_MiRP
+from LG_MiRP import RescaleReferencesGui
 
 # Generating the gui
-LG_MiRP.RescaleReferencesGui("References/13pf")
+RescaleReferencesGui("References/13pf")

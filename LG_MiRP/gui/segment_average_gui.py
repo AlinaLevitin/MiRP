@@ -6,10 +6,9 @@ Updated: 11/3/24
 Two GUI classes (master and frame) for segment average generation
 The method of segment averaging is located in LG_MiRP/methods/segment_average_generator
 """
-import tkinter as tk
 
 from ..gui_base import LgFrameBase, LgMasterGui, LGTopLevelBase
-from ..methods import segment_average_generator, methods_utils
+from ..methods import SegmentAverageGenerator, method_base
 
 
 class SegmentAverageGui(LgMasterGui):
@@ -38,27 +37,28 @@ class SegmentAverageFrame(LgFrameBase):
         # Adds the job name at the top row
         # self.add_sub_job_name("Segment Average Generator", row=0)
         # Creates an entry for particles.star file
-        input_star_file = self.add_file_entry('star', 'Select a particles.star file', row=1)
+        self.input_star_file = self.add_file_entry('star', 'Select a particles.star file', row=1)
         # Creates a Show segments histogram to show the distribution of number of segments
-        self.add_show_results_button(command=lambda: self.show_mt_segment_histogram(input_star_file),
+        self.add_show_results_button(command=lambda: self.show_mt_segment_histogram(self.input_star_file),
                                      row=2, text="Show segments histogram")
         # Creates an entry for input directory with mrcs stack files in Extract folder (after particle picking)
-        input_directory = self.add_directory_entry('Select directory containing extracted particles in Extract', row=4)
+        self.input_directory = self.add_directory_entry('Select directory containing extracted particles in Extract', row=4)
         # Creates an entry for output directory (usually the project folder) there it will save the new mrcs files and
         # the new star file
-        output_directory = self.add_directory_entry('Select output directory', row=5)
+        self.output_directory = self.add_directory_entry('Select output directory', row=5)
         # Creates a "Run" button that uses the segment average method
-        self.add_run_button(lambda: segment_average_generator(input_directory,
-                                                              output_directory,
-                                                              input_star_file,
-                                                              ),
-                            row=6)
+        self.add_run_button(self.run_function, row=6)
 
         # Imports a themed image at the bottom
         self.add_image("segment_average.jpg", new_size=600, row=7)
 
+    def run_function(self):
+        function = SegmentAverageGenerator(self.input_directory, self.output_directory, self.input_star_file)
+
+        function.generate_segment_averages()
+
     def show_mt_segment_histogram(self, input_star_file):
-        fig = methods_utils.mt_segment_histogram(input_star_file)
+        fig = method_base.mt_segment_histogram(input_star_file)
         histogram_window = LGTopLevelBase(self)
         histogram_window.title("Histogram of number of segments per MT")
         histogram_window.add_plot(fig)
