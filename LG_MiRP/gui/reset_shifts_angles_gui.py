@@ -39,15 +39,25 @@ class ResetShiftsAnglesFrame(LgFrameBase):
         # Creates an entry for run_it000_data.star file
         self.input_star_file = self.add_file_entry('star', 'Select a run_it001_data.star file', row=1)
 
+        options = [None, '0']
+        options1 = [None, 'prior']
+
+        self.x = self.add_method_combobox(row=2, options=options, text='Manipulation to x (rlnOriginXAngst)')
+        self.y = self.add_method_combobox(row=3, options=options, text='Manipulation to y (rlnOriginYAngst)')
+        self.z = self.add_method_combobox(row=4, options=options, text='Manipulation to z (rlnOriginZ)')
+        self.rot = self.add_method_combobox(row=5, options=options, text='Manipulation to rot (rlnAngleRot)')
+        self.tilt = self.add_method_combobox(row=6, options=options1, text='Manipulation to rot (rlnAngleTilt)')
+        self.psi = self.add_method_combobox(row=7, options=options1, text='Manipulation to rot (rlnAnglePsi)')
+
         # Creates an entry for output directory
-        self.output_directory = self.add_directory_entry('Select output directory', row=2)
+        self.output_directory = self.add_directory_entry('Select output directory', row=8)
 
         # Creates a "Run" button that uses the class unification and extraction method
-        self.add_run_button(self.run_function(), row=3)
+        self.add_run_button(self.run_function, row=9)
 
         # Imports a themed image at the bottom
-        self.add_image(new_size=600, row=4)
+        self.add_image(new_size=600, row=10)
 
     def run_function(self):
-        function = ResetAnglesAndShifts(self.input_star_file, self.output_directory, rot='0', x='0', y='0', z='0', psi='prior', tilt='prior')
+        function = ResetAnglesAndShifts(self.input_star_file, self.output_directory, rot=self.rot, x=self.x, y=self.y, z=self.z, psi=self.psi, tilt=self.tilt)
         function.reset_angles_and_translations()

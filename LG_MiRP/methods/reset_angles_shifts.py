@@ -21,7 +21,7 @@ class ResetAnglesAndShifts(MethodBase):
     def __init__(self, star_file_input, output_directory, rot=None, x=None, y=None, z=None, psi=None, tilt=None):
         self.star_file_input = star_file_input.get()
         self.star_file_name = os.path.basename(self.star_file_input)
-        self.output_directory = output_directory
+        self.output_directory = output_directory.get()
         self.rot = rot
         self.x = x
         self.y = y

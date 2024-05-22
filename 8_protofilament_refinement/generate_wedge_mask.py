@@ -7,7 +7,7 @@ Updated: 12/05/24
 
 """
 
-import LG_MiRP
+from LG_MiRP import WedgeMasksGui
 
 # Generating the gui
-LG_MiRP.WedgeMasksGui()
+WedgeMasksGui()
