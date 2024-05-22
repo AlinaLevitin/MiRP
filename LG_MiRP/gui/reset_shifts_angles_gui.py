@@ -37,16 +37,17 @@ class ResetShiftsAnglesFrame(LgFrameBase):
         """
         super().__init__(master)
         # Creates an entry for run_it000_data.star file
-        input_star_file = self.add_file_entry('star', 'Select a run_it001_data.star file', row=1)
+        self.input_star_file = self.add_file_entry('star', 'Select a run_it001_data.star file', row=1)
 
         # Creates an entry for output directory
-        output_directory = self.add_directory_entry('Select output directory', row=2)
+        self.output_directory = self.add_directory_entry('Select output directory', row=2)
 
         # Creates a "Run" button that uses the class unification and extraction method
-        self.add_run_button(lambda: reset_angles_and_translations(input_star_file, output_directory, rot='0', x='0', y='0', z='0', psi='prior', tilt='prior'),
-                            row=3)
+        self.add_run_button(self.run_function(), row=3)
 
         # Imports a themed image at the bottom
         self.add_image(new_size=600, row=4)
 
-        def run_function()
+    def run_function(self):
+        function = ResetAnglesAndShifts(self.input_star_file, self.output_directory, rot='0', x='0', y='0', z='0', psi='prior', tilt='prior')
+        function.reset_angles_and_translations()

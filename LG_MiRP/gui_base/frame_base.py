@@ -177,7 +177,7 @@ class LgFrameBase(ttk.Frame):
         for i, (file_path, label_text) in enumerate(zip(file_paths, label_text)):
             display_mrc_stack(self, file_path, label_text, row=row, column=i)
 
-    def add_method_combobox(self, row, options):
+    def add_method_combobox(self, row, options, on_method_change=None):
         label = tk.Label(self, text="Method:", font=('Ariel', 12))
         label.grid(row=row, column=0)
         method_var = tk.StringVar(value=options[0])
@@ -185,4 +185,12 @@ class LgFrameBase(ttk.Frame):
         method_combobox['values'] = options
         method_combobox.grid(row=row, column=1)
 
+        if on_method_change:
+            # Bind the combobox selection change to the add_image_by_name method
+            method_combobox.bind("<<ComboboxSelected>>", self.on_method_change)
+
         return method_var
+
+    def on_method_change(self, event):
+        pass
+

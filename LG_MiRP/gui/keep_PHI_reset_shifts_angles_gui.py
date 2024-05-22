@@ -1,4 +1,5 @@
 """
+TODO: Where is this used?
 Author: Alina Levitin
 Date: 15/04/24
 Updated: 15/04/24
@@ -11,7 +12,7 @@ shifts: _rlnOriginX, _rlnOriginY, _rlnOriginZ are set to 0
 angles: _rlnAnglePsi, _rlnAngleTilt are set to priors: _rlnAnglePsiPrior, _rlnAngleTiltPrior
 """
 from ..gui_base import LgFrameBase, LgMasterGui
-from ..methods import reset_angles_and_translations
+# from ..methods import reset_angles_and_translations
 
 
 class KeepPHIResetShiftsAnglesGui(LgMasterGui):

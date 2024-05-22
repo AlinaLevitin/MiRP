@@ -25,7 +25,7 @@ class ResetAnglesAndShifts(MethodBase):
         self.rot = rot
         self.x = x
         self.y = y
-        self.z = x
+        self.z = z
         self.psi = psi
         self.tilt = tilt
 

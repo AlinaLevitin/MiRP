@@ -17,8 +17,9 @@ class SmoothAnglesOrShifts(MethodBase):
 
     def __init__(self, star_file_input, output_path, method, cutoff=None):
         self.star_file_input = star_file_input.get()
+        self.star_file_name = os.path.basename(self.star_file_input)
         self.output_path = output_path.get()
-        self.method = method
+        self.method = method.get()
         self.cutoff = cutoff
 
     @print_done_decorator
@@ -41,7 +42,7 @@ class SmoothAnglesOrShifts(MethodBase):
         new_particles_star_file_data = {'optics': data_optics_dataframe, 'particles': particles_dataframe}
 
         os.chdir(self.output_path)
-        original_name = self.star_file_input.replace('.star', '')
+        original_name = self.star_file_name.replace('.star', '')
         output_file = f'{original_name}_smoothened_{self.method}.star'
 
         starfile.write(new_particles_star_file_data, output_file)
