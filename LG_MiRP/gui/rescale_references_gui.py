@@ -52,7 +52,7 @@ class RescaleReferenceFrame(LgFrameBase):
 
         self.output_path = self.add_directory_entry('Select output directory', row=3)
 
-        options = tuple('relion', 'scipy')
+        options = ['relion', 'scipy']
 
         self.method_var = self.add_method_combobox(row=4, options=options)
 

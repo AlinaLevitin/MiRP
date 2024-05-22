@@ -53,7 +53,17 @@ class ReferenceScaler(MethodBase):
             raise ValueError("Unsupported method. Choose 'relion' or 'scipy'.")
 
         # Accessing the references
-        reference_directory = os.listdir(self.path)
+
+        # Determine if self.path is a directory or a file
+        if os.path.isdir(self.path):
+            # Accessing the references
+            reference_directory = os.listdir(self.path)
+        elif os.path.isfile(self.path) and self.path.endswith(".mrc"):
+            # Treating the single .mrc file as a list with one file
+            reference_directory = [os.path.basename(self.path)]
+            self.path = os.path.dirname(self.path)
+        else:
+            raise ValueError("The specified path is neither a directory nor a .mrc file.")
 
         # Iterates over the references and selects only mrc files
         for input_mrc in reference_directory:
@@ -101,7 +111,7 @@ class ReferenceScaler(MethodBase):
 
         voxel_size_rounded = np.round(voxel_size['x'], decimals=4)
         original_pixel_size_name = str(voxel_size_rounded).replace(".", "-")
-        new_pixel_size_name = str(new_pixel_size).replace(".", "-")
+        new_pixel_size_name = str(new_pixel_size).replace(".", "_")
 
         output_file = input_mrc.replace(original_pixel_size_name, new_pixel_size_name)
         output_mrc = output_file.replace('.mrc', f'_{new_box_size}pix_resampled.mrc')
