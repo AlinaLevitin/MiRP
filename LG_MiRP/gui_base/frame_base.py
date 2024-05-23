@@ -71,13 +71,14 @@ class LgFrameBase(ttk.Frame):
         button = tk.Button(self, text='Run', command=command)
         button.grid(row=row, column=1, columnspan=1, padx=5, pady=5)
 
-    def add_file_entry(self, entry_type, entry_name, row):
+    def add_file_entry(self, entry_type, entry_name, row, default_value=""):
         """
-        Adds a file entry with w browse button
+        Adds a file entry with a browse button.
 
-        :param entry_type: can be star, mrc, mrcs - passed down to brose function in gui_base.utils
+        :param entry_type: can be star, mrc, mrcs - passed down to browse function in gui_base.utils
         :param entry_name: text to appear next to the Entry
         :param row: row in the frame
+        :param default_value: the default value to be set in the Entry (optional)
         :return: tk.Entry for downstream operations
         """
         label = tk.Label(self, text=entry_name, font=('Ariel', 12))
@@ -85,6 +86,10 @@ class LgFrameBase(ttk.Frame):
 
         file_entry = tk.Entry(self, width=50)
         file_entry.grid(row=row, column=1, padx=5, pady=5)
+
+        # Set the default value if provided
+        if default_value:
+            file_entry.insert(0, default_value)
 
         browse_button = tk.Button(self, text="Browse", command=lambda: browse(entry_type, file_entry))
         browse_button.grid(row=row, column=2, padx=5, pady=5)
@@ -117,13 +122,13 @@ class LgFrameBase(ttk.Frame):
 
         return directory
 
-    def add_number_entry(self, entry_name, row):
+    def add_number_entry(self, entry_name, row, default_value=None):
         """
         Adds a numerical entry
 
-        :param column:
         :param entry_name: text to appear next to the entry
         :param row: row in the frame
+        :param default_value: the default value to be set in the Entry (optional)
         :return: numerical tk.Entry for downstream operations
         """
         label = tk.Label(self, text=entry_name, font=('Ariel', 12))
@@ -131,6 +136,10 @@ class LgFrameBase(ttk.Frame):
 
         number_entry = tk.Entry(self, width=10)
         number_entry.grid(row=row, column=1, padx=5, pady=5)
+
+        # Set the default value if provided
+        if default_value is not None:
+            number_entry.insert(0, str(default_value))
 
         return number_entry
 
