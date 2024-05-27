@@ -6,7 +6,6 @@ dependencies:
     - openmpi
     - mpi4py
     - matplotlib
-    - tkinter
     - numpy
     - pandas
     - olefile
@@ -21,5 +20,5 @@ dependencies:
             - mrcfile
             - starfile
             - tensorflow
-            - biopython
+            - Bio
             

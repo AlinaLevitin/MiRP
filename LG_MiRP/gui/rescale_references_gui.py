@@ -60,6 +60,6 @@ class RescaleReferenceFrame(LgFrameBase):
         self.add_run_button(command=self.run_function, row=5)
 
     def run_function(self):
-        function = ReferenceScaler(self.path, self.output_path, self.input_box_size, self.input_pixel_size)
+        function = ReferenceScaler(self.path, self.output_path, self.input_box_size, self.input_pixel_size, self.method_var)
 
-        function.rescale_and_crop_image(method=self.method_var.get())
+        function.rescale_and_crop_image()
