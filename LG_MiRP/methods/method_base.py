@@ -233,6 +233,68 @@ class MethodBase:
         return fig
 
     # ======================================================================================================================
+    # structural functions:
+
+    @staticmethod
+    def spherical_cosmask(n, mask_radius, edge_width, origin=None):
+        """mask = spherical_cosmask(n, mask_radius, edge_width, origin)
+        """
+
+        if type(n) is int:
+            n = np.array([n])
+
+        sz = np.array([1, 1, 1])
+        sz[0:np.size(n)] = n[:]
+
+        szl = -np.floor(sz / 2)
+        szh = szl + sz
+
+        x, y, z = np.meshgrid(np.arange(szl[0], szh[0]),
+                              np.arange(szl[1], szh[1]),
+                              np.arange(szl[2], szh[2]), indexing='ij', sparse=True)
+
+        r = np.sqrt(x * x + y * y + z * z)
+
+        m = np.zeros(sz.tolist())
+
+        #    edgezone = np.where( (x*x + y*y + z*z >= mask_radius) & (x*x + y*y + z*z <= np.square(mask_radius + edge_width)))
+
+        edgezone = np.all(
+            [(x * x + y * y + z * z >= mask_radius), (x * x + y * y + z * z <= np.square(mask_radius + edge_width))],
+            axis=0)
+        m[edgezone] = 0.5 + 0.5 * np.cos(2 * np.pi * (r[edgezone] - mask_radius) / (2 * edge_width))
+        m[np.all([(x * x + y * y + z * z <= mask_radius * mask_radius)], axis=0)] = 1
+
+        #    m[ np.where(x*x + y*y + z*z <= mask_radius*mask_radius)] = 1
+
+        return m
+
+    @staticmethod
+    def calc_center_of_gravity(structure):
+        x_sum, y_sum, z_sum = 0, 0, 0
+        total_weight = 0
+
+        for model in structure:
+            for chain in model:
+                for residue in chain:
+                    for atom in residue:
+                        # Get the atom coordinates
+                        atom_coord = atom.get_coord()
+                        # Get the atom weight (assuming it's stored in B-factor)
+                        atom_weight = atom.get_bfactor()
+                        # Accumulate the weighted sum of coordinates
+                        x_sum += atom_coord[0] * atom_weight
+                        y_sum += atom_coord[1] * atom_weight
+                        z_sum += atom_coord[2] * atom_weight
+                        # Accumulate the total weight
+                        total_weight += atom_weight
+
+        # Calculate the center of gravity
+        center_of_gravity = np.array([x_sum / total_weight, y_sum / total_weight, z_sum / total_weight])
+
+        return center_of_gravity
+
+    # ======================================================================================================================
     # Lazy functions:
     @staticmethod
     def filter_microtubules_by_length(data, cutoff):
