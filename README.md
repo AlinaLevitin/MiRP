@@ -1,6 +1,6 @@
-#### INSTRUCTIONS FOR MiRP v1.0 PROCESSING OF MTS #### Leah gheber/Alina Levitin 2024 #
+#### INSTRUCTIONS FOR MiRP v1.0 PROCESSING OF MTS #### Leah Gheber/Alina Levitin 2024 #
 
-Please follow the instructions in the Tutorial.pdf file.
+Please follow the instructions in the Kinesin-5 cryoEM density pipeline.pdf file.
 
 ------------------------------------------------------------------------------------------------------------------------
 
