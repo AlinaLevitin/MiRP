@@ -20,7 +20,7 @@ class ResetShiftsAnglesGui(LgMasterGui):
     """
     def __init__(self):
         super().__init__()
-        self.add_job_name("Reset shifts to 0 and angles to prior")
+        self.add_job_name("Reset shifts and angles to 0/prior")
         frame = ResetShiftsAnglesFrame(self)
         frame.grid(row=1, column=0, sticky="NSEW")
         self.mainloop()
@@ -37,10 +37,10 @@ class ResetShiftsAnglesFrame(LgFrameBase):
         """
         super().__init__(master)
         # Creates an entry for run_it000_data.star file
-        self.input_star_file = self.add_file_entry('star', 'Select a run_it001_data.star file', row=1)
+        self.input_star_file = self.add_file_entry('star', 'Select a run_it0xx_data.star file', row=1)
 
-        options = [None, '0']
-        options1 = [None, 'prior']
+        options = ['0', None]
+        options1 = ['prior', None]
 
         self.x = self.add_method_combobox(row=2, options=options, text='Manipulation to x (rlnOriginXAngst)')
         self.y = self.add_method_combobox(row=3, options=options, text='Manipulation to y (rlnOriginYAngst)')
