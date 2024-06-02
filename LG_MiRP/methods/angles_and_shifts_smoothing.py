@@ -27,17 +27,19 @@ class SmoothAnglesOrShifts(MethodBase):
 
         data = starfile.read(self.star_file_input)
 
-        particles_dataframe = data['particles']
+        input_particles_dataframe = data['particles']
         data_optics_dataframe = data['optics']
 
         if self.cutoff:
-            particles_dataframe = self.filter_microtubules_by_length(particles_dataframe, self.cutoff)
+            particles_dataframe = self.filter_microtubules_by_length(input_particles_dataframe, self.cutoff)
+        else:
+            particles_dataframe = input_particles_dataframe
 
         if self.method == 'angles':
-            particles_dataframe = self.process_data(particles_dataframe, id_label='rlnAngleRot')
+            particles_dataframe = self.smooth_data(particles_dataframe, id_label='rlnAngleRot')
         elif self.method == 'shifts':
-            particles_dataframe = self.process_data(particles_dataframe, id_label='rlnOriginXAngst')
-            particles_dataframe = self.process_data(particles_dataframe, id_label='rlnOriginYAngst')
+            particles_dataframe = self.smooth_data(particles_dataframe, id_label='rlnOriginXAngst')
+            particles_dataframe = self.smooth_data(particles_dataframe, id_label='rlnOriginYAngst')
 
         new_particles_star_file_data = {'optics': data_optics_dataframe, 'particles': particles_dataframe}
 
@@ -50,9 +52,9 @@ class SmoothAnglesOrShifts(MethodBase):
         print("=" * 50)
         print(f"Updated STAR file saved as: {output_file} at {self.output_path}")
 
-        return particles_dataframe
+        return input_particles_dataframe, particles_dataframe
 
-    def process_data(self, particles_dataframe, id_label):
+    def smooth_data(self, particles_dataframe, id_label):
         print('=' * 50)
         print(f'Smoothing {id_label}')
         print('=' * 50)

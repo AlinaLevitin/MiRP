@@ -60,7 +60,7 @@ class SmoothingFrame(LgFrameBase):
 
         function = SmoothAnglesOrShifts(self.star_file_input, self.output_path, self.method, cutoff=None)
 
-        self.output = function.smooth_angles_or_shifts()
+        self.input, self.output = function.smooth_angles_or_shifts()
 
     def on_method_change(self, event):
         self.add_image_by_name()
@@ -74,3 +74,4 @@ class SmoothingFrame(LgFrameBase):
 
         if image_name:
             self.add_image(image_name=image_name, new_size=600)
+

@@ -10,6 +10,7 @@ import random
 
 import tkinter as tk
 from tkinter import ttk
+import pandas as pd
 
 from .utils import *
 from .top_level_base import LGTopLevelBase
@@ -29,7 +30,8 @@ class LgFrameBase(ttk.Frame):
         super().__init__(master)
 
         self.image = None
-        self.output = None
+        self.input = pd.DataFrame()
+        self.output = pd.DataFrame()
         # Open and resize a tiny folder icon for browse button
         self.browse_image = open_and_resize_browse_image()
 
@@ -143,12 +145,11 @@ class LgFrameBase(ttk.Frame):
 
         return number_entry
 
-    def add_show_results_button(self, command, row, text="Show Results"):
+    def add_show_results_button(self, command, row, text="Show Results", column=2):
         button = tk.Button(self, text=text, command=command)
-        button.grid(row=row, column=2, columnspan=1, padx=5, pady=5)
+        button.grid(row=row, column=column, columnspan=1, padx=5, pady=5)
 
-    def show_result(self, n=5):
-
+    def show_result(self, n=10):
         # Assuming 'grouped_data' is the grouped data from a DataFrame
         grouped_data = self.output.groupby(['rlnMicrographName', 'rlnHelicalTubeID'])
 
@@ -158,19 +159,43 @@ class LgFrameBase(ttk.Frame):
 
         selected_indices = random.sample(range(num_groups), n)
 
-        # Iterate through the first three items in the grouped data list
+        # Iterate through the selected items in the grouped data list
         for index in selected_indices:
             # Unpack the key and the grouped DataFrame
             (micrograph, MT), MT_dataframe = grouped_data_list[index]
 
-            # Plot the data at the first item in each group
-            fig = plot_angles_and_shifts(MT_dataframe)
+            # Plot the output data
+            fig_output = plot_angles_and_shifts(MT_dataframe)
+
+            if not self.input.empty:
+                # Assuming 'grouped_data_input' is the grouped data from the input DataFrame
+                grouped_data_input = self.input.groupby(['rlnMicrographName', 'rlnHelicalTubeID'])
+                grouped_data_list_input = list(grouped_data_input)
+
+                # Find the corresponding input DataFrame
+                input_dataframe = pd.DataFrame()
+                for (micrograph_input, MT_input), df in grouped_data_list_input:
+                    if micrograph_input == micrograph and MT_input == MT:
+                        input_dataframe = df
+                        break
+
+                if not input_dataframe.empty:
+                    fig_input = plot_angles_and_shifts(input_dataframe)
+                else:
+                    fig_input = None
+            else:
+                fig_input = None
 
             # Create a new window for each plot
             plot_window = LGTopLevelBase(self)
             plot_window.title("Plot of angles")
             plot_window.add_title(text=f"MT {MT} in {micrograph}")
-            plot_window.add_plot(fig)
+
+            if fig_input:
+                plot_window.add_title(text='Before smoothing/correcting', row=1)
+                plot_window.add_plot(fig_input, row=2)
+                plot_window.add_title(text='After smoothing/correcting', row=3)
+            plot_window.add_plot(fig_output, row=4)
 
     def display_multiple_mrc_files(self, path, row):
         """

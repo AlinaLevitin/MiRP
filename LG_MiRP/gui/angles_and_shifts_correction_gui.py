@@ -46,7 +46,9 @@ class AngleShiftsCorrectionFrame(LgFrameBase):
 
         self.add_run_button(self.run_function, row=4)
 
-        self.add_show_results_button(command=self.show_result, row=5, text="Show results")
+        result_number = self.add_number_entry(entry_name='Results to show (random):', row=5, default_value=10)
+        self.add_show_results_button(lambda: self.show_result(int(result_number.get())), row=5, text="Show results")
+
         # Imports a themed image at the bottom
         self.add_image(image_name="angles_and_shifts_correction.jpg", new_size=600, row=6)
 
