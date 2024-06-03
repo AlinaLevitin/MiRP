@@ -28,7 +28,8 @@ class AnglesAndShiftsCorrection(MethodBase):
         # Read the STAR file and convert it to a pandas DataFrame
         data = starfile.read(self.star_file_input)
 
-        particles_dataframe = data['particles']
+        input_particles_dataframe = data['particles']
+        particles_dataframe = pd.DataFrame()
         data_optics_dataframe = data['optics']
 
         pixel_size = float(data_optics_dataframe['rlnImagePixelSize'])
@@ -37,7 +38,7 @@ class AnglesAndShiftsCorrection(MethodBase):
         helical_twist = 360 / self.pf_number
         helical_rise = (3 * 41) / self.pf_number
 
-        for index, row in particles_dataframe.iterrows():
+        for index, row in input_particles_dataframe.iterrows():
             if pd.isnull(row['rlnAnglePsi']):
                 pass
             else:
@@ -74,4 +75,4 @@ class AnglesAndShiftsCorrection(MethodBase):
 
         print(f"Updated STAR file saved as: {new_star_file} at {self.output_directory}")
 
-        return particles_dataframe
+        return particles_dataframe, input_particles_dataframe

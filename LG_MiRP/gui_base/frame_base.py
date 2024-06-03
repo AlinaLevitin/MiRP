@@ -149,7 +149,7 @@ class LgFrameBase(ttk.Frame):
         button = tk.Button(self, text=text, command=command)
         button.grid(row=row, column=column, columnspan=1, padx=5, pady=5)
 
-    def show_result(self, n=10):
+    def show_angle_and_shifts_plot(self, n=10):
         # Assuming 'grouped_data' is the grouped data from a DataFrame
         grouped_data = self.output.groupby(['rlnMicrographName', 'rlnHelicalTubeID'])
 
@@ -228,3 +228,8 @@ class LgFrameBase(ttk.Frame):
     def on_method_change(self, event):
         pass
 
+    def display_image(self):
+        image_stream = open_image("default_image.jpg")
+        self.image = resize_image(image_stream, 600)
+        image_label = tk.Label(self, image=self.image)
+        image_label.grid(row=0, column=0, padx=10, pady=10)
