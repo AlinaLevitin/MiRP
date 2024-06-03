@@ -16,7 +16,7 @@ setuptools.setup(
     "microtubule structures",
     packages=setuptools.find_packages(),
     scripts=[
-        "1_preprocessing/segment_average_generation.py",
+        "utils/utils.py",
             ],
     package_data={'LG_MiRP': [
                             'assets/directory_icon.png',

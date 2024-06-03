@@ -8,7 +8,7 @@ The method of segment averaging is located in LG_MiRP/methods/segment_average_ge
 """
 
 from ..gui_base import LgFrameBase, LgMasterGui, LGTopLevelBase
-from ..methods import SegmentAverageGenerator, method_base
+from ..methods import SegmentAverageGenerator, mt_segment_histogram
 
 
 class SegmentAverageGui(LgMasterGui):
@@ -58,7 +58,7 @@ class SegmentAverageFrame(LgFrameBase):
         function.generate_segment_averages()
 
     def show_mt_segment_histogram(self, input_star_file):
-        fig = method_base.mt_segment_histogram(input_star_file)
+        fig = mt_segment_histogram(input_star_file)
         histogram_window = LGTopLevelBase(self)
         histogram_window.title("Histogram of number of segments per MT")
         histogram_window.add_plot(fig)
