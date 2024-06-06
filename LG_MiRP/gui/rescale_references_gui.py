@@ -19,14 +19,14 @@ class RescaleReferencesGui(LgMasterGui):
     Inherits from LgMasterGui
     """
 
-    def __init__(self, path, name):
+    def __init__(self, name):
         super().__init__(name)
-        frame1 = RescaleReferenceFrame(self, path)
+        frame1 = RescaleReferenceFrame(self)
         frame1.grid(row=1, column=0, sticky="NSEW")
         frame2 = LgFrameBase(self)
         frame2.grid(row=2, column=0, sticky="NSEW")
         frame2.add_sub_job_name("References")
-        frame2.display_multiple_mrc_files(path, row=1)
+        frame2.display_multiple_mrc_files('References', row=1)
         self.mainloop()
 
 
@@ -36,11 +36,11 @@ class RescaleReferenceFrame(LgFrameBase):
     Inherits from LgFrameBase
     """
 
-    def __init__(self, master, path):
+    def __init__(self, master):
         """
         :param master: the master gui in which the frame will be displayed
         """
-        self.path = path
+        self.path = 'References'
         super().__init__(master)
         # Adds the job name at the top row
         self.add_sub_job_name("Rescale References", row=0)

@@ -202,7 +202,15 @@ class LgFrameBase(ttk.Frame):
         A method to show the mrc images of the references in a Tkinter top level window
         """
         # File paths
-        file_paths = [os.path.join(path, file) for file in os.listdir(path) if file.endswith(".mrc")]
+        # file_paths = [os.path.join(path, file) for file in os.listdir(path) if file.endswith(".mrc")]
+        file_paths = []
+        for root, dirs, files in os.walk(path):
+            for file in files:
+                if file.endswith(".mrc"):
+                    file_paths.append(os.path.join(root, file))
+
+        if not file_paths:
+            raise ValueError("No .mrc files found in the specified path.")
 
         # labels to be displayed under the images
         label_text = [file.split("_")[0:2] for file in os.listdir(path) if file.endswith(".mrc")]
