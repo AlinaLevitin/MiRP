@@ -17,4 +17,4 @@ The GUI is located in LG_MiRP/gui/angles_and_shifts_smoothing_gui
 from LG_MiRP import SmoothingGui
 
 # Generating the gui
-SmoothingGui()
+SmoothingGui("Angle (PHI/Rot) or XY shifts smoothing")

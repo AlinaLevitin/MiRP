@@ -13,4 +13,4 @@ The GUI is located in LG_MiRP/gui/class_uni_ext_gui
 from LG_MiRP import ClassUnificationExtractionGui
 
 
-ClassUnificationExtractionGui()
+ClassUnificationExtractionGui("Class Unification and extraction")

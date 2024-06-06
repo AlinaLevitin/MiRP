@@ -207,9 +207,17 @@ class LgFrameBase(ttk.Frame):
         # labels to be displayed under the images
         label_text = [file.split("_")[0:2] for file in os.listdir(path) if file.endswith(".mrc")]
 
+        # Define the maximum number of columns
+        max_columns = 6
+
         # Shows the mrc images
         for i, (file_path, label_text) in enumerate(zip(file_paths, label_text)):
-            display_mrc_stack(self, file_path, label_text, row=row, column=i)
+            # Calculate the row and column index
+            show_row = row + (i // max_columns) * 2
+            column = i % max_columns
+
+            # Display the mrc stack
+            display_mrc_stack(self, file_path, label_text, row=show_row, column=column)
 
     def add_method_combobox(self, row, options, on_method_change=None, text='Method:'):
         label = tk.Label(self, text=text, font=('Ariel', 12))

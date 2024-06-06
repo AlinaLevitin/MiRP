@@ -17,9 +17,8 @@ class RescaleMaskGui(LgMasterGui):
     Inherits from LgMasterGui
     """
 
-    def __init__(self):
-        super().__init__()
-        self.add_job_name("Rescale Mask")
+    def __init__(self, name):
+        super().__init__(name)
         frame = RescaleMaskFrame(self)
         frame.grid(row=1, column=0, sticky="NSEW")
         self.mainloop()
@@ -37,7 +36,7 @@ class RescaleMaskFrame(LgFrameBase):
         """
         super().__init__(master)
         # Adds the job name at the top row
-        # self.add_sub_job_name("Rescale References", row=0)
+        self.add_sub_job_name("Rescale Mask", row=0)
 
         self.input_file = self.add_file_entry(entry_type='mrc', entry_name='Choose mask .mrc file', row=1)
 

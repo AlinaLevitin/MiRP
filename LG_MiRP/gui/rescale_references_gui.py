@@ -19,9 +19,8 @@ class RescaleReferencesGui(LgMasterGui):
     Inherits from LgMasterGui
     """
 
-    def __init__(self, path):
-        super().__init__()
-        self.add_job_name("Rescale References")
+    def __init__(self, path, name):
+        super().__init__(name)
         frame1 = RescaleReferenceFrame(self, path)
         frame1.grid(row=1, column=0, sticky="NSEW")
         frame2 = LgFrameBase(self)
@@ -44,7 +43,7 @@ class RescaleReferenceFrame(LgFrameBase):
         self.path = path
         super().__init__(master)
         # Adds the job name at the top row
-        # self.add_sub_job_name("Rescale References", row=0)
+        self.add_sub_job_name("Rescale References", row=0)
 
         self.input_pixel_size = self.add_number_entry("Pixel size", row=1)
 

@@ -18,9 +18,8 @@ class ResetShiftsAnglesGui(LgMasterGui):
     ...
     Inherits from LgMasterGui
     """
-    def __init__(self):
-        super().__init__()
-        self.add_job_name("Reset shifts and angles to 0/prior")
+    def __init__(self, name):
+        super().__init__(name)
         frame = ResetShiftsAnglesFrame(self)
         frame.grid(row=1, column=0, sticky="NSEW")
         self.mainloop()
@@ -36,6 +35,9 @@ class ResetShiftsAnglesFrame(LgFrameBase):
         :param master: the master gui in which the frame will be displayed
         """
         super().__init__(master)
+
+        self.add_sub_job_name("Reset shifts and angles to 0/prior")
+
         # Creates an entry for run_it000_data.star file
         self.input_star_file = self.add_file_entry('star', 'Select a run_it0xx_data.star file', row=1)
 

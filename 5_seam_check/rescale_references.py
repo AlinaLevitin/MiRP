@@ -13,4 +13,4 @@ The GUI is located in LG_MiRP/gui/rescale_references_gui
 from LG_MiRP import RescaleReferencesGui
 
 # Generating the gui
-RescaleReferencesGui("References/13pf")
+RescaleReferencesGui("References/13pf", "Rescale References")

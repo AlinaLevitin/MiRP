@@ -17,9 +17,8 @@ class AngleShiftsCorrectionGui(LgMasterGui):
     Inherits from LgMasterGui
     """
 
-    def __init__(self):
-        super().__init__()
-        self.add_job_name("angles and shifts correction")
+    def __init__(self, name):
+        super().__init__(name)
         frame = AngleShiftsCorrectionFrame(self)
         frame.grid(row=1, column=0, sticky="NSEW")
         self.mainloop()
@@ -36,6 +35,9 @@ class AngleShiftsCorrectionFrame(LgFrameBase):
         :param master: the master gui in which the frame will be displayed
         """
         super().__init__(master)
+
+        self.add_sub_job_name("angles and shifts correction")
+
         # Creates an entry for run_it000_data.star file
         self.star_file_input = self.add_file_entry('star', 'Select a run_it0xx_data_class_corrected.star file', row=1)
 

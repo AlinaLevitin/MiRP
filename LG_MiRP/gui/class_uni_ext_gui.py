@@ -18,9 +18,8 @@ class ClassUnificationExtractionGui(LgMasterGui):
     ...
     Inherits from LgMasterGui
     """
-    def __init__(self):
-        super().__init__()
-        self.add_job_name("Class Unification and extraction")
+    def __init__(self, name):
+        super().__init__(name)
         frame = ClassUnificationFrame(self)
         frame.grid(row=1, column=0, sticky="NSEW")
         self.mainloop()
@@ -36,6 +35,8 @@ class ClassUnificationFrame(LgFrameBase):
         :param master: the master gui in which the frame will be displayed
         """
         super().__init__(master)
+
+        self.add_sub_job_name("Class Unification and extraction")
 
         options = ['pf_number_check', 'seam_check']
 

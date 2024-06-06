@@ -16,4 +16,4 @@ The GUI is located in LG_MiRP/gui/reset_angles_shifts_gui
 from LG_MiRP import ResetShiftsAnglesGui
 
 # Generating the gui
-ResetShiftsAnglesGui()
+ResetShiftsAnglesGui("Reset shifts and angles to 0/prior")

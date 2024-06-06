@@ -17,9 +17,9 @@ class MicrotubuleSubtractGui(LgMasterGui):
     Inherits from LgMasterGui
     """
 
-    def __init__(self):
-        super().__init__()
-        self.add_job_name("Generate Protofilament Particles from Wedges")
+    def __init__(self, name):
+        super().__init__(name)
+        self.add_gui_name("Generate Protofilament Particles from Wedges")
         frame1 = MicrotubuleSubtractFrame(self)
         frame1.grid(row=1, column=0, sticky="NSEW")
         self.mainloop()
@@ -36,6 +36,9 @@ class MicrotubuleSubtractFrame(LgFrameBase):
         :param master: the master gui in which the frame will be displayed
         """
         super().__init__(master)
+
+        self.add_sub_job_name("Generate Protofilament Particles from Wedges")
+
         self.input_star_file = self.add_file_entry('star', 'Select a particles.star file', row=1)
 
         self.pf_number = self.add_number_entry("Proto-filament number", default_value='13', row=2)

@@ -12,4 +12,4 @@ The GUI is located in LG_MiRP/gui/angles_and_shifts_correction_gui
 from LG_MiRP import AngleShiftsCorrectionGui
 
 
-AngleShiftsCorrectionGui()
+AngleShiftsCorrectionGui("angles and shifts correction")

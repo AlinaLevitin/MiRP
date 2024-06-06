@@ -13,4 +13,4 @@ The GUI is located in LG_MiRP/gui/rescale_references_gui
 from LG_MiRP import RescaleMaskGui
 
 # Generating the gui
-RescaleMaskGui()
+RescaleMaskGui("Rescale Mask")

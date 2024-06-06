@@ -17,9 +17,8 @@ class SmoothingGui(LgMasterGui):
     Inherits from LgMasterGui
     """
 
-    def __init__(self):
-        super().__init__()
-        self.add_job_name("Angle (PHI/Rot) or XY shifts smoothing")
+    def __init__(self, name):
+        super().__init__(name)
         frame = SmoothingFrame(self)
         frame.grid(row=1, column=0, sticky="NSEW")
         self.mainloop()
@@ -36,6 +35,8 @@ class SmoothingFrame(LgFrameBase):
         :param master: the master gui in which the frame will be displayed
         """
         super().__init__(master)
+
+        self.add_sub_job_name("Angle (PHI/Rot) or XY shifts smoothing")
 
         options = ['angles', 'shifts']
 

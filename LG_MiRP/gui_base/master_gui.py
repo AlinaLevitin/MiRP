@@ -15,8 +15,10 @@ class LgMasterGui(tk.Tk):
     A class to create a master GUI's LG-style that will contain a jof ttk.Frame
     Inherits from tkinter (tk) Tk class
     """
-    def __init__(self):
+    def __init__(self, name):
         super().__init__()
+        self.add_gui_name(name)
+
         self.frames = {}
 
         # Add menu frame on the left
@@ -31,13 +33,15 @@ class LgMasterGui(tk.Tk):
         self.add_exit_button()
         self.add_complete_pipeline_button()
 
-    def add_job_name(self, title_name):
+    def add_job_name(self, name):
+        label = tk.Label(self, text=name, font=('Ariel', 18))
+        label.grid(row=0, column=0, columnspan=3, padx=5, pady=5)
+
+    def add_gui_name(self, title_name):
         """
         Adds the name of the job to the GUI window (always first)
         """
         self.title(title_name)
-        label = tk.Label(self, text=title_name, font=('Ariel', 18))
-        label.grid(row=0, column=0, columnspan=3, padx=5, pady=5)
 
     def add_frame(self, frame_class, frame_name, row=1):
         """

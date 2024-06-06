@@ -16,9 +16,8 @@ class SegmentAverageGui(LgMasterGui):
     A class for the segment average master gui
     Inherits from LgMasterGui
     """
-    def __init__(self):
-        super().__init__()
-        self.add_job_name("Segment Average Generation")
+    def __init__(self, name):
+        super().__init__(name)
         frame = SegmentAverageFrame(self)
         frame.grid(row=1, column=0, sticky="NSEW")
         self.mainloop()

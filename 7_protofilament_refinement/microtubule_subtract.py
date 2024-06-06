@@ -10,4 +10,4 @@ Updated: 12/05/24
 from LG_MiRP import MicrotubuleSubtractGui
 
 # Generating the gui
-MicrotubuleSubtractGui()
+MicrotubuleSubtractGui("Generate Protofilament Particles from Wedges")

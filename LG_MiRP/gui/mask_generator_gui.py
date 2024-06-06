@@ -17,9 +17,8 @@ class MaskGeneratorGui(LgMasterGui):
     Inherits from LgMasterGui
     """
 
-    def __init__(self):
-        super().__init__()
-        self.add_job_name("Masks Generator")
+    def __init__(self, name):
+        super().__init__(name)
         frame1 = MaskGeneratorFrame(self)
         frame1.grid(row=1, column=0, sticky="NSEW")
         self.mainloop()
@@ -36,6 +35,8 @@ class MaskGeneratorFrame(LgFrameBase):
         :param master: the master gui in which the frame will be displayed
         """
         super().__init__(master)
+        self.add_sub_job_name("Mask Generator", row=0)
+
         self.input_star_file = self.add_file_entry('star', 'Select a particles.star file', row=1)
 
         self.microtubule_volume = self.add_file_entry('mrc', 'Select microtubule volume .mrc file', row=2)

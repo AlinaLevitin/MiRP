@@ -14,9 +14,8 @@ class UtilsGui(LgMasterGui):
     A class for the segment average master gui
     Inherits from LgMasterGui
     """
-    def __init__(self):
-        super().__init__()
-        self.add_job_name("Utils")
+    def __init__(self, name):
+        super().__init__(name)
 
         self.frames = {}
 
