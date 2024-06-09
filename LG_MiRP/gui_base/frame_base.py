@@ -101,10 +101,11 @@ class LgFrameBase(ttk.Frame):
 
         return file_entry
 
-    def add_directory_entry(self, entry_name, row):
+    def add_directory_entry(self, entry_name, row, command=None):
         """
         Adds a directory entry with a browse button
 
+        :param command:
         :param entry_name: text to appear next to the entry
         :param row: row in the frame
         :return: directory entry for downstream operations
@@ -116,7 +117,7 @@ class LgFrameBase(ttk.Frame):
         directory = tk.Entry(self, width=50)
         directory.grid(row=row, column=1, padx=5, pady=5)
 
-        browse_button = tk.Button(self, text="Browse", command=lambda: browse('directory', directory))
+        browse_button = tk.Button(self, text="Browse", command=lambda: browse('directory', directory, command=command))
         browse_button.grid(row=row, column=2, padx=5, pady=5)
 
         browse_label = tk.Label(self, image=self.browse_image)

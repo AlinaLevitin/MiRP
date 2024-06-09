@@ -56,10 +56,11 @@ def open_and_resize_browse_image():
     return new_browse_image
 
 
-def browse(file_type, file_entry=None):
+def browse(file_type, file_entry=None, command=None):
     """
     Browsing function using filedialog from tk
 
+    :param command:
     :param file_type: file type can be star, mrc, mrcs, directory,
                         when browsing it will show only the selected file type
     :param file_entry: tk.Entry in order to insert the selected file/directory in the entry
@@ -71,6 +72,8 @@ def browse(file_type, file_entry=None):
         if directory:
             file_entry.delete(0, tk.END)
             file_entry.insert(0, directory)
+            if command:
+                command()
 
         return directory
 

@@ -36,30 +36,36 @@ class RescaleReferenceFrame(LgFrameBase):
         """
         :param master: the master gui in which the frame will be displayed
         """
-        self.path = 'References'
         super().__init__(master)
         # Adds the job name at the top row
         self.add_sub_job_name("Rescale References", row=0)
 
-        self.input_pixel_size = self.add_number_entry("Pixel size", row=1)
+        self.path = self.add_directory_entry('Select references directory', row=1, command=self.update_references)
 
-        self.input_box_size = self.add_number_entry("Box size", row=2)
+        self.input_pixel_size = self.add_number_entry("Pixel size", row=2)
 
-        self.output_path = self.add_directory_entry('Select output directory', row=3)
+        self.input_box_size = self.add_number_entry("Box size", row=3)
+
+        self.output_path = self.add_directory_entry('Select output directory', row=4)
 
         options = ['relion', 'scipy']
 
-        self.method_var = self.add_method_combobox(row=4, options=options)
+        self.method_var = self.add_method_combobox(row=5, options=options)
 
         # Creates a "Run" button that uses the segment average method
-        self.add_run_button(command=self.run_function, row=5)
+        self.add_run_button(command=self.run_function, row=6)
 
-        frame2 = LgFrameBase(self)
-        frame2.grid(row=6, column=0, columnspan=6, sticky="NSEW")
-        frame2.add_sub_job_name("References")
-        frame2.display_multiple_mrc_files('References', row=1)
+        self.frame2 = None
 
     def run_function(self):
         function = ReferenceScaler(self.path, self.output_path, self.input_box_size, self.input_pixel_size, self.method_var)
 
         function.rescale_and_crop_image()
+
+    def update_references(self):
+
+        # Display the MRC files from the selected path
+        self.frame2 = LgFrameBase(self)
+        self.frame2.grid(row=7, column=0, columnspan=6, sticky="NSEW")
+        self.frame2.add_sub_job_name("References")
+        self.frame2.display_multiple_mrc_files(self.path.get(), row=1)

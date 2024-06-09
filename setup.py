@@ -3,7 +3,7 @@ Setup file for LG_MiRP
 
 Author: Alina Levitin
 Date: 10/03/24
-Updated: 11/3/24
+Updated: 09/06/24
 """
 import setuptools
 
@@ -15,15 +15,19 @@ setuptools.setup(
     description="A cryo-EM reconstruction technique to more precisely refine \n"
     "microtubule structures",
     packages=setuptools.find_packages(),
-    scripts=[
-        "utils/utils.py",
-            ],
-    package_data={'LG_MiRP': [
-                            'assets/directory_icon.png',
-                            'assets/segment_average.jpg',
-                            'assets/default_image.jpg',
-                            'assets/pf_number_sorting.jpg',
-                            'assets/complete_pipeline.jpg'
-                              ]
-                  }
-                )
+    package_data={
+        'LG_MiRP': [
+            'assets/directory_icon.png',
+            'assets/segment_average.jpg',
+            'assets/default_image.jpg',
+            'assets/pf_number_sorting.jpg',
+            'assets/complete_pipeline.jpg'
+        ]
+    },
+    entry_points={
+        'console_scripts': [
+            'pf_number_sorting=3_protofilament_number_sorting.pf_number_sorting:main',
+            'utils=utils.utils:main',
+        ],
+    }
+)

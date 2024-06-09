@@ -22,7 +22,7 @@ from .volume_mrc import VolumeMrc
 class ReferenceScaler(MethodBase):
 
     def __init__(self, path, output_path, new_box_size, new_pixel_size, method):
-        self.path = path
+        self.path = path.get()
         self.output_path = output_path.get()
         self.new_box_size = new_box_size.get()
         self.new_pixel_size = new_pixel_size.get()

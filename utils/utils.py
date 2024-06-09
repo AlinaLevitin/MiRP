@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
 Author: Alina Levitin
-Date: 3/06/24
-Updated: 6/6/24
+Date: 03/06/24
+Updated: 09/06/24
 
 Command to bring up Utils GUI
 The GUI is located in LG_MiRP/gui/utils_gui
@@ -14,9 +14,14 @@ The method of segment averaging is located in LG_MiRP/methods/segment_average_ge
 
 from LG_MiRP import UtilsGui, SegmentAverageFrame, MaskGeneratorFrame
 
-# Generating the gui
-gui = UtilsGui('Utils')
-gui.add_frame(SegmentAverageFrame, 'Segment average generator')
-gui.add_frame(MaskGeneratorFrame, 'Mask generator')
-gui.mainloop()
 
+def main():
+    # Generating the gui
+    gui = UtilsGui('Utils')
+    gui.add_frame(SegmentAverageFrame, 'Segment average generator')
+    gui.add_frame(MaskGeneratorFrame, 'Mask generator')
+    gui.mainloop()
+
+
+if __name__ == "__main__":
+    main()
