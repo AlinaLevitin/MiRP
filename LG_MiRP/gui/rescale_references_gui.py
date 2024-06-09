@@ -1,7 +1,7 @@
 """
 Author: Alina Levitin
 Date: 28/03/24
-Updated: 02/04/24
+Updated: 09/06/24
 
 Two GUI classes (master and frame) for class reference rescaling
 The method of reference rescaling is located in LG_MiRP/methods/reference_scaler
@@ -23,10 +23,6 @@ class RescaleReferencesGui(LgMasterGui):
         super().__init__(name)
         frame1 = RescaleReferenceFrame(self)
         frame1.grid(row=1, column=0, sticky="NSEW")
-        frame2 = LgFrameBase(self)
-        frame2.grid(row=2, column=0, sticky="NSEW")
-        frame2.add_sub_job_name("References")
-        frame2.display_multiple_mrc_files('References', row=1)
         self.mainloop()
 
 
@@ -57,6 +53,11 @@ class RescaleReferenceFrame(LgFrameBase):
 
         # Creates a "Run" button that uses the segment average method
         self.add_run_button(command=self.run_function, row=5)
+
+        frame2 = LgFrameBase(self)
+        frame2.grid(row=6, column=0, columnspan=6, sticky="NSEW")
+        frame2.add_sub_job_name("References")
+        frame2.display_multiple_mrc_files('References', row=1)
 
     def run_function(self):
         function = ReferenceScaler(self.path, self.output_path, self.input_box_size, self.input_pixel_size, self.method_var)

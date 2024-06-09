@@ -1,7 +1,7 @@
 """
 Author: Alina Levitin
 Date: 26/02/24
-Updated: 11/3/24
+Updated: 09/06/24
 
 Class to generate ttk.Frames LG-style.
 """
@@ -213,7 +213,8 @@ class LgFrameBase(ttk.Frame):
             raise ValueError("No .mrc files found in the specified path.")
 
         # labels to be displayed under the images
-        label_text = [file.split("_")[0:2] for file in os.listdir(path) if file.endswith(".mrc")]
+        base_names = [os.path.basename(file) for file in file_paths]
+        label_text = [file.split("_")[0:2] for file in base_names]
 
         # Define the maximum number of columns
         max_columns = 6

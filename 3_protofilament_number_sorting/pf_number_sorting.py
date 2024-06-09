@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
 Author: Alina Levitin
-Date: 6/06/24
-Updated: 6/6/24
+Date: 06/06/24
+Updated: 09/06/24
 
 Command to bring up Utils GUI
 The GUI is located in LG_MiRP/gui/utils_gui
