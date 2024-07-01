@@ -9,7 +9,7 @@ The method of shifts and angle reset is in and extraction is located in LG_MiRP/
 shifts: _rlnAngleRot, _rlnOriginX, _rlnOriginY, _rlnOriginZ are set to 0
 angles: _rlnAnglePsi, _rlnAngleTilt are set to priors: _rlnAnglePsiPrior, _rlnAngleTiltPrior
 """
-from ..gui_base import LgFrameBase, LgMasterGui
+from ..gui_base import LgFrameBase, LgMasterGui, check_parameters
 from ..methods import ResetAnglesAndShifts
 
 
@@ -60,6 +60,7 @@ class ResetShiftsAnglesFrame(LgFrameBase):
         # Imports a themed image at the bottom
         self.add_image(new_size=600, row=10)
 
+    @check_parameters(['input_star_file', 'output_directory', 'rot', 'x', 'y', 'z', 'psi', 'tilt'])
     def run_function(self):
         function = ResetAnglesAndShifts(self.input_star_file, self.output_directory, rot=self.rot, x=self.x, y=self.y, z=self.z, psi=self.psi, tilt=self.tilt)
         function.reset_angles_and_translations()

@@ -1,16 +1,11 @@
 """
 Author: Alina Levitin
 Date: 28/03/24
-Updated: 09/06/24
+Updated: 01/07/24
 
 Two GUI classes (master and frame) for class reference rescaling
 The method of reference rescaling is located in LG_MiRP/methods/reference_scaler
 """
-import tkinter as tk
-from tkinter import ttk
-
-from functools import wraps
-
 from ..gui_base import LgFrameBase, LgMasterGui, check_parameters
 from ..methods import ReferenceScaler
 
@@ -42,13 +37,13 @@ class RescaleReferenceFrame(LgFrameBase):
         # Adds the job name at the top row
         self.add_sub_job_name("Rescale References", row=0)
 
-        self.path = self.add_directory_entry('Select references directory', row=1, command=self.update_references)
+        self.reference_directory = self.add_directory_entry('Select references directory', row=1, command=self.update_references)
 
         self.input_pixel_size = self.add_number_entry("Pixel size", row=2)
 
         self.input_box_size = self.add_number_entry("Box size", row=3)
 
-        self.output_path = self.add_directory_entry('Select output directory', row=4)
+        self.output_directory = self.add_directory_entry('Select output directory', row=4)
 
         options = ['relion', 'scipy']
 
@@ -59,11 +54,11 @@ class RescaleReferenceFrame(LgFrameBase):
 
         self.frame2 = None
 
-    @check_parameters(['path', 'input_pixel_size', 'input_box_size', 'output_path', 'method_var'])
+    @check_parameters(['reference_directory', 'input_pixel_size', 'input_box_size', 'output_directory', 'method_var'])
     def run_function(self):
-        function = ReferenceScaler(self.path, self.output_path, self.input_box_size, self.input_pixel_size, self.method_var)
+        function = ReferenceScaler(self.reference_directory, self.output_directory, self.input_box_size, self.input_pixel_size, self.method_var)
 
-        function.rescale_and_crop_image()
+        function.rescale_and_crop_image(directory="new_references")
 
     def update_references(self):
 
@@ -71,4 +66,4 @@ class RescaleReferenceFrame(LgFrameBase):
         self.frame2 = LgFrameBase(self)
         self.frame2.grid(row=7, column=0, columnspan=6, sticky="NSEW")
         self.frame2.add_sub_job_name("References")
-        self.frame2.display_multiple_mrc_files(self.path.get(), row=1)
+        self.frame2.display_multiple_mrc_files(self.reference_directory.get(), row=1)

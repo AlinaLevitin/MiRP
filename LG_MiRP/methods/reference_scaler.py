@@ -15,7 +15,7 @@ import numpy as np
 from scipy.ndimage import zoom
 import mrcfile
 
-from .method_base import MethodBase, print_done_decorator, print_command_decorator
+from .method_base import MethodBase, print_done_decorator
 from .volume_mrc import VolumeMrc
 
 
@@ -28,82 +28,43 @@ class ReferenceScaler(MethodBase):
         self.new_pixel_size = new_pixel_size.get()
         self.method = method.get()
 
+        self.reference_files = self.get_references()
+
     @print_done_decorator
-    def rescale_and_crop_image(self):
+    def rescale_and_crop_image(self, directory):
         """
         A method to rescale and crop the reference images.
         :return: Generates rescaled and cropped images of the references.
         """
-        output_directory = os.path.join(self.output_path, "new_references")
+        output_directory = os.path.join(self.output_path, directory)
 
-        # Create the output directory if it does not exist
-        if not os.path.exists(output_directory):
-            os.makedirs(output_directory)
-        else:
-            self.delete_folder_contents(output_directory)
+        if self.perform_checks():
 
-        if self.method == 'relion':
-            output_scaled_path = os.path.join(output_directory, "rescaled_references")
-            output_cropped_path = os.path.join(output_directory, "cropped_references")
-            os.makedirs(output_scaled_path, exist_ok=True)
-            os.makedirs(output_cropped_path, exist_ok=True)
-        elif self.method == 'scipy':
-            output_scaled_path = os.path.join(output_directory, "resampled_references")
-            os.makedirs(output_scaled_path, exist_ok=True)
-        else:
-            raise ValueError("Unsupported method. Choose 'relion' or 'scipy'.")
-
-        # Determine if self.path is a directory or a file
-        reference_files = []
-
-        if os.path.isdir(self.path):
-            # Accessing the references
-            for root, dirs, files in os.walk(self.path):
-                for file in files:
-                    if file.endswith(".mrc"):
-                        reference_files.append(os.path.join(root, file))
-        elif os.path.isfile(self.path) and self.path.endswith(".mrc"):
-            # Treating the single .mrc file as a list with one file
-            reference_files = [self.path]
-            self.path = os.path.dirname(self.path)
-        else:
-            raise ValueError("The specified path is neither a directory nor a .mrc file.")
-
-        if not reference_files:
-            raise ValueError("No .mrc files found in the specified path.")
-
-        # Iterate over the gathered .mrc files
-        for input_mrc in reference_files:
-            if self.method == 'relion':
-                self.relion_rescale(input_mrc)
-            elif self.method == 'scipy':
-                self.scipy_rescale(input_mrc)
+            # Create the output directory if it does not exist
+            if not os.path.exists(output_directory):
+                os.makedirs(output_directory)
             else:
-                raise ValueError("Unsupported method. Choose 'relion' or 'scipy'.")
+                self.delete_folder_contents(output_directory)
 
-        # # Determine if self.path is a directory or a file
-        # if os.path.isdir(self.path):
-        #     # Accessing the references
-        #     reference_directory = os.listdir(self.path)
-        # elif os.path.isfile(self.path) and self.path.endswith(".mrc"):
-        #     # Treating the single .mrc file as a list with one file
-        #     reference_directory = [os.path.basename(self.path)]
-        #     self.path = os.path.dirname(self.path)
-        # else:
-        #     raise ValueError("The specified path is neither a directory nor a .mrc file.")
-        #
-        # # Iterates over the references and selects only mrc files
-        # for input_mrc in reference_directory:
-        #     if input_mrc.endswith(".mrc"):
-        #         if self.method == 'relion':
-        #             self.relion_rescale(input_mrc)
-        #         elif self.method == 'scipy':
-        #             self.scipy_rescale(input_mrc)
-        #         else:
-        #             raise ValueError("Unsupported method. Choose 'relion' or 'scipy'.")
+            print(f"Rescaling .mrc files using {self.method}")
 
-    def scipy_rescale(self, input_mrc):
-        output_resampled_path = os.path.join(self.output_path, "new_references", "resampled_references")
+            # Iterate over the gathered .mrc files
+            for input_mrc in self.reference_files:
+                if self.method == 'relion':
+                    output_scaled_path = os.path.join(output_directory, "rescaled_references")
+                    output_cropped_path = os.path.join(output_directory, "cropped_references")
+                    os.makedirs(output_scaled_path, exist_ok=True)
+                    os.makedirs(output_cropped_path, exist_ok=True)
+                    self.relion_rescale(input_mrc, directory)
+                elif self.method == 'scipy':
+                    output_scaled_path = os.path.join(output_directory, "resampled_references")
+                    os.makedirs(output_scaled_path, exist_ok=True)
+                    self.scipy_rescale(input_mrc, directory)
+                else:
+                    raise ValueError("Unsupported method. Choose 'relion' or 'scipy'.")
+
+    def scipy_rescale(self, input_mrc,directory):
+        output_resampled_path = os.path.join(self.output_path, directory, "resampled_references")
         new_box_size = int(self.new_box_size)
         new_pixel_size = float(self.new_pixel_size)
 
@@ -149,10 +110,10 @@ class ReferenceScaler(MethodBase):
 
         print(f'{output_resampled_path_mrc} was saved')
 
-    def relion_rescale(self, input_mrc):
+    def relion_rescale(self, input_mrc, directory):
         input_file_path = os.path.join(self.path, input_mrc)
-        output_scaled_path = os.path.join(self.output_path, "new_references", "rescaled_references")
-        output_cropped_path = os.path.join(self.output_path, "new_references", "cropped_references")
+        output_scaled_path = os.path.join(self.output_path, directory, "rescaled_references")
+        output_cropped_path = os.path.join(self.output_path, directory, "cropped_references")
 
         volume = VolumeMrc(input_file_path)
         original_pixel_size = volume.pixel
@@ -170,13 +131,43 @@ class ReferenceScaler(MethodBase):
         rescale_command = f"relion_image_handler --i {input_file_path} --angpix {original_pixel_size} --rescale_angpix {float(self.new_pixel_size)} --o {output_scaled_file_path}"
         crop_command = f"relion_image_handler --i {output_scaled_file_path} --new_box {int(self.new_box_size)} --o {output_cropped_file_path}"
 
-        print(rescale_command.__doc__)
-
         subprocess.run(rescale_command, shell=True, check=True)
+        print(rescale_command.__doc__)
         subprocess.run(crop_command, shell=True, check=True)
+        print(crop_command.__doc__)
 
     def perform_checks(self, input_background_wedge_map=None):
         # Check if RELION is installed
-        if not self.is_relion_installed():
-            raise ValueError("Relion is not installed on this computer.")
+        if self.method == 'relion' and not self.is_relion_installed():
+            print("Relion is not installed on this computer.\nTry rescaling using scipy")
+            return False
+        elif self.method == 'relion' and self.is_relion_installed():
+            return True
+        elif self.method == 'scipy':
+            return True
+
+        # Determine if self.path is a directory or a file
+
+        if not self.reference_files:
+            print("No .mrc files found in the specified path.")
+            return False
+
+    def get_references(self):
+
+        reference_files = []
+
+        if os.path.isdir(self.path):
+            # Accessing the references
+            for root, dirs, files in os.walk(self.path):
+                for file in files:
+                    if file.endswith(".mrc"):
+                        reference_files.append(os.path.join(root, file))
+        elif os.path.isfile(self.path) and self.path.endswith(".mrc"):
+            # Treating the single .mrc file as a list with one file
+            reference_files = [self.path]
+            self.path = os.path.dirname(self.path)
+        else:
+            raise ValueError("The specified path is neither a directory nor a .mrc file.")
+
+        return reference_files
 

@@ -1,13 +1,13 @@
 """
 Author: Alina Levitin
 Date: 17/04/24
-Updated: 18/04/24
+Updated: 01/07/24
 
 Two GUI classes (master and frame) to correct PHI/Rot and shifts
 The method of angle smoothing is in and extraction is located in LG_MiRP/methods/angle_shifts_correction
 
 """
-from ..gui_base import LgFrameBase, LgMasterGui
+from ..gui_base import LgFrameBase, LgMasterGui, check_parameters
 from ..methods import AnglesAndShiftsCorrection
 
 
@@ -39,10 +39,10 @@ class AngleShiftsCorrectionFrame(LgFrameBase):
         self.add_sub_job_name("angles and shifts correction")
 
         # Creates an entry for run_it000_data.star file
-        self.star_file_input = self.add_file_entry('star', 'Select a run_it0xx_data_class_corrected.star file', row=1)
+        self.input_star_file = self.add_file_entry('star', 'Select a run_it0xx_data_class_corrected.star file', row=1)
 
         # Creates an entry for output directory
-        self.output_path = self.add_directory_entry('Select output directory', row=2)
+        self.output_directory = self.add_directory_entry('Select output directory', row=2)
 
         self.pf_number = self.add_number_entry("Number of proto-filaments", row=3)
 
@@ -54,6 +54,7 @@ class AngleShiftsCorrectionFrame(LgFrameBase):
         # Imports a themed image at the bottom
         self.add_image(image_name="angles_and_shifts_correction.jpg", new_size=600, row=6)
 
+    @check_parameters(['input_star_file', 'pf_number', 'output_directory'])
     def run_function(self):
-        function = AnglesAndShiftsCorrection(self.star_file_input, self.pf_number, self.output_path)
+        function = AnglesAndShiftsCorrection(self.input_star_file, self.pf_number, self.output_directory)
         self.output, self.input = function.adjust_angles_and_translations()

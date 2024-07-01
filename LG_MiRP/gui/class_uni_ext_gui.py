@@ -9,7 +9,7 @@ The method of class unification and extraction is located in LG_MiRP/methods/cla
 import tkinter as tk
 from tkinter import ttk
 
-from ..gui_base import LgFrameBase, LgMasterGui, LGTopLevelBase
+from ..gui_base import LgFrameBase, LgMasterGui, LGTopLevelBase, check_parameters
 from ..methods import ClassUnifierExtractor
 
 
@@ -58,6 +58,7 @@ class ClassUnificationFrame(LgFrameBase):
         # Imports a themed image at the bottom
         self.add_image(new_size=600, row=7)
 
+    @check_parameters(['input_star_file0', 'input_star_file1', 'output_directory'])
     def run_function(self):
         function = ClassUnifierExtractor(self.input_star_file0, self.input_star_file1, self.output_directory, self.step.get())
         function.class_unifier_extractor()

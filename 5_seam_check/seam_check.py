@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Author: Alina Levitin
-Date: 06/06/24
+Date: 01/07/24
 Updated: 01/07/24
 
 Command to bring up Methods GUI
@@ -9,14 +9,15 @@ The GUI is located in LG_MiRP/gui/method_gui
 
 """
 
-from LG_MiRP import MethodGui, RescaleReferenceFrame, ClassUnificationFrame
+from LG_MiRP import MethodGui, RescaleReferenceFrame, ClassUnificationFrame, AngleShiftsCorrectionFrame
 
 
 def main():
     # Generating the gui
-    gui = MethodGui('Proto-filament Number Sorting')
+    gui = MethodGui('Seam Check')
     gui.add_frame(RescaleReferenceFrame, 'Rescale references')
     gui.add_frame(ClassUnificationFrame, 'Class unification and extraction')
+    gui.add_frame(AngleShiftsCorrectionFrame, 'Angle and Shifts Correction')
     gui.mainloop()
 
 

@@ -7,7 +7,7 @@ Two GUI classes (master and frame) for class reference rescaling
 The method of reference rescaling is located in LG_MiRP/methods/reference_scaler
 """
 
-from ..gui_base import LgFrameBase, LgMasterGui
+from ..gui_base import LgFrameBase, LgMasterGui, check_parameters
 from ..methods import ReferenceScaler
 
 
@@ -38,13 +38,13 @@ class RescaleMaskFrame(LgFrameBase):
         # Adds the job name at the top row
         self.add_sub_job_name("Rescale Mask", row=0)
 
-        self.input_file = self.add_file_entry(entry_type='mrc', entry_name='Choose mask .mrc file', row=1)
+        self.reference_directory = self.add_file_entry(entry_type='mrc', entry_name='Choose mask .mrc file', row=1)
 
         self.input_pixel_size = self.add_number_entry("Pixel size", row=2)
 
         self.input_box_size = self.add_number_entry("Box size", row=3)
 
-        self.output_path = self.add_directory_entry('Select output directory', row=4)
+        self.output_directory = self.add_directory_entry('Select output directory', row=4)
 
         options = ['relion', 'scipy']
 
@@ -53,7 +53,9 @@ class RescaleMaskFrame(LgFrameBase):
         # Creates a "Run" button that uses the segment average method
         self.add_run_button(command=self.run_function, row=6)
 
+    @check_parameters(['reference_directory', 'input_pixel_size', 'input_box_size', 'output_directory', 'method_var'])
     def run_function(self):
-        function = ReferenceScaler(self.input_file.get(), self.output_path, self.input_box_size, self.input_pixel_size, self.method_var)
+        function = ReferenceScaler(self.reference_directory, self.output_directory, self.input_box_size,
+                                   self.input_pixel_size, self.method_var)
 
-        function.rescale_and_crop_image()
+        function.rescale_and_crop_image(directory='new_mask')

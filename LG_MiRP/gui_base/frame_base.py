@@ -271,7 +271,7 @@ def check_parameters(required_params):
 
             if missing_params:
                 for param in missing_params:
-                    print(f"Please provide {param}")
+                    print(f"WARNING! Missing parameter: please provide {param}")
                 print(50 * "=")
                 return
 

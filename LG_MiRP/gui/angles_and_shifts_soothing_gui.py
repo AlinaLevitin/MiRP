@@ -7,7 +7,7 @@ Two GUI classes (master and frame) to unifi PHI/Rot (angle smoothing)
 The method of angle smoothing is in and extraction is located in LG_MiRP/methods/angle_smoothing
 
 """
-from ..gui_base import LgFrameBase, LgMasterGui
+from ..gui_base import LgFrameBase, LgMasterGui, check_parameters
 from ..methods import SmoothAnglesOrShifts
 
 
@@ -57,6 +57,7 @@ class SmoothingFrame(LgFrameBase):
         # Imports a themed image at the bottom
         self.add_image_by_name()
 
+    @check_parameters(['input_star_file', 'output_directory', 'method'])
     def run_function(self):
 
         function = SmoothAnglesOrShifts(self.star_file_input, self.output_path, self.method, cutoff=None)
