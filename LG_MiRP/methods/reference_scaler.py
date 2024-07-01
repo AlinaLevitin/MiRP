@@ -149,7 +149,6 @@ class ReferenceScaler(MethodBase):
 
         print(f'{output_resampled_path_mrc} was saved')
 
-    @print_command_decorator
     def relion_rescale(self, input_mrc):
         input_file_path = os.path.join(self.path, input_mrc)
         output_scaled_path = os.path.join(self.output_path, "new_references", "rescaled_references")
@@ -170,6 +169,8 @@ class ReferenceScaler(MethodBase):
 
         rescale_command = f"relion_image_handler --i {input_file_path} --angpix {original_pixel_size} --rescale_angpix {float(self.new_pixel_size)} --o {output_scaled_file_path}"
         crop_command = f"relion_image_handler --i {output_scaled_file_path} --new_box {int(self.new_box_size)} --o {output_cropped_file_path}"
+
+        print(rescale_command.__doc__)
 
         subprocess.run(rescale_command, shell=True, check=True)
         subprocess.run(crop_command, shell=True, check=True)

@@ -27,6 +27,7 @@ setuptools.setup(
     entry_points={
         'console_scripts': [
             'pf_number_sorting=3_protofilament_number_sorting.pf_number_sorting:main',
+            'initial_seam_assignment=4_initial_seam_assignment.initial_seam_assignment:main',
             'utils=utils.utils:main',
         ],
     }

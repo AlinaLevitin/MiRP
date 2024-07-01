@@ -9,7 +9,9 @@ The method of reference rescaling is located in LG_MiRP/methods/reference_scaler
 import tkinter as tk
 from tkinter import ttk
 
-from ..gui_base import LgFrameBase, LgMasterGui
+from functools import wraps
+
+from ..gui_base import LgFrameBase, LgMasterGui, check_parameters
 from ..methods import ReferenceScaler
 
 
@@ -57,6 +59,7 @@ class RescaleReferenceFrame(LgFrameBase):
 
         self.frame2 = None
 
+    @check_parameters(['path', 'input_pixel_size', 'input_box_size', 'output_path', 'method_var'])
     def run_function(self):
         function = ReferenceScaler(self.path, self.output_path, self.input_box_size, self.input_pixel_size, self.method_var)
 

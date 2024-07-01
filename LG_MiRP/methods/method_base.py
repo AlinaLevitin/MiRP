@@ -9,7 +9,6 @@ This contains the base class for all the methods and wrappers for the methods
 import os
 import shutil
 import subprocess
-from tqdm import tqdm
 import functools
 import numpy as np
 import matplotlib.pyplot as plt
@@ -21,20 +20,6 @@ def print_done_decorator(func):
     def wrapper(self, *args, **kwargs):
         result = func(self, *args, **kwargs)
         print('Done!')
-        return result
-
-    return wrapper
-
-
-def progress_bar_decorator(func):
-    def wrapper(*args, **kwargs):
-        iterable = kwargs.get('iterable', [])
-        total = len(iterable)
-        result = None  # Initialize the result variable
-        with tqdm(total=total) as pbar:
-            for item in iterable:
-                result = func(*args, **kwargs, item=item)
-                pbar.update(1)
         return result
 
     return wrapper

@@ -1,4 +1,4 @@
-from .master_gui import LgMasterGui
-from .frame_base import LgFrameBase
-from .top_level_base import LGTopLevelBase
+from .master_gui import *
+from .frame_base import *
+from .top_level_base import *
 from .utils import *

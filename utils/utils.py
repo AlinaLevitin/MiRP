@@ -12,12 +12,12 @@ The method of segment averaging is located in LG_MiRP/methods/segment_average_ge
 
 """
 
-from LG_MiRP import UtilsGui, SegmentAverageFrame, MaskGeneratorFrame
+from LG_MiRP import MethodGui, SegmentAverageFrame, MaskGeneratorFrame
 
 
 def main():
     # Generating the gui
-    gui = UtilsGui('Utils')
+    gui = MethodGui('Utils')
     gui.add_frame(SegmentAverageFrame, 'Segment average generator')
     gui.add_frame(MaskGeneratorFrame, 'Mask generator')
     gui.mainloop()

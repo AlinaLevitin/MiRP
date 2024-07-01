@@ -12,6 +12,8 @@ import tkinter as tk
 from tkinter import ttk
 import pandas as pd
 
+from functools import wraps
+
 from .utils import *
 from .top_level_base import LGTopLevelBase
 from LG_MiRP.methods import plot_angles_and_shifts
@@ -251,3 +253,30 @@ class LgFrameBase(ttk.Frame):
         self.image = resize_image(image_stream, 600)
         image_label = tk.Label(self, image=self.image)
         image_label.grid(row=0, column=0, padx=10, pady=10)
+
+
+# =======================================================================================================================
+# Decorators:
+
+def check_parameters(required_params):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(self, *args, **kwargs):
+            missing_params = []
+
+            for param in required_params:
+                value = getattr(self, param, None)
+                if value is None or not value.get():
+                    missing_params.append(param.replace('_', ' '))
+
+            if missing_params:
+                for param in missing_params:
+                    print(f"Please provide {param}")
+                print(50 * "=")
+                return
+
+            return func(self, *args, **kwargs)
+
+        return wrapper
+
+    return decorator

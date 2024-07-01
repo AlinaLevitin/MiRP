@@ -9,14 +9,15 @@ The GUI is located in LG_MiRP/gui/method_gui
 
 """
 
-from LG_MiRP import MethodGui, RescaleReferenceFrame, ClassUnificationFrame
+from LG_MiRP import MethodGui, RescaleReferenceFrame, SmoothingFrame, ResetShiftsAnglesFrame
 
 
 def main():
     # Generating the gui
     gui = MethodGui('Utils')
-    gui.add_frame(RescaleReferenceFrame, 'Rescale references')
-    gui.add_frame(ClassUnificationFrame, 'Class unification and extraction')
+    gui.add_frame(RescaleReferenceFrame, 'Rescale References')
+    gui.add_frame(ResetShiftsAnglesFrame, 'Angles and Shifts Reset')
+    gui.add_frame(SmoothingFrame, 'Angels and Shifts Smoothing')
     gui.mainloop()
 
 

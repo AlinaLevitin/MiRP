@@ -9,7 +9,7 @@ import tkinter as tk
 from ..gui_base import LgFrameBase, LgMasterGui
 
 
-class UtilsGui(LgMasterGui):
+class MethodGui(LgMasterGui):
     """
     A class for the segment average master gui
     Inherits from LgMasterGui
