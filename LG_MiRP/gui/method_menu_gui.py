@@ -1,7 +1,7 @@
 """
 Author: Alina Levitin
 Date: 30/05/24
-Updated: 05/06/24
+Updated: 02/07/24
 
 GUI class
 """
@@ -9,9 +9,9 @@ import tkinter as tk
 from ..gui_base import LgFrameBase, LgMasterGui
 
 
-class MethodGui(LgMasterGui):
+class MethodMenuGui(LgMasterGui):
     """
-    A class for the segment average master gui
+    A class for gui in the form of a menu
     Inherits from LgMasterGui
     """
     def __init__(self, name):

@@ -1,23 +1,22 @@
 #!/usr/bin/env python3
 """
 Author: Alina Levitin
-Date: 01/07/24
-Updated: 01/07/24
+Date: 02/07/24
+Updated: 02/07/24
 
 Command to bring up Methods GUI
 The GUI is located in LG_MiRP/gui/method_menu_gui
 
 """
 
-from LG_MiRP import MethodMenuGui, RescaleReferenceFrame, SmoothingFrame, ResetShiftsAnglesFrame
+from LG_MiRP import MethodMenuGui, RescaleReferenceFrame, RescaleMaskFrame
 
 
 def main():
     # Generating the gui
     gui = MethodMenuGui('Initial Seam Assignment')
     gui.add_frame(RescaleReferenceFrame, 'Rescale References')
-    gui.add_frame(ResetShiftsAnglesFrame, 'Angles and Shifts Reset')
-    gui.add_frame(SmoothingFrame, 'Angels and Shifts Smoothing')
+    gui.add_frame(RescaleMaskFrame, 'Rescale Mask')
     gui.mainloop()
 
 

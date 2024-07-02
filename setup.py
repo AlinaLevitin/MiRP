@@ -3,7 +3,7 @@ Setup file for LG_MiRP
 
 Author: Alina Levitin
 Date: 10/03/24
-Updated: 09/06/24
+Updated: 02/07/24
 """
 import setuptools
 
@@ -28,6 +28,9 @@ setuptools.setup(
         'console_scripts': [
             'pf_number_sorting=3_protofilament_number_sorting.pf_number_sorting:main',
             'initial_seam_assignment=4_initial_seam_assignment.initial_seam_assignment:main',
+            'seam_check=5_seam_check.seam_check:main',
+            'high_resolution_reconstruction=6_high_resolution_reconstruction.high_resolution_reconstruction:main',
+            'pf_refinement=7_protofilament_refinement.pf_refinement:main',
             'utils=utils.utils:main',
         ],
     }

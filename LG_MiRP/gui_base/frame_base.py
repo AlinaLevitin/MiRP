@@ -248,7 +248,7 @@ class LgFrameBase(ttk.Frame):
         label_text = base_name.split("_")[0:2]
 
         # Shows the mrc images
-        display_mrc_stack(self, file_path, label_text, row=0, column=0)
+        display_mrc_stack(self, file_path, label_text, row=1, column=0)
 
     def add_method_combobox(self, row, options, on_method_change=None, text='Method:'):
         label = tk.Label(self, text=text, font=('Ariel', 12))

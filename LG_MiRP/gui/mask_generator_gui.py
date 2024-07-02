@@ -7,7 +7,7 @@ Updated: 28/05/24
 """
 import tkinter as tk
 
-from ..gui_base import LgFrameBase, LgMasterGui, LGTopLevelBase
+from ..gui_base import LgFrameBase, LgMasterGui, LGTopLevelBase, check_parameters
 from ..methods import MaskGenerator
 
 
@@ -61,6 +61,7 @@ class MaskGeneratorFrame(LgFrameBase):
 
         self.add_image_by_name()
 
+    @check_parameters(['input_star_file', 'microtubule_volume', 'microtubule_mask', 'fit_tubulin_pdb', 'pf_number', 'helical_twist', 'helical_rise',  'output_path'])
     def run_function(self):
         function = MaskGenerator(self.input_star_file,
                                  self.microtubule_volume,

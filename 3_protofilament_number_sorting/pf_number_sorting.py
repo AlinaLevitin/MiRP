@@ -9,12 +9,12 @@ The GUI is located in LG_MiRP/gui/method_gui
 
 """
 
-from LG_MiRP import MethodGui, RescaleReferenceFrame, ClassUnificationFrame
+from LG_MiRP import MethodMenuGui, RescaleReferenceFrame, ClassUnificationFrame
 
 
 def main():
     # Generating the gui
-    gui = MethodGui('Proto-filament Number Sorting')
+    gui = MethodMenuGui('Proto-filament Number Sorting')
     gui.add_frame(RescaleReferenceFrame, 'Rescale references')
     gui.add_frame(ClassUnificationFrame, 'Class unification and extraction')
     gui.mainloop()

@@ -7,7 +7,7 @@ Two GUI classes (master and frame) for segment average generation
 The method of segment averaging is located in LG_MiRP/methods/segment_average_generator
 """
 
-from ..gui_base import LgFrameBase, LgMasterGui, LGTopLevelBase
+from ..gui_base import LgFrameBase, LgMasterGui, LGTopLevelBase, check_parameters
 from ..methods import SegmentAverageGenerator, mt_segment_histogram
 
 
@@ -51,6 +51,7 @@ class SegmentAverageFrame(LgFrameBase):
         # Imports a themed image at the bottom
         self.add_image("segment_average.jpg", new_size=600, row=7)
 
+    @check_parameters(['input_directory', 'output_directory', 'input_star_file'])
     def run_function(self):
         function = SegmentAverageGenerator(self.input_directory, self.output_directory, self.input_star_file)
 
