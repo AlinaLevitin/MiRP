@@ -68,11 +68,12 @@ class ClassUnifierExtractor(MethodBase):
                     number_of_appearances = classes.max()
 
                     # Total number of segments
-                    total_number = len(classes)
+                    total_number = len(MT_star_data)
 
                     print(
-                        f'For MT {MT}, the most common class is {most_common_class} It appears {number_of_appearances} '
-                        f'out of {total_number} times\n', '=' * 100)
+                        f'For MT {MT}, the most common class is {most_common_class}'
+                        f'\nIt appears {number_of_appearances} out of {total_number} times'
+                        f'\n', '=' * 100)
 
                     # Iterates over the entire original dataframe and replacing the class with the most common class
                     # for all segments of the MT in the micrograph using all other data from run_it000_data.star
