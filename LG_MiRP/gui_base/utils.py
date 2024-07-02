@@ -82,6 +82,8 @@ def browse(file_type, file_entry=None, command=None):
     if file_path:
         file_entry.delete(0, tk.END)
         file_entry.insert(0, file_path)
+        if command:
+            command()
 
 
 def display_mrc_slice(master, file_path, slice_index, label_text, row, column):

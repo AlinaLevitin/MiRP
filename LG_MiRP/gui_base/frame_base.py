@@ -75,10 +75,11 @@ class LgFrameBase(ttk.Frame):
         button = tk.Button(self, text='Run', command=command)
         button.grid(row=row, column=1, columnspan=1, padx=5, pady=5)
 
-    def add_file_entry(self, entry_type, entry_name, row, default_value=""):
+    def add_file_entry(self, entry_type, entry_name, row, default_value="", command=None):
         """
         Adds a file entry with a browse button.
 
+        :param command:
         :param entry_type: can be star, mrc, mrcs - passed down to browse function in gui_base.utils
         :param entry_name: text to appear next to the Entry
         :param row: row in the frame
@@ -95,7 +96,7 @@ class LgFrameBase(ttk.Frame):
         if default_value:
             file_entry.insert(0, default_value)
 
-        browse_button = tk.Button(self, text="Browse", command=lambda: browse(entry_type, file_entry))
+        browse_button = tk.Button(self, text="Browse", command=lambda: browse(entry_type, file_entry, command=command))
         browse_button.grid(row=row, column=2, padx=5, pady=5)
 
         browse_label = tk.Label(self, image=self.browse_image)
@@ -207,7 +208,7 @@ class LgFrameBase(ttk.Frame):
         # File paths
         # file_paths = [os.path.join(path, file) for file in os.listdir(path) if file.endswith(".mrc")]
         file_paths = []
-        for root, dirs, files in os.walk(path):
+        for root, dirs, files in os.walk(path.get()):
             for file in files:
                 if file.endswith(".mrc"):
                     file_paths.append(os.path.join(root, file))
@@ -230,6 +231,24 @@ class LgFrameBase(ttk.Frame):
 
             # Display the mrc stack
             display_mrc_stack(self, file_path, label_text, row=show_row, column=column)
+
+    def display_single_mrc_files(self, path, row):
+        """
+        A method to show the mrc images of the references in a Tkinter top level window
+        """
+        # File paths
+        # file_paths = [os.path.join(path, file) for file in os.listdir(path) if file.endswith(".mrc")]
+        file_path = path.get()
+
+        if not file_path:
+            raise ValueError("No .mrc files found in the specified path.")
+
+        # labels to be displayed under the images
+        base_name = os.path.basename(file_path)
+        label_text = base_name.split("_")[0:2]
+
+        # Shows the mrc images
+        display_mrc_stack(self, file_path, label_text, row=0, column=0)
 
     def add_method_combobox(self, row, options, on_method_change=None, text='Method:'):
         label = tk.Label(self, text=text, font=('Ariel', 12))

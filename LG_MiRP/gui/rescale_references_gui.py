@@ -18,8 +18,8 @@ class RescaleReferencesGui(LgMasterGui):
 
     def __init__(self, name):
         super().__init__(name)
-        frame1 = RescaleReferenceFrame(self)
-        frame1.grid(row=1, column=0, sticky="NSEW")
+        frame = RescaleReferenceFrame(self)
+        frame.grid(row=1, column=0, sticky="NSEW")
         self.mainloop()
 
 
@@ -66,4 +66,4 @@ class RescaleReferenceFrame(LgFrameBase):
         self.frame2 = LgFrameBase(self)
         self.frame2.grid(row=7, column=0, columnspan=6, sticky="NSEW")
         self.frame2.add_sub_job_name("References")
-        self.frame2.display_multiple_mrc_files(self.reference_directory.get(), row=1)
+        self.frame2.display_multiple_mrc_files(self.reference_directory, row=1)
