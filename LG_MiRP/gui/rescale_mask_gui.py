@@ -67,5 +67,5 @@ class RescaleMaskFrame(LgFrameBase):
         # Display the MRC files from the selected path
         self.frame2 = LgFrameBase(self)
         self.frame2.grid(row=7, column=0, columnspan=6, sticky="NSEW")
-        self.frame2.add_sub_job_name("References")
+        self.frame2.add_sub_job_name("Selected mrc file:")
         self.frame2.display_single_mrc_files(self.reference_file, row=1)
