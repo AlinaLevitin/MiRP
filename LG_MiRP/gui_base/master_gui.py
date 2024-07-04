@@ -43,14 +43,14 @@ class LgMasterGui(tk.Tk):
         """
         self.title(title_name)
 
-    def add_frame(self, frame_class, frame_name, row=1):
+    def add_frame(self, frame_class, frame_name, row=1, **kwargs):
         """
         Adding the desired frame to the master gui and menu
         :param frame_class: class of the ttk.Frame of the required job
         :param frame_name: name of the frame to display in the menu
         :param row: the row in which the frame will be located
         """
-        frame = frame_class(self.main_frame)
+        frame = frame_class(self.main_frame, **kwargs)
         self.frames[frame_name] = frame
         frame.grid(row=row, column=1, sticky="NSEW")
         frame.grid_remove()

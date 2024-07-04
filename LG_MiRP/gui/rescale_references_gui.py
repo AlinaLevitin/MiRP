@@ -29,11 +29,13 @@ class RescaleReferenceFrame(LgFrameBase):
     Inherits from LgFrameBase
     """
 
-    def __init__(self, master):
+    def __init__(self, master, **kwargs):
         """
         :param master: the master gui in which the frame will be displayed
         """
         super().__init__(master)
+
+        self.step = kwargs['step']
         # Adds the job name at the top row
         self.add_sub_job_name("Rescale References", row=0)
 
@@ -58,7 +60,7 @@ class RescaleReferenceFrame(LgFrameBase):
     def run_function(self):
         function = ReferenceScaler(self.reference_directory, self.output_directory, self.input_box_size, self.input_pixel_size, self.method_var)
 
-        function.rescale_and_crop_image(directory="new_references")
+        function.rescale_and_crop_image(directory="new_references", step=self.step)
 
     def update_references(self):
 

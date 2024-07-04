@@ -15,7 +15,7 @@ from LG_MiRP import MethodMenuGui, RescaleReferenceFrame, RescaleMaskFrame
 def main():
     # Generating the gui
     gui = MethodMenuGui('Initial Seam Assignment')
-    gui.add_frame(RescaleReferenceFrame, 'Rescale References')
+    gui.add_frame(RescaleReferenceFrame, 'Rescale References', step=gui.get_file_name(__file__))
     gui.add_frame(RescaleMaskFrame, 'Rescale Mask')
     gui.mainloop()
 

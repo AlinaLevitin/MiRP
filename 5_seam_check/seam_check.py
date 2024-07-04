@@ -15,7 +15,7 @@ from LG_MiRP import MethodMenuGui, RescaleReferenceFrame, ClassUnificationFrame,
 def main():
     # Generating the gui
     gui = MethodMenuGui('Seam Check')
-    gui.add_frame(RescaleReferenceFrame, 'Rescale references')
+    gui.add_frame(RescaleReferenceFrame, 'Rescale references', step=gui.get_file_name(__file__))
     gui.add_frame(ClassUnificationFrame, 'Class unification and extraction')
     gui.add_frame(AngleShiftsCorrectionFrame, 'Angle and Shifts Correction')
     gui.mainloop()

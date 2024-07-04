@@ -5,6 +5,8 @@ Updated: 02/07/24
 
 GUI class
 """
+import os
+
 import tkinter as tk
 from ..gui_base import LgFrameBase, LgMasterGui
 
@@ -31,3 +33,7 @@ class MethodMenuGui(LgMasterGui):
         self.default_frame.display_image()
         self.default_frame.grid(row=0, column=0, sticky="NSEW")
         self.current_frame = self.default_frame
+
+    @staticmethod
+    def get_file_name(file):
+        return os.path.splitext(os.path.basename(file))[0]

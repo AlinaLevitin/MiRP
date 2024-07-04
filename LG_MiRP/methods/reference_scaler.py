@@ -28,43 +28,45 @@ class ReferenceScaler(MethodBase):
         self.new_pixel_size = new_pixel_size.get()
         self.method = method.get()
 
+        self.output_directory = None
         self.reference_files = self.get_references()
 
     @print_done_decorator
-    def rescale_and_crop_image(self, directory):
+    def rescale_and_crop_image(self, directory, step):
         """
         A method to rescale and crop the reference images.
         :return: Generates rescaled and cropped images of the references.
         """
-        output_directory = os.path.join(self.output_path, directory)
+
+        self.output_directory = os.path.join(self.output_path, f'{directory}\\{step}')
 
         if self.perform_checks():
 
             # Create the output directory if it does not exist
-            if not os.path.exists(output_directory):
-                os.makedirs(output_directory)
+            if not os.path.exists(self.output_directory):
+                os.makedirs(self.output_directory)
             else:
-                self.delete_folder_contents(output_directory)
+                self.delete_folder_contents(self.output_directory)
 
             print(f"Rescaling .mrc files using {self.method}")
 
             # Iterate over the gathered .mrc files
             for input_mrc in self.reference_files:
                 if self.method == 'relion':
-                    output_scaled_path = os.path.join(output_directory, "rescaled_references")
-                    output_cropped_path = os.path.join(output_directory, "cropped_references")
+                    output_scaled_path = os.path.join(self.output_directory, "rescaled_references")
+                    output_cropped_path = os.path.join(self.output_directory, "cropped_references")
                     os.makedirs(output_scaled_path, exist_ok=True)
                     os.makedirs(output_cropped_path, exist_ok=True)
-                    self.relion_rescale(input_mrc, directory)
+                    self.relion_rescale(input_mrc)
                 elif self.method == 'scipy':
-                    output_scaled_path = os.path.join(output_directory, "resampled_references")
+                    output_scaled_path = os.path.join(self.output_directory, "resampled_references")
                     os.makedirs(output_scaled_path, exist_ok=True)
-                    self.scipy_rescale(input_mrc, directory)
+                    self.scipy_rescale(input_mrc)
                 else:
                     raise ValueError("Unsupported method. Choose 'relion' or 'scipy'.")
 
-    def scipy_rescale(self, input_mrc,directory):
-        output_resampled_path = os.path.join(self.output_path, directory, "resampled_references")
+    def scipy_rescale(self, input_mrc):
+        output_resampled_path = os.path.join(self.output_directory, "resampled_references")
         new_box_size = int(self.new_box_size)
         new_pixel_size = float(self.new_pixel_size)
 
@@ -110,10 +112,10 @@ class ReferenceScaler(MethodBase):
 
         print(f'{output_resampled_path_mrc} was saved')
 
-    def relion_rescale(self, input_mrc, directory):
+    def relion_rescale(self, input_mrc):
         input_file_path = os.path.join(self.path, input_mrc)
-        output_scaled_path = os.path.join(self.output_path, directory, "rescaled_references")
-        output_cropped_path = os.path.join(self.output_path, directory, "cropped_references")
+        output_scaled_path = os.path.join(self.output_directory, "rescaled_references")
+        output_cropped_path = os.path.join(self.output_directory, "cropped_references")
 
         volume = VolumeMrc(input_file_path)
         original_pixel_size = volume.pixel
