@@ -39,9 +39,9 @@ class ReferenceScaler(MethodBase):
         """
 
         if step:
-            self.output_directory = os.path.join(self.output_path, f'{directory}\\{step}')
+            self.output_directory = os.path.join(self.output_path, f'{directory}/{step}')
         else:
-            self.output_directory = os.path.join(self.output_path, f'{directory}\\{directory}_{self.new_pixel_size.replace(".", "_")}_{self.new_box_size}')
+            self.output_directory = os.path.join(self.output_path, f'{directory}/{directory}_{self.new_pixel_size.replace(".", "_")}_{self.new_box_size}')
 
         if self.perform_checks():
 
@@ -125,21 +125,28 @@ class ReferenceScaler(MethodBase):
 
         voxel_size_rounded = np.round(original_pixel_size, decimals=4)
         original_pixel_size_name = str(voxel_size_rounded).replace(".", "-")
-        new_pixel_size_name = str(self.new_pixel_size).replace(".", "-")
+        new_pixel_size_name = str(self.new_pixel_size).replace(".", "_")
 
-        output_file = input_mrc.replace(original_pixel_size_name, new_pixel_size_name)
+        output_file = os.path.basename(input_mrc).replace(original_pixel_size_name, new_pixel_size_name)
         cropped_output_file = output_file.replace('.mrc', f'_{self.new_box_size}px_boxed.mrc')
 
         output_scaled_file_path = os.path.join(output_scaled_path, output_file)
+        print('output_scaled_file_path', output_scaled_file_path)
         output_cropped_file_path = os.path.join(output_cropped_path, cropped_output_file)
+        print('output_cropped_file_path', output_cropped_file_path)
 
-        rescale_command = f"relion_image_handler --i {input_file_path} --angpix {original_pixel_size} --rescale_angpix {float(self.new_pixel_size)} --o {output_scaled_file_path}"
+        rescale_command = f"relion_image_handler --i {input_file_path} --angpix {voxel_size_rounded} --rescale_angpix {float(self.new_pixel_size)} --o {output_scaled_file_path}"
+
         crop_command = f"relion_image_handler --i {output_scaled_file_path} --new_box {int(self.new_box_size)} --o {output_cropped_file_path}"
 
-        subprocess.run(rescale_command, shell=True, check=True)
         print(rescale_command.__doc__)
-        subprocess.run(crop_command, shell=True, check=True)
+        subprocess.run(rescale_command, shell=True, check=True)
+        print(f'{output_scaled_file_path} was saved')
+
         print(crop_command.__doc__)
+        subprocess.run(crop_command, shell=True, check=True)
+        print(f'{output_cropped_file_path} was saved')
+
 
     def perform_checks(self, input_background_wedge_map=None):
         # Check if RELION is installed
