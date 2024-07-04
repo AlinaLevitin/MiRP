@@ -32,13 +32,16 @@ class ReferenceScaler(MethodBase):
         self.reference_files = self.get_references()
 
     @print_done_decorator
-    def rescale_and_crop_image(self, directory, step):
+    def rescale_and_crop_image(self, directory, step=None):
         """
         A method to rescale and crop the reference images.
         :return: Generates rescaled and cropped images of the references.
         """
 
-        self.output_directory = os.path.join(self.output_path, f'{directory}\\{step}')
+        if step:
+            self.output_directory = os.path.join(self.output_path, f'{directory}\\{step}')
+        else:
+            self.output_directory = os.path.join(self.output_path, f'{directory}\\{directory}_{self.new_pixel_size.replace(".", "_")}_{self.new_box_size}')
 
         if self.perform_checks():
 

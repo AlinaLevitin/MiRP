@@ -35,7 +35,8 @@ class RescaleReferenceFrame(LgFrameBase):
         """
         super().__init__(master)
 
-        self.step = kwargs['step']
+        self.step = kwargs.get('step', None)
+
         # Adds the job name at the top row
         self.add_sub_job_name("Rescale References", row=0)
 
@@ -56,7 +57,7 @@ class RescaleReferenceFrame(LgFrameBase):
 
         self.frame2 = None
 
-    @check_parameters(['reference_directory', 'input_pixel_size', 'input_box_size', 'output_directory', 'method_var'])
+    @check_parameters(['reference_directory', 'output_directory', 'input_pixel_size', 'input_box_size', 'method_var'])
     def run_function(self):
         function = ReferenceScaler(self.reference_directory, self.output_directory, self.input_box_size, self.input_pixel_size, self.method_var)
 
