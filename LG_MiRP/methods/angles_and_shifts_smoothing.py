@@ -14,8 +14,26 @@ from .method_base import MethodBase, print_done_decorator
 
 
 class SmoothAnglesOrShifts(MethodBase):
+    """
+    Method with logic to smooth angles (rlnAngleRot) or shifts (rlnOriginXAngst, rlnOriginYAngst)
+        For angles = find the angels that are most common and applies them to all MT segments for each MT
+        If there are no angles within the cutoff, the MT is omitted.
+        For shifts = finds the flattest cluster and applies it to all MT segments for each MT
+
+    This method class is inheriting from MethodBase class and is using calculation methods written in method_base.py
+    """
 
     def __init__(self, star_file_input, output_path, method, cutoff=None):
+        """
+
+        The cutoff is referring to cutoff of number of segments meaning MTs with number of segments lower than the cutoff
+        will be omitted
+
+        :param star_file_input: star files it00xx_data.star file
+        :param output_path: path for the output star file location
+        :param method: 'angles' or 'shifts'
+        :param cutoff: minimal number of segments to include, if None, all MTs will be included
+        """
         self.star_file_input = star_file_input.get()
         self.star_file_name = os.path.basename(self.star_file_input)
         self.output_path = output_path.get()
@@ -55,6 +73,19 @@ class SmoothAnglesOrShifts(MethodBase):
         return input_particles_dataframe, particles_dataframe
 
     def smooth_data(self, particles_dataframe, id_label):
+        """
+        Smooths data in the particles dataframe based on the specified ID label rlnAngleRot, rlnOriginXAngst,
+        rlnOriginYAngst.
+
+        Parameters:
+        particles_dataframe (pd.DataFrame): The dataframe containing particle data.
+        id_label (str): The label indicating which column to smooth (e.g., 'rlnAngleRot', 'rlnOriginXAngst').
+
+        Returns:
+        pd.DataFrame: The dataframe with smoothed data.
+
+        """
+
         print('=' * 50)
         print(f'Smoothing {id_label}')
         print('=' * 50)
@@ -72,7 +103,8 @@ class SmoothAnglesOrShifts(MethodBase):
                 angle_cutoff = 8
                 top_clstr, outliers = self.cluster_shallow_slopes(values, angle_cutoff)
             elif id_label in ['rlnOriginXAngst', 'rlnOriginYAngst']:
-                top_clstr, outliers = self.flatten_and_cluster_shifts(values)
+                shifts_cutoff = 8
+                top_clstr, outliers = self.flatten_and_cluster_shifts(values, shifts_cutoff)
             else:
                 raise ValueError("Unsupported id_label")
             if top_clstr:

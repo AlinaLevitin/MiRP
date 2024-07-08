@@ -90,6 +90,17 @@ class MethodBase:
 
     @staticmethod
     def cluster_shallow_slopes(angles, cutoff):
+        """
+        Clusters angles based on pairwise differences within a cutoff range.
+
+        Parameters:
+        angles (array-like): An array of angle values.
+        cutoff (float): The cutoff range for clustering based on pairwise differences.
+
+        Returns:
+        top_cluster (list): The cluster with the maximum number of angles.
+        low_weight_cluster (list): Angles that are not part of the top cluster.
+        """
         # Create an array of all pairwise differences
         diff_matrix = angles[:, None] - angles[None, :]
 
@@ -133,44 +144,6 @@ class MethodBase:
             low_weight_cluster = [j for i in clusters if i != top_cluster for j in i]
         else:
             top_cluster, low_weight_cluster = None, None
-
-        return top_cluster, low_weight_cluster
-
-    def flatten_and_cluster_shifts(self, shifts):
-        # Generate flattening factors
-        flattening_factors = np.arange(-8, 8, 0.25)
-        flatness_score = []
-        b = []
-
-        # Initialize arrays to store flattened shifts and flatness scores
-        flattened_shifts = np.zeros((len(flattening_factors), len(shifts)))
-        flatness_scores = np.zeros(len(flattening_factors))
-
-        for i, factor in enumerate(flattening_factors):
-            # Flatten shifts using broadcasting
-            flattened_shifts[i] = shifts - np.arange(1, len(shifts) + 1) * factor
-
-            # Calculate flatness score
-            flatness_scores[i] = np.sum(np.abs(np.diff(flattened_shifts[i])))
-
-        # Find index of minimum flatness score
-        min_flatness_idx = np.argmin(flatness_scores)
-
-        # Find histogram bins using numpy
-        try:
-            hist, bins = np.histogram(flattened_shifts[min_flatness_idx], bins='auto')
-        except MemoryError:
-            hist, bins = np.histogram(flattened_shifts[min_flatness_idx], bins=5)
-
-        # Cluster shift values
-        clusters = self.cluster_numpy_bins(flattened_shifts[min_flatness_idx], bins)
-
-        # Find the cluster with the maximum length
-        sorted_clusters = sorted(clusters.items(), key=lambda item: len(item[1]), reverse=True)
-        top_cluster_key, top_cluster = sorted_clusters.pop(0)
-
-        # Find the outliers
-        low_weight_cluster = [value for sublist in sorted_clusters for value in sublist[1]]
 
         return top_cluster, low_weight_cluster
 
@@ -222,46 +195,76 @@ class MethodBase:
 
     @staticmethod
     def spherical_cosmask(n, mask_radius, edge_width, origin=None):
-        """mask = spherical_cosmask(n, mask_radius, edge_width, origin)
+        """
+        Creates a spherical cosine mask.
+
+        Parameters:
+        n (int or array-like): The size of the mask. If an integer, a cube of size n is assumed.
+        mask_radius (float): The radius of the mask where the value is 1.
+        edge_width (float): The width of the edge where the mask transitions from 1 to 0.
+        origin (array-like, optional): The origin of the mask. If None, the center is used.
+
+        Returns:
+        m (numpy array): The generated spherical cosine mask.
         """
 
-        if type(n) is int:
+        # Ensure n is an array
+        if isinstance(n, int):
             n = np.array([n])
 
+        # Initialize size of the mask
         sz = np.array([1, 1, 1])
-        sz[0:np.size(n)] = n[:]
+        sz[:len(n)] = n
 
+        # Determine lower and upper bounds for the mask grid
         szl = -np.floor(sz / 2)
         szh = szl + sz
 
+        # Create a meshgrid for the coordinates
         x, y, z = np.meshgrid(np.arange(szl[0], szh[0]),
                               np.arange(szl[1], szh[1]),
-                              np.arange(szl[2], szh[2]), indexing='ij', sparse=True)
+                              np.arange(szl[2], szh[2]),
+                              indexing='ij', sparse=True)
 
-        r = np.sqrt(x * x + y * y + z * z)
+        # Compute the distance from the origin
+        r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
 
-        m = np.zeros(sz.tolist())
+        # Initialize the mask with zeros
+        cosmask = np.zeros(sz.tolist())
 
-        #    edgezone = np.where( (x*x + y*y + z*z >= mask_radius) & (x*x + y*y + z*z <= np.square(mask_radius + edge_width)))
+        # Identify the edge zone where the transition will occur
+        edgezone = (r >= mask_radius) & (r <= mask_radius + edge_width)
 
-        edgezone = np.all(
-            [(x * x + y * y + z * z >= mask_radius), (x * x + y * y + z * z <= np.square(mask_radius + edge_width))],
-            axis=0)
-        m[edgezone] = 0.5 + 0.5 * np.cos(2 * np.pi * (r[edgezone] - mask_radius) / (2 * edge_width))
-        m[np.all([(x * x + y * y + z * z <= mask_radius * mask_radius)], axis=0)] = 1
+        # Apply the cosine transition in the edge zone
+        cosmask[edgezone] = 0.5 + 0.5 * np.cos(2 * np.pi * (r[edgezone] - mask_radius) / (2 * edge_width))
 
-        #    m[ np.where(x*x + y*y + z*z <= mask_radius*mask_radius)] = 1
+        # Set the mask to 1 within the mask radius
+        cosmask[r <= mask_radius] = 1
 
-        return m
+        return cosmask
 
     @staticmethod
     def calc_center_of_gravity(structure):
+        """
+        Calculates the center of gravity of a molecular structure.
+
+        Parameters:
+        structure (Structure): A molecular structure containing models, chains, residues, and atoms (use biopython)
+
+        Returns:
+        center_of_gravity (numpy array): The coordinates of the center of gravity.
+        """
+        # Initialize sums for coordinates and total weight
         x_sum, y_sum, z_sum = 0, 0, 0
         total_weight = 0
 
+        # Iterate over all models in the structure
         for model in structure:
+            # Iterate over all chains in each model
             for chain in model:
+                # Iterate over all residues in each chain
                 for residue in chain:
+                    # Iterate over all atoms in each residue
                     for atom in residue:
                         # Get the atom coordinates
                         atom_coord = atom.get_coord()
@@ -283,6 +286,13 @@ class MethodBase:
     # Lazy functions:
     @staticmethod
     def filter_microtubules_by_length(data, cutoff):
+        """
+        Removes MTs in which the number of segments is lower than the cutoff
+
+        :param data: data block from data star file
+        :param cutoff: minimal number of segments to include
+        :return: data where MTs with number of segments lower than in the cutoff are excluded
+        """
         # Group the DataFrame by micrograph name and helical tube ID
         grouped = data.groupby(['rlnMicrographName', 'rlnHelicalTubeID'])
 
@@ -294,6 +304,11 @@ class MethodBase:
 
     @staticmethod
     def delete_folder_contents(folder_path):
+        """
+        Deletes all content in a selected folder
+        :param folder_path: path of the folder to empty
+
+        """
         # List all contents in the folder
         contents = os.listdir(folder_path)
 
