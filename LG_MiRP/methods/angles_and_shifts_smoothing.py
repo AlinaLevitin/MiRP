@@ -1,9 +1,10 @@
 """
 Author: Alina Levitin
 Date: 01/05/24
-Updated: 01/05/24
+Updated: 08/07/24
 
-Methods for smoothing X/Y Shifts and angles
+Methods for smoothing shifts (rlnOriginXAngst, rlnOriginYAngst) and angles (rlnAngleRot) used during initial seam
+assignment.
 
 """
 import os
@@ -42,29 +43,43 @@ class SmoothAnglesOrShifts(MethodBase):
 
     @print_done_decorator
     def smooth_angles_or_shifts(self):
+        """
+        Smooths the angles or shifts in the STAR file data and saves the updated data to a new STAR file.
 
+        Returns:
+        tuple: A tuple containing the original particles dataframe and the smoothed particles dataframe.
+        """
+        # Read data from the input STAR file
         data = starfile.read(self.star_file_input)
 
+        # Extract particles and optics dataframes
         input_particles_dataframe = data['particles']
         data_optics_dataframe = data['optics']
 
+        # Filter microtubules by length if a cutoff is provided
         if self.cutoff:
             particles_dataframe = self.filter_microtubules_by_length(input_particles_dataframe, self.cutoff)
         else:
             particles_dataframe = input_particles_dataframe
 
+        # Smooth the data based on the specified method
         if self.method == 'angles':
             particles_dataframe = self.smooth_data(particles_dataframe, id_label='rlnAngleRot')
         elif self.method == 'shifts':
             particles_dataframe = self.smooth_data(particles_dataframe, id_label='rlnOriginXAngst')
             particles_dataframe = self.smooth_data(particles_dataframe, id_label='rlnOriginYAngst')
 
+        # Create a dictionary with the updated optics and particles dataframes
         new_particles_star_file_data = {'optics': data_optics_dataframe, 'particles': particles_dataframe}
 
+        # Change to the output directory
         os.chdir(self.output_path)
+
+        # Generate the output file name
         original_name = self.star_file_name.replace('.star', '')
         output_file = f'{original_name}_smoothened_{self.method}.star'
 
+        # Write the updated data to the output STAR file
         starfile.write(new_particles_star_file_data, output_file)
 
         print("=" * 50)
@@ -90,13 +105,15 @@ class SmoothAnglesOrShifts(MethodBase):
         print(f'Smoothing {id_label}')
         print('=' * 50)
 
-        bad_mts = []
+        bad_mts = [] # List to keep track of microtubules that cannot be fitted
         grouped_data = particles_dataframe.groupby(['rlnMicrographName', 'rlnHelicalTubeID'])
 
         for (micrograph, MT), MT_dataframe in grouped_data:
+            # Create masks for current micrograph and helical tube
             mask1 = particles_dataframe['rlnMicrographName'] == micrograph
             mask2 = particles_dataframe['rlnHelicalTubeID'] == MT
 
+            # Converting the angles or shifts to numpy array
             values = MT_dataframe[id_label].to_numpy()
 
             if id_label == 'rlnAngleRot':
