@@ -64,6 +64,13 @@ class MethodBase:
 
     @staticmethod
     def linear_fit(xax, vals):
+        """
+        Performs linear fit
+
+        :param xax: x values
+        :param vals: y values
+        :return: slope and intercept
+        """
         x = np.array(xax)
         y = np.array(vals)
 
@@ -79,10 +86,18 @@ class MethodBase:
         return slope, intercept
 
     def fit_clusters(self, values, top_cluster):
+        """
+        Fits the data according to the linear fit of the top cluster
 
+        :param values: data values to fit
+        :param top_cluster: top cluster of angles or shifts
+
+        :return: fit values
+        """
+        # Getting the slope and intercept according to linear fit method
         slope, intercept = self.linear_fit(np.arange(1, len(top_cluster) + 1), [values[i] for i in top_cluster])
 
-        # Fit linear model to the low weight cluster
+        # Fit the data values according to the top cluster
         x = np.array([i for i in range(0, len(values))])
         linear_fit_values = intercept + slope * x
 

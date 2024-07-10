@@ -3,11 +3,11 @@ Author: Alina Levitin
 Date: 14/03/24
 Updated: 02/04/24
 
-Method to unify classes by protofilament numbers after 3D-classification
+Method to unify classes by protofilament numbers or location of seam after 3D-classification
 The method counts how many times each class was assigned to segments of the same MT and assign the most common class
 to all the MT segments.
-Then it separates the segments according to their class to STAR files using all the data from run_it000_data.star file
-meaning it resets all the angles to prior
+For protofilament number it then it separates the segments according to their class to STAR files using all the data
+from run_it000_data.star file meaning it resets all the angles to prior
 """
 import os
 
@@ -32,73 +32,31 @@ class ClassUnifierExtractor(MethodBase):
         data0 = starfile.read(self.star_file_input0)
         particles_dataframe0 = data0['particles']
 
-        # Read data from "run_it001_data.star" using starfile
+        # Read data from "run_it0xx_data.star" using starfile
         data1 = starfile.read(self.star_file_input1)
         particles_dataframe1 = data1['particles']
         data_optics_dataframe1 = data1['optics']
 
         # Takes only the unique micrographs from the star file
-        micrographs = particles_dataframe1['rlnMicrographName'].unique()
-
-        # Iterates over the micrographs
-        for micrograph in micrographs:
-            # Filters the dataframe according to the micrograph name
-            mask = particles_dataframe1['rlnMicrographName'] == micrograph
-            micrograph_star = particles_dataframe1.loc[mask]
-            # Fines the number of MTs in the micrograph
-            total_number_of_mts = micrograph_star['rlnHelicalTubeID'].max()
-            print(f'{micrograph} contains {total_number_of_mts} MTs')
-
-            # Iterates over the MTs in the micrograph
-            for MT in range(1, total_number_of_mts + 1):
-                # creating a mask to filter only the micrographs for the id of the MT
-                mask2 = micrograph_star['rlnHelicalTubeID'] == MT
-                MT_star_data = micrograph_star.loc[mask2]
-
-                # Some MTs are missing so to avoid errors we continue only with MTs with data
-                if not MT_star_data.empty:
-
-                    # Counts how many segments were classified as a specific class
-                    classes = MT_star_data['rlnClassNumber'].value_counts()
-
-                    # Takes the class that appeared the most times
-                    most_common_class = classes.idxmax()
-
-                    # Number of segments classified at this class
-                    number_of_appearances = classes.max()
-
-                    # Total number of segments
-                    total_number = len(MT_star_data)
-
-                    print(
-                        f'For MT {MT}, the most common class is {most_common_class}'
-                        f'\nIt appears {number_of_appearances} out of {total_number} times'
-                        f'\n', '=' * 100)
-
-                    # Iterates over the entire original dataframe and replacing the class with the most common class
-                    # for all segments of the MT in the micrograph using all other data from run_it000_data.star
-                    # This resets the angles to prior
-                    for index, row in particles_dataframe0.iterrows():
-                        if micrograph in row['rlnMicrographName'] and row['rlnHelicalTubeID'] == MT:
-                            particles_dataframe0.loc[index, 'rlnClassNumber'] = most_common_class
+        class_unified_particles_dataframe = self.update_class_numbers(particles_dataframe0, particles_dataframe1)
 
         original_data_star_name = self.star_file_name.replace('.star', '')
 
         if self.step == 'pf_number_check':
             # EXTRACTING THE SEGMENTS TO SEPARATE STAR FILES ACCORDING TO THEIR CLASS
-            number_of_classes = particles_dataframe1['rlnClassNumber'].max()
+            number_of_classes = class_unified_particles_dataframe['rlnClassNumber'].unique().tolist()
 
             # Iterates over the number of classes
-            for i in range(number_of_classes + 1):
+            for i in number_of_classes:
 
                 # Filtering the datarfame for the specific class i
-                mask_class = particles_dataframe0['rlnClassNumber'] == i
-                class_particles = particles_dataframe0.loc[mask_class]
+                mask_class = class_unified_particles_dataframe['rlnClassNumber'] == i
+                class_particles = class_unified_particles_dataframe.loc[mask_class]
 
                 print(f"There are {class_particles.shape[0]} segments of class {i}")
 
-                # Generating a new STAR file using the optics from run_it001_data.star and the new particels (segments) data
-                # with corrected classes after unification
+                # Generating a new STAR file using the optics from run_it001_data.star and the new particels (segments)
+                # data with corrected classes after unification
 
                 new_particles_star_file_data = {'optics': data_optics_dataframe1, 'particles': class_particles}
 
@@ -113,7 +71,7 @@ class ClassUnifierExtractor(MethodBase):
 
         elif self.step == 'seam_check':
             # EXTRACTING THE SEGMENTS TO A SINGLE STAR FILES WITH CORRECTED CLASSES
-            new_particles_star_file_data = {'optics': data_optics_dataframe1, 'particles': particles_dataframe0}
+            new_particles_star_file_data = {'optics': data_optics_dataframe1, 'particles': class_unified_particles_dataframe}
 
             os.chdir(self.output_path.get())
             output_file = f'{original_data_star_name}_class_corrected.star'
@@ -123,6 +81,40 @@ class ClassUnifierExtractor(MethodBase):
             except NameError:
                 print(f"File names {output_file} already exists, delete old file and try again")
                 raise NameError("File already exists")
+
+    @staticmethod
+    def update_class_numbers(particles_dataframe0, particles_dataframe1):
+        """
+        Finds the most common class for each MT and assigns it to all MT segments.
+        Since it updates the it00_data.star with the most common classes from itxx_data.star file, this also resets all
+        angles and shifts to prior
+
+        :param particles_dataframe0: particles dataframe from it00_data.star file
+        :param particles_dataframe1: particles dataframe from itxx_data.star file
+
+        :return: updated particles dataframe with original angles and shifts
+        """
+        # Group by 'rlnMicrographName' and 'rlnHelicalTubeID'
+        grouped_data = particles_dataframe1.groupby(['rlnMicrographName', 'rlnHelicalTubeID'])
+
+        for (micrograph, MT), MT_dataframe in grouped_data:
+            # Get the most common class number in the current MT segment
+            most_common_class = MT_dataframe['rlnClassNumber'].mode().iloc[0]
+
+            # Log the information
+            number_of_appearances = MT_dataframe[MT_dataframe['rlnClassNumber'] == most_common_class].shape[0]
+            total_number = len(MT_dataframe)
+            print(f'MT {MT} in {micrograph}:')
+            print(f'The most common class is {most_common_class}')
+            print(f'It appears {number_of_appearances} out of {total_number} times')
+            print('=' * 100)
+
+            # Apply the most common class number to all segments of the MT in the original dataframe
+            mask = (particles_dataframe0['rlnMicrographName'] == micrograph) & (
+                    particles_dataframe0['rlnHelicalTubeID'] == MT)
+            particles_dataframe0.loc[mask, 'rlnClassNumber'] = most_common_class
+
+        return particles_dataframe0
 
     @staticmethod
     def classes_distribution(star_file_input):

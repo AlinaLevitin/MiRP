@@ -113,9 +113,10 @@ class SmoothAnglesOrShifts(MethodBase):
             mask1 = particles_dataframe['rlnMicrographName'] == micrograph
             mask2 = particles_dataframe['rlnHelicalTubeID'] == MT
 
-            # Converting the angles or shifts to numpy array
+            # Converting the angles or shifts of a single MT to numpy array
             values = MT_dataframe[id_label].to_numpy()
 
+            # Get top cluster
             if id_label == 'rlnAngleRot':
                 angle_cutoff = 8
                 top_clstr, outliers = self.cluster_shallow_slopes(values, angle_cutoff)
@@ -138,7 +139,9 @@ class SmoothAnglesOrShifts(MethodBase):
                 index_numbers = matching_rows.index
                 bad_mts.append(index_numbers[0])
 
+        # Omit bad MTs
         if bad_mts:
             particles_dataframe.drop(bad_mts, inplace=True)
+            print(f"{len(bad_mts)} out of {grouped_data.shape[0]} MTs were omitted")
 
         return particles_dataframe

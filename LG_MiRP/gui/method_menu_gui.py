@@ -36,4 +36,9 @@ class MethodMenuGui(LgMasterGui):
 
     @staticmethod
     def get_file_name(file):
+        """
+        Gets the name of the file to be used as the name of the output directory path
+        :param file: __file__
+        :return: string of the base name of the file
+        """
         return os.path.splitext(os.path.basename(file))[0]
