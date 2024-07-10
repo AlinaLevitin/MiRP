@@ -3,7 +3,7 @@ Author: Alina Levitin
 Date: 27/05/24
 Updated: 27/05/24
 
-This contains plotting functions
+This contains a collection of plotting functions
 
 """
 import matplotlib.pyplot as plt
@@ -61,36 +61,52 @@ def mt_segment_histogram(particles_star_file):
 
 
 def plot_angles_and_shifts(data):
+    """
+    Plots angles and shifts as a function of segments along a MT
+
+    :param data: pandas.Dataframe containing the particles data block from a star file
+
+    :return: The matplotlib figure object containing the subplots
+    """
+    # Reset the index of the DataFrame to ensure it's sequential and starts from 0
     data.reset_index(inplace=True)
 
+    # Create a figure with 4 subplots arranged in 1 row and 4 columns
     fig, axes = plt.subplots(1, 4, figsize=(12, 6))
 
+    # Plot rlnAngleRot (Phi Angle) in the first subplot
     axes[0].plot(data['rlnAngleRot'], 'o')
-    axes[0].set_ylim([-181, 181])
-    axes[0].set_yticks([i for i in range(-180, 180 + 1, 40)])
-    axes[0].set_ylabel('Phi Angle')
-    axes[0].set_title('Phi')
+    axes[0].set_ylim([-181, 181])  # Set the y-axis limits
+    axes[0].set_yticks([i for i in range(-180, 180 + 1, 40)])  # Set y-axis ticks
+    axes[0].set_ylabel('Phi Angle')  # Label the y-axis
+    axes[0].set_title('Phi')  # Set the title of the subplot
 
+    # Plot rlnAngleTilt (Theta Angle) in the second subplot
     axes[1].plot(data['rlnAngleTilt'], 'o')
-    axes[1].set_yticks([i for i in range(-180, 180 + 1, 40)])
-    axes[1].set_ylim([-181, 181])
-    axes[1].set_ylabel('Theta Angle')
-    axes[1].set_title('Theta')
+    axes[1].set_ylim([-181, 181])  # Set the y-axis limits
+    axes[1].set_yticks([i for i in range(-180, 180 + 1, 40)])  # Set y-axis ticks
+    axes[1].set_ylabel('Theta Angle')  # Label the y-axis
+    axes[1].set_title('Theta')  # Set the title of the subplot
 
+    # Plot rlnAnglePsi (Psi Angle) in the third subplot
     axes[2].plot(data['rlnAnglePsi'], 'o')
-    axes[2].set_yticks([i for i in range(-180, 180 + 1, 40)])
-    axes[2].set_ylim([-181, 181])
-    axes[2].set_ylabel('Psi Angle')
-    axes[2].set_title('Psi')
+    axes[2].set_ylim([-181, 181])  # Set the y-axis limits
+    axes[2].set_yticks([i for i in range(-180, 180 + 1, 40)])  # Set y-axis ticks
+    axes[2].set_ylabel('Psi Angle')  # Label the y-axis
+    axes[2].set_title('Psi')  # Set the title of the subplot
 
+    # Plot rlnOriginXAngst and rlnOriginYAngst (X and Y Shifts) in the fourth subplot
     axes[3].plot(data['rlnOriginXAngst'], 'o', label='Xshift')
     axes[3].plot(data['rlnOriginYAngst'], 'o', label='Yshift')
-    axes[3].set_title('X/Y Shifts')
-    axes[3].set_ylabel('Shift (pixels)')
-    axes[3].legend(loc='upper right')
+    axes[3].set_title('X/Y Shifts')  # Set the title of the subplot
+    axes[3].set_ylabel('Shift (pixels)')  # Label the y-axis
+    axes[3].legend(loc='upper right')  # Add a legend in the upper right corner
 
+    # Set the x-ticks for all subplots to be the segment numbers, spaced by 2
     plt.setp(axes, xticks=[i for i in range(1, len(data) + 1, 2)], xlabel='Segment')
 
-    plt.tight_layout()  # Add padding between subplots
+    # Adjust the layout to add padding between subplots
+    plt.tight_layout()
 
+    # Return the figure object containing the plots
     return fig

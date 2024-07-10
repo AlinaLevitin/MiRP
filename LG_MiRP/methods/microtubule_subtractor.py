@@ -1,3 +1,10 @@
+"""
+Author: Alina Levitin
+Date: 02/07/24
+Updated: 10/07/24
+
+BROKEN!! NOT WORKING!!
+"""
 import os
 import subprocess
 from mpi4py import MPI
