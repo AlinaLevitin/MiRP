@@ -3,7 +3,7 @@ Author: Alina Levitin
 Date: 15/04/24
 Updated: 15/04/24
 
-Methods for angles and shifts manipulation
+Methods for angles and shifts manipulation during initial seam assignment step
 
 shifts: _rlnAngleRot, _rlnOriginX, _rlnOriginY, _rlnOriginZ are set to 0
 angles: _rlnAnglePsi, _rlnAngleTilt are set to priors: _rlnAnglePsiPrior, _rlnAngleTiltPrior
@@ -17,8 +17,14 @@ from .method_base import MethodBase, print_done_decorator
 
 
 class ResetAnglesAndShifts(MethodBase):
+    """
+        Method inherits from MethodBase class in method_base.py
+    """
 
     def __init__(self, star_file_input, output_directory, rot=None, x=None, y=None, z=None, psi=None, tilt=None):
+        """
+
+        """
         self.star_file_input = star_file_input.get()
         self.star_file_name = os.path.basename(self.star_file_input)
         self.output_directory = output_directory.get()
