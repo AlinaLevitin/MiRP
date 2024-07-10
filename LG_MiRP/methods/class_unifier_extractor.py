@@ -1,13 +1,15 @@
 """
 Author: Alina Levitin
 Date: 14/03/24
-Updated: 02/04/24
+Updated: 10/07/24
 
 Method to unify classes by protofilament numbers or location of seam after 3D-classification
 The method counts how many times each class was assigned to segments of the same MT and assign the most common class
 to all the MT segments.
 For protofilament number it then it separates the segments according to their class to STAR files using all the data
-from run_it000_data.star file meaning it resets all the angles to prior
+from run_it000_data.star file meaning it resets all the angles to prior.
+For Seam-check it will generate a single file with unified class numbers incorporated in the run_itxx_data.star file
+therefore will reset the angles and shifts to prior
 """
 import os
 
@@ -17,6 +19,9 @@ from .method_base import MethodBase, print_done_decorator
 
 
 class ClassUnifierExtractor(MethodBase):
+    """
+
+    """
 
     def __init__(self, star_file_input0, star_file_input1, output_path, step):
         self.star_file_input0 = star_file_input0.get()
@@ -86,11 +91,11 @@ class ClassUnifierExtractor(MethodBase):
     def update_class_numbers(particles_dataframe0, particles_dataframe1):
         """
         Finds the most common class for each MT and assigns it to all MT segments.
-        Since it updates the it00_data.star with the most common classes from itxx_data.star file, this also resets all
-        angles and shifts to prior
+        Since it updates the run_it00_data.star with the most common classes from run_itxx_data.star file, this also
+        resets all angles and shifts to prior
 
-        :param particles_dataframe0: particles dataframe from it00_data.star file
-        :param particles_dataframe1: particles dataframe from itxx_data.star file
+        :param particles_dataframe0: particles dataframe from run_it00_data.star file
+        :param particles_dataframe1: particles dataframe from run_itxx_data.star file
 
         :return: updated particles dataframe with original angles and shifts
         """

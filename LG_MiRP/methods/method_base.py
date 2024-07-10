@@ -14,50 +14,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-# ======================================================================================================================
-# Wrappers
-def print_done_decorator(func):
-    def wrapper(self, *args, **kwargs):
-        result = func(self, *args, **kwargs)
-        print('Done!')
-        return result
-
-    return wrapper
-
-
-def print_command_decorator(func):
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        # Extract command from function's docstring or create it from arguments
-        command = func.__doc__ or "Executing command"
-        print(f"Command: {command}")
-
-        # Perform the necessary checks
-        instance = args[0]  # Assuming the first argument is the class instance
-        if 'input_background_wedge_map' in kwargs:
-            input_background_wedge_map = kwargs['input_background_wedge_map']
-        elif len(args) > 1:
-            input_background_wedge_map = args[1]
-        else:
-            print("Error: No `input_background_wedge_map` argument provided for checks.")
-            return
-
-        try:
-            instance.perform_checks(input_background_wedge_map)
-        except ValueError as e:
-            print(f"Error: {e}")
-            return
-
-        result = func(*args, **kwargs)
-        print("Command executed successfully.")
-        return result
-
-    return wrapper
-
-
-# ======================================================================================================================
 # Base class for all the method classes
-
 class MethodBase:
 
     # Mathematical functions:
@@ -109,10 +66,10 @@ class MethodBase:
         Clusters angles based on pairwise differences within a cutoff range.
 
         Parameters:
-        angles (array-like): An array of angle values.
-        cutoff (float): The cutoff range for clustering based on pairwise differences.
+        :param angles: (array-like): An array of angle values.
+        :param cutoff: (float): The cutoff range for clustering based on pairwise differences.
 
-        Returns:
+        :returns:
         top_cluster (list): The cluster with the maximum number of angles.
         low_weight_cluster (list): Angles that are not part of the top cluster.
         """
@@ -213,14 +170,12 @@ class MethodBase:
         """
         Creates a spherical cosine mask.
 
-        Parameters:
-        n (int or array-like): The size of the mask. If an integer, a cube of size n is assumed.
-        mask_radius (float): The radius of the mask where the value is 1.
-        edge_width (float): The width of the edge where the mask transitions from 1 to 0.
-        origin (array-like, optional): The origin of the mask. If None, the center is used.
+        :param n: (int or array-like): The size of the mask. If an integer, a cube of size n is assumed.
+        :param mask_radius: (float): The radius of the mask where the value is 1.
+        :param edge_width: (float): The width of the edge where the mask transitions from 1 to 0.
+        :param origin: (array-like, optional): The origin of the mask. If None, the center is used.
 
-        Returns:
-        m (numpy array): The generated spherical cosine mask.
+        :return: m (numpy array): The generated spherical cosine mask.
         """
 
         # Ensure n is an array
@@ -263,11 +218,9 @@ class MethodBase:
         """
         Calculates the center of gravity of a molecular structure.
 
-        Parameters:
-        structure (Structure): A molecular structure containing models, chains, residues, and atoms (use biopython)
+        :param structure: (Structure): A molecular structure containing models, chains, residues, and atoms (use biopython)
 
-        Returns:
-        center_of_gravity (numpy array): The coordinates of the center of gravity.
+        :return center_of_gravity: (numpy array): The coordinates of the center of gravity.
         """
         # Initialize sums for coordinates and total weight
         x_sum, y_sum, z_sum = 0, 0, 0
@@ -368,4 +321,42 @@ class MethodBase:
             return False
 
 
+# ======================================================================================================================
+# Wrappers
+def print_done_decorator(func):
+    def wrapper(self, *args, **kwargs):
+        result = func(self, *args, **kwargs)
+        print('Done!')
+        return result
 
+    return wrapper
+
+
+def print_command_decorator(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        # Extract command from function's docstring or create it from arguments
+        command = func.__doc__ or "Executing command"
+        print(f"Command: {command}")
+
+        # Perform the necessary checks
+        instance = args[0]  # Assuming the first argument is the class instance
+        if 'input_background_wedge_map' in kwargs:
+            input_background_wedge_map = kwargs['input_background_wedge_map']
+        elif len(args) > 1:
+            input_background_wedge_map = args[1]
+        else:
+            print("Error: No `input_background_wedge_map` argument provided for checks.")
+            return
+
+        try:
+            instance.perform_checks(input_background_wedge_map)
+        except ValueError as e:
+            print(f"Error: {e}")
+            return
+
+        result = func(*args, **kwargs)
+        print("Command executed successfully.")
+        return result
+
+    return wrapper

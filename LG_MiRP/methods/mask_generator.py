@@ -1,3 +1,10 @@
+"""
+Author: Alina Levitin
+Date: 02/07/24
+Updated: 10/07/24
+
+Method to ...
+"""
 import os
 import numpy as np
 import mrcfile
