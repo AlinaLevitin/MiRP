@@ -7,7 +7,7 @@ BROKEN!! NOT WORKING!!
 """
 import os
 import subprocess
-from mpi4py import MPI
+
 import numpy as np
 import starfile
 import mrcfile

@@ -1,7 +1,7 @@
 """
 Author: Alina Levitin
 Date: 15/04/24
-Updated: 15/04/24
+Updated: 15/07/24
 
 Two GUI classes (master and frame) for shifts and angle reset
 The method of shifts and angle reset is in and extraction is located in LG_MiRP/methods/reset_angles_shifts
@@ -62,5 +62,5 @@ class ResetShiftsAnglesFrame(LgFrameBase):
 
     @check_parameters(['input_star_file', 'output_directory', 'rot', 'x', 'y', 'z', 'psi', 'tilt'])
     def run_function(self):
-        function = ResetAnglesAndShifts(self.input_star_file, self.output_directory, rot=self.rot, x=self.x, y=self.y, z=self.z, psi=self.psi, tilt=self.tilt)
-        function.reset_angles_and_translations()
+        function = ResetAnglesAndShifts(self.input_star_file, self.output_directory)
+        function.reset_angles_and_translations(rot=self.rot, x=self.x, y=self.y, z=self.z, psi=self.psi, tilt=self.tilt)

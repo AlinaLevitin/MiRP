@@ -3,7 +3,8 @@ Author: Alina Levitin
 Date: 05/03/24
 Updated: 18/04/24
 
-Method to generate averages of segments of MTs after manual subset selection
+Method to generate averages of segments of MTs, ATM used only to assess the quality of the data
+Could be broken to several methods instead of spaghetti, but I'm too lazy
 
 """
 import os
@@ -58,11 +59,11 @@ class SegmentAverageGenerator(MethodBase):
         if "norm_mrcs" not in os.listdir(output_path):
             os.mkdir(norm_path)
 
-        # ==================================================================================================================
-
         # Starting to iterate over mrcs files
 
-        # Setting an empty list for the final averages-normalized mrcs files that will be saved in new_particles.star file
+        # Setting an empty list for the final averages-normalized mrcs files that will be saved in new_particles.star
+        # file
+
         new_avg_norm_images_names = []
 
         # Iterate over each micrograph stack in the directory path
