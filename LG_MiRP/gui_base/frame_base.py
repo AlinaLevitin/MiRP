@@ -8,7 +8,6 @@ Class to generate ttk.Frames LG-style.
 import os
 import random
 
-import tkinter as tk
 from tkinter import ttk
 import pandas as pd
 
@@ -27,14 +26,14 @@ class LgFrameBase(ttk.Frame):
 
     def __init__(self, master):
         """
-        :param master: master tk.Tk gui (gui_base.master_gui class)
+        :param master: master tk.Tk gui (gui_base.LgMasterGui class in master_gui.py) that will contain the frame
         """
         super().__init__(master)
 
         self.image = None
         self.input = pd.DataFrame()
         self.output = pd.DataFrame()
-        # Open and resize a tiny folder icon for browse button
+        # Open and resize a tiny 'folder' icon for browse button
         self.browse_image = open_and_resize_browse_image()
 
     def add_image(self, image_name: str = "default_image.jpg", new_size: int = 600, row: int = 10):
@@ -150,10 +149,18 @@ class LgFrameBase(ttk.Frame):
         return number_entry
 
     def add_show_results_button(self, command, row, text="Show Results", column=2):
+        """
+        Adds a button to show plots (very similar to run button, I don't remember why I felt the need to have both)
+        """
         button = tk.Button(self, text=text, command=command)
         button.grid(row=row, column=column, columnspan=1, padx=5, pady=5)
 
     def show_angle_and_shifts_plot(self, n=10):
+        """
+        Generates a matplot lib fig with 4 subplots for rot, tilt, psi and X/Y shifts as a function of segment number
+        for n random microtubules in the data set in new sub-windows (tk.TopLevel)
+        Uses plot_angles_and_shifts method from plost_functions.py in methods folder
+        """
         # Assuming 'grouped_data' is the grouped data from a DataFrame
         grouped_data = self.output.groupby(['rlnMicrographName', 'rlnHelicalTubeID'])
 
@@ -201,12 +208,17 @@ class LgFrameBase(ttk.Frame):
                 plot_window.add_title(text='After smoothing/correcting', row=3)
             plot_window.add_plot(fig_output, row=4)
 
-    def display_multiple_mrc_files(self, path, row):
+    def display_multiple_mrc_files(self, path, row, max_columns=6):
         """
         A method to show the mrc images of the references in a Tkinter top level window
+        Uses display_mrc_stack method from
+
+        :param path: mrc files path
+        :param row: the row in which to display the mrc images
+        :param max_columns: the maximum number of columns to display (default is six)
         """
-        # File paths
-        # file_paths = [os.path.join(path, file) for file in os.listdir(path) if file.endswith(".mrc")]
+
+        # Getting all files in the path (even in nested directories - just in case)
         file_paths = []
         for root, dirs, files in os.walk(path.get()):
             for file in files:
@@ -220,9 +232,6 @@ class LgFrameBase(ttk.Frame):
         base_names = [os.path.basename(file) for file in file_paths]
         label_text = [file.split("_")[0:2] for file in base_names]
 
-        # Define the maximum number of columns
-        max_columns = 6
-
         # Shows the mrc images
         for i, (file_path, label_text) in enumerate(zip(file_paths, label_text)):
             # Calculate the row and column index
@@ -232,12 +241,11 @@ class LgFrameBase(ttk.Frame):
             # Display the mrc stack
             display_mrc_stack(self, file_path, label_text, row=show_row, column=column)
 
-    def display_single_mrc_files(self, path, row):
+    def display_single_mrc_files(self, path, row=1):
         """
         A method to show the mrc images of the references in a Tkinter top level window
         """
-        # File paths
-        # file_paths = [os.path.join(path, file) for file in os.listdir(path) if file.endswith(".mrc")]
+
         file_path = path.get()
 
         if not file_path:
@@ -248,7 +256,7 @@ class LgFrameBase(ttk.Frame):
         label_text = base_name.split("_")[0:2]
 
         # Shows the mrc images
-        display_mrc_stack(self, file_path, label_text, row=1, column=0)
+        display_mrc_stack(self, file_path, label_text, row=row, column=0)
 
     def add_method_combobox(self, row, options, on_method_change=None, text='Method:'):
         label = tk.Label(self, text=text, font=('Ariel', 12))
@@ -265,9 +273,17 @@ class LgFrameBase(ttk.Frame):
         return method_var
 
     def on_method_change(self, event):
+        """
+        This is used to change the displayed image if used is chaining the method from a dropdown menu.
+        Since this may change for different steps, the method here is kept empty and is added on gui classes that
+        inherit from this class
+        """
         pass
 
     def display_image(self):
+        """
+        Used for MethodMenuGui (in gui.method_menu_gui.py) to display a default image when used is opening the gui
+        """
         image_stream = open_image("default_image.jpg")
         self.image = resize_image(image_stream, 600)
         image_label = tk.Label(self, image=self.image)
@@ -278,6 +294,10 @@ class LgFrameBase(ttk.Frame):
 # Decorators:
 
 def check_parameters(required_params):
+    """
+    Decorator to check if all the parameters are filled before trying to run a function.
+    Used in all guis to check if the used filled the required boxes before executing self.run_function()
+    """
     def decorator(func):
         @wraps(func)
         def wrapper(self, *args, **kwargs):
