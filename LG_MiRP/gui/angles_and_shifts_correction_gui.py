@@ -50,7 +50,10 @@ class AngleShiftsCorrectionFrame(LgFrameBase):
         # Adding a "Run" button that runs self.run_function
         self.add_run_button(row=4)
 
+        # Adding a number entry for number of results to show, default is 10
         result_number = self.add_number_entry(entry_name='Results to show (random):', row=5, default_value=10)
+
+        # Adding a button to show plots of angles and shifts as function of segments
         self.add_show_results_button(lambda: self.show_angle_and_shifts_plot(int(result_number.get())), row=5, text="Show results")
 
         # Imports a themed image at the bottom

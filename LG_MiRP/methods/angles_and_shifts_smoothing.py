@@ -142,6 +142,6 @@ class SmoothAnglesOrShifts(MethodBase):
         # Omit bad MTs
         if bad_mts:
             particles_dataframe.drop(bad_mts, inplace=True)
-            print(f"{len(bad_mts)} out of {grouped_data.shape[0]} MTs were omitted")
+            print(f"{len(bad_mts)} out of {len(grouped_data)} MTs were omitted")
 
         return particles_dataframe

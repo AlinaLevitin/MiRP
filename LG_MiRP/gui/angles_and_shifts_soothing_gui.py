@@ -13,7 +13,6 @@ from ..methods import SmoothAnglesOrShifts
 
 class SmoothingGui(LgMasterGui):
     """
-    ...
     Inherits from LgMasterGui
     """
 
@@ -26,7 +25,6 @@ class SmoothingGui(LgMasterGui):
 
 class SmoothingFrame(LgFrameBase):
     """
-    ...
     Inherits from LgFrameBase
     """
 
@@ -36,18 +34,20 @@ class SmoothingFrame(LgFrameBase):
         """
         super().__init__(master)
 
+        # Adding a title label
         self.add_sub_job_name("Angle (PHI/Rot) or XY shifts smoothing")
 
+        # Adding a dropdown menu (combobox) to choose a method (smooth angels or shifts)
         options = ['angles', 'shifts']
-
         self.method = self.add_method_combobox(row=1, options=options, on_method_change=True)
 
         # Creates an entry for run_it000_data.star file
-        self.star_file_input = self.add_file_entry('star', 'Select a run_it0xx_data.star file', row=2)
+        self.input_star_file = self.add_file_entry('star', 'Select a run_it0xx_data.star file', row=2)
 
         # Creates an entry for output directory
-        self.output_path = self.add_directory_entry('Select output directory', row=3)
+        self.output_directory = self.add_directory_entry('Select output directory', row=3)
 
+        # Adding a "Run" button that executes self.run_function
         self.add_run_button(row=4)
 
         # Adding entry and button to show results
@@ -60,8 +60,9 @@ class SmoothingFrame(LgFrameBase):
     @check_parameters(['input_star_file', 'output_directory', 'method'])
     def run_function(self):
 
-        function = SmoothAnglesOrShifts(self.star_file_input, self.output_path, self.method, cutoff=None)
+        function = SmoothAnglesOrShifts(self.input_star_file, self.output_directory, self.method, cutoff=None)
 
+        # Setting the input and output for
         self.input, self.output = function.smooth_angles_or_shifts()
 
     def on_method_change(self, event):
