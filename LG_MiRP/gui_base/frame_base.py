@@ -83,6 +83,7 @@ class LgFrameBase(ttk.Frame):
         :param entry_name: text to appear next to the Entry
         :param row: row in the frame
         :param default_value: the default value to be set in the Entry (optional)
+
         :return: tk.Entry for downstream operations
         """
         label = tk.Label(self, text=entry_name, font=('Ariel', 12))
@@ -151,6 +152,11 @@ class LgFrameBase(ttk.Frame):
     def add_show_results_button(self, command, row, text="Show Results", column=2):
         """
         Adds a button to show plots (very similar to run button, I don't remember why I felt the need to have both)
+
+        :param command: the function to run when pressing the button
+        :param row: selected row in the frame to display the button
+        :param text: selected test to display on the left of the button (default is "Show Results"
+        :param column: column to show the button on, default is 2
         """
         button = tk.Button(self, text=text, command=command)
         button.grid(row=row, column=column, columnspan=1, padx=5, pady=5)
@@ -160,6 +166,8 @@ class LgFrameBase(ttk.Frame):
         Generates a matplot lib fig with 4 subplots for rot, tilt, psi and X/Y shifts as a function of segment number
         for n random microtubules in the data set in new sub-windows (tk.TopLevel)
         Uses plot_angles_and_shifts method from plost_functions.py in methods folder
+
+        :param n: number of MTs to display plots for
         """
         # Assuming 'grouped_data' is the grouped data from a DataFrame
         grouped_data = self.output.groupby(['rlnMicrographName', 'rlnHelicalTubeID'])
@@ -244,6 +252,9 @@ class LgFrameBase(ttk.Frame):
     def display_single_mrc_files(self, path, row=1):
         """
         A method to show the mrc images of the references in a Tkinter top level window
+
+        :param path: path of the mrc file
+        :param row: selected row, default is 1
         """
 
         file_path = path.get()
@@ -259,10 +270,28 @@ class LgFrameBase(ttk.Frame):
         display_mrc_stack(self, file_path, label_text, row=row, column=0)
 
     def add_method_combobox(self, row, options, on_method_change=None, text='Method:'):
+        """
+        Creates a dropdown menu (ttk.Combobox) at a selected row with the options list as the menu next to the selected
+        text
+        Optionally will change something in the gui (method or image or both) when a specific option is selected
+        (on_method_change)
+
+        :param row: row number in the frame
+        :param options: list of options, the first item in the list will appear as the default option
+        :param on_method_change: True or None/False
+        :param text: text to be displayed on the left of the combobox
+
+        :return: selected option from the dropdown menu
+        """
+        # Creating a label with the desired text at the desired row
         label = tk.Label(self, text=text, font=('Ariel', 12))
         label.grid(row=row, column=0)
-        method_var = tk.StringVar(value=options[0])
-        method_combobox = ttk.Combobox(self, textvariable=method_var)
+
+        # Sets the default option as the first item in the options list
+        selected_option = tk.StringVar(value=options[0])
+        method_combobox = ttk.Combobox(self, textvariable=selected_option)
+
+        # Sets the options in the dropdown menu
         method_combobox['values'] = options
         method_combobox.grid(row=row, column=1)
 
@@ -270,11 +299,12 @@ class LgFrameBase(ttk.Frame):
             # Bind the combobox selection change to the add_image_by_name method
             method_combobox.bind("<<ComboboxSelected>>", self.on_method_change)
 
-        return method_var
+        return selected_option
 
     def on_method_change(self, event):
         """
-        This is used to change the displayed image if used is chaining the method from a dropdown menu.
+        This is used to change the displayed image or method (or both)as a result of changing options in the dropdown
+        menu.
         Since this may change for different steps, the method here is kept empty and is added on gui classes that
         inherit from this class
         """
