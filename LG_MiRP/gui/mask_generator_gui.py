@@ -1,7 +1,7 @@
 """
 Author: Alina Levitin
 Date: 28/05/24
-Updated: 28/05/24
+Updated: 17/07/24
 
 
 """
@@ -57,7 +57,7 @@ class MaskGeneratorFrame(LgFrameBase):
 
         self.method = self.add_method_combobox(row=9, options=options, on_method_change=True)
 
-        self.add_run_button(self.run_function, row=10)
+        self.add_run_button(row=10)
 
         self.add_image_by_name()
 

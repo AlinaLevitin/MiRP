@@ -1,7 +1,7 @@
 """
 Author: Alina Levitin
 Date: 26/02/24
-Updated: 09/06/24
+Updated: 17/07/24
 
 Class to generate ttk.Frames LG-style.
 """
@@ -59,7 +59,7 @@ class LgFrameBase(ttk.Frame):
         label = tk.Label(self, text=sub_job_name, font=('Ariel', 16))
         label.grid(row=row, column=0, columnspan=5, padx=5, pady=5)
 
-    def add_run_button(self, command, row, text=None):
+    def add_run_button(self, row, command=None, text=None):
         """
         Adds a "Run" button in order to run a function (functions are located in LG_MiRP/methods)
 
@@ -71,8 +71,17 @@ class LgFrameBase(ttk.Frame):
             label = tk.Label(self, text=text, font=('Ariel', 12))
             label.grid(row=row, column=0, columnspan=1, padx=5, pady=5)
 
-        button = tk.Button(self, text='Run', command=command)
+        if command:
+            button = tk.Button(self, text='Run', command=command)
+        else:
+            button = tk.Button(self, text='Run', command=self.run_function)
         button.grid(row=row, column=1, columnspan=1, padx=5, pady=5)
+
+    def run_function(self):
+        """
+        Place-holder for function to be run when user clicks the run button
+        """
+        pass
 
     def add_file_entry(self, entry_type, entry_name, row, default_value="", command=None):
         """

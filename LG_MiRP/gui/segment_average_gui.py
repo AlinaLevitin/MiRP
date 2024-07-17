@@ -1,7 +1,7 @@
 """
 Author: Alina Levitin
 Date: 10/03/24
-Updated: 11/3/24
+Updated: 17/07/24
 
 Two GUI classes (master and frame) for segment average generation
 The method of segment averaging is located in LG_MiRP/methods/segment_average_generator
@@ -46,7 +46,7 @@ class SegmentAverageFrame(LgFrameBase):
         # the new star file
         self.output_directory = self.add_directory_entry('Select output directory', row=5)
         # Creates a "Run" button that uses the segment average method
-        self.add_run_button(self.run_function, row=6)
+        self.add_run_button(row=6)
 
         # Imports a themed image at the bottom
         self.add_image("segment_average.jpg", new_size=600, row=7)

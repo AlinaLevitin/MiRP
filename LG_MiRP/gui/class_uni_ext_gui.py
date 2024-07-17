@@ -1,13 +1,12 @@
 """
 Author: Alina Levitin
 Date: 14/03/24
-Updated: 07/05/24
+Updated: 17/07/24
 
 Two GUI classes (master and frame) for class unification and extraction
 The method of class unification and extraction is located in LG_MiRP/methods/class_unifier_extractor
 """
 import tkinter as tk
-from tkinter import ttk
 
 from ..gui_base import LgFrameBase, LgMasterGui, LGTopLevelBase, check_parameters
 from ..methods import ClassUnifierExtractor
@@ -50,7 +49,7 @@ class ClassUnificationFrame(LgFrameBase):
         self.output_directory = self.add_directory_entry('Select output directory', row=4)
 
         # Creates a "Run" button that uses the class unification and extraction method
-        self.add_run_button(self.run_function, row=5)
+        self.add_run_button(row=5)
         # Creates a button to show the distribution of classes according to 3D classification
         result_button = tk.Button(self, text="Show Classes Distribution", command=lambda: self.show_class_distribution(self.input_star_file1))
         result_button.grid(row=6, column=0)

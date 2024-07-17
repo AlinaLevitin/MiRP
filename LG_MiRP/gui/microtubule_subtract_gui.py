@@ -1,7 +1,7 @@
 """
 Author: Alina Levitin
 Date: 26/05/24
-Updated: 26/05/24
+Updated: 17/07/24
 
 
 """
@@ -19,7 +19,7 @@ class MicrotubuleSubtractGui(LgMasterGui):
 
     def __init__(self, name):
         super().__init__(name)
-        self.add_gui_name("Generate Protofilament Particles from Wedges")
+        self.title("Generate Protofilament Particles from Wedges")
         frame1 = MicrotubuleSubtractFrame(self)
         frame1.grid(row=1, column=0, sticky="NSEW")
         self.mainloop()
@@ -49,7 +49,7 @@ class MicrotubuleSubtractFrame(LgFrameBase):
 
         self.method_var = self.add_method_combobox(row=4, options=options)
 
-        self.add_run_button(self.run_function, row=5)
+        self.add_run_button(row=5)
 
         self.add_image(image_name='wedge_mask_generator.png', new_size=600, row=10)
 

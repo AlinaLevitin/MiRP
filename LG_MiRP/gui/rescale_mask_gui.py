@@ -1,7 +1,7 @@
 """
 Author: Alina Levitin
 Date: 28/03/24
-Updated: 02/04/24
+Updated: 17/07/24
 
 Two GUI classes (master and frame) for class reference rescaling
 The method of reference rescaling is located in LG_MiRP/methods/reference_scaler
@@ -51,7 +51,7 @@ class RescaleMaskFrame(LgFrameBase):
         self.method_var = self.add_method_combobox(row=5, options=options)
 
         # Creates a "Run" button that uses the segment average method
-        self.add_run_button(command=self.run_function, row=6)
+        self.add_run_button(row=6)
 
         self.frame2 = None
 

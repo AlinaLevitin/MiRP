@@ -1,7 +1,7 @@
 """
 Author: Alina Levitin
 Date: 17/04/24
-Updated: 18/04/24
+Updated: 17/07/24
 
 Two GUI classes (master and frame) to unifi PHI/Rot (angle smoothing)
 The method of angle smoothing is in and extraction is located in LG_MiRP/methods/angle_smoothing
@@ -48,7 +48,7 @@ class SmoothingFrame(LgFrameBase):
         # Creates an entry for output directory
         self.output_path = self.add_directory_entry('Select output directory', row=3)
 
-        self.add_run_button(self.run_function, row=4)
+        self.add_run_button(row=4)
 
         # Adding entry and button to show results
         result_number = self.add_number_entry(entry_name='Results to show (random):', row=5, default_value=10)

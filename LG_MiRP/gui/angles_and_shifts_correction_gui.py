@@ -1,7 +1,7 @@
 """
 Author: Alina Levitin
 Date: 17/04/24
-Updated: 01/07/24
+Updated: 17/07/24
 
 Two GUI classes (master and frame) to correct PHI/Rot and shifts
 The method of angle smoothing is in and extraction is located in LG_MiRP/methods/angle_shifts_correction
@@ -13,8 +13,7 @@ from ..methods import AnglesAndShiftsCorrection
 
 class AngleShiftsCorrectionGui(LgMasterGui):
     """
-    ...
-    Inherits from LgMasterGui
+    Inherits from LgMasterGui in master_gui.py
     """
 
     def __init__(self, name):
@@ -36,6 +35,7 @@ class AngleShiftsCorrectionFrame(LgFrameBase):
         """
         super().__init__(master)
 
+        # Adding a title label
         self.add_sub_job_name("angles and shifts correction")
 
         # Creates an entry for run_it000_data.star file
@@ -44,9 +44,11 @@ class AngleShiftsCorrectionFrame(LgFrameBase):
         # Creates an entry for output directory
         self.output_directory = self.add_directory_entry('Select output directory', row=2)
 
+        # Adding a number entry for protofilament number
         self.pf_number = self.add_number_entry("Number of proto-filaments", row=3)
 
-        self.add_run_button(self.run_function, row=4)
+        # Adding a "Run" button that runs self.run_function
+        self.add_run_button(row=4)
 
         result_number = self.add_number_entry(entry_name='Results to show (random):', row=5, default_value=10)
         self.add_show_results_button(lambda: self.show_angle_and_shifts_plot(int(result_number.get())), row=5, text="Show results")

@@ -1,7 +1,7 @@
 """
 Author: Alina Levitin
 Date: 15/04/24
-Updated: 15/07/24
+Updated: 17/07/24
 
 Two GUI classes (master and frame) for shifts and angle reset
 The method of shifts and angle reset is in and extraction is located in LG_MiRP/methods/reset_angles_shifts
@@ -55,7 +55,7 @@ class ResetShiftsAnglesFrame(LgFrameBase):
         self.output_directory = self.add_directory_entry('Select output directory', row=8)
 
         # Creates a "Run" button that uses the class unification and extraction method
-        self.add_run_button(self.run_function, row=9)
+        self.add_run_button(row=9)
 
         # Imports a themed image at the bottom
         self.add_image(new_size=600, row=10)
