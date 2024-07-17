@@ -27,6 +27,12 @@ class LGTopLevelBase(tk.Toplevel):
         self.add_exit_button()
 
     def add_title(self, text, row=0):
+        """
+        Adds a title label at the top of the window
+
+        :param text: desired text
+        :param row: selected row to display the title (default is 0 - first row)
+        """
         label = tk.Label(self, text=text, font=('Ariel', 12))
         label.grid(row=row, column=0, padx=5, pady=5)
 

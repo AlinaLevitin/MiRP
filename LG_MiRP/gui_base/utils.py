@@ -19,7 +19,7 @@ def open_image(image_name: str = "missing image"):
     Open image using resource_stream
 
     :param image_name: string name of image in LG_MiRP/assets
-    :return: Image
+    :return: PIL image
     """
     image_stream = resource_stream('LG_MiRP', f'assets/{image_name}')
     if image_stream:
@@ -34,6 +34,7 @@ def resize_image(image, new_width: int = 100):
 
     :param image: Image input after opening with open_image function
     :param new_width: desired new width
+
     :return: PhotoImage Image
     """
     scale = new_width / image.width
@@ -60,7 +61,9 @@ def browse(file_type, file_entry=None, command=None):
     """
     Browsing function using filedialog from tk
 
-    :param command:
+    :param command: command to execute once the files are selected (usually used in conjugation with displaying selected
+    mrc files (references and masks)
+
     :param file_type: file type can be star, mrc, mrcs, directory,
                         when browsing it will show only the selected file type
     :param file_entry: tk.Entry in order to insert the selected file/directory in the entry
@@ -87,6 +90,18 @@ def browse(file_type, file_entry=None, command=None):
 
 
 def display_mrc_slice(master, file_path, slice_index, label_text, row, column):
+    """
+    Display an image of a single slice in a mrc file
+
+    :param master: the gui in which to show the image
+    :param file_path: the mrc file path
+    :param slice_index: slice number
+    :param label_text: text to display
+    :param row: selected row in the gui
+    :param column: selected column in the gui
+
+    :return: sets image_label.photo as the desired slice
+    """
     # Open the MRC file
     with mrcfile.open(file_path, permissive=True) as mrc:
         # Extract the image data for the specified slice
@@ -117,6 +132,17 @@ def display_mrc_slice(master, file_path, slice_index, label_text, row, column):
 
 
 def display_mrc_stack(master, file_path, label_text, row, column):
+    """
+    Display an image of a mrc file stack
+
+    :param master: the gui in which to show the image
+    :param file_path: the mrc file path
+    :param label_text: text to display
+    :param row: selected row in the gui
+    :param column: selected column in the gui
+
+    :return: sets image_label.photo as the desired stack
+    """
     # Open the MRC file
     with mrcfile.open(file_path, permissive=True) as mrc:
         # Extract the image data for the specified slice
