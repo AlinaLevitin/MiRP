@@ -29,9 +29,12 @@ class MethodMenuGui(LgMasterGui):
         self.main_frame = tk.Frame(self)
         self.main_frame.grid(row=0, column=1, rowspan=12, sticky="NSEW")
 
+        # Setting up the default frame which is the main frame that contains the default image
         self.default_frame = LgFrameBase(self.main_frame)
         self.default_frame.display_image()
         self.default_frame.grid(row=0, column=0, sticky="NSEW")
+
+        # When the user opens the gui the current frame is the default frame
         self.current_frame = self.default_frame
 
     @staticmethod

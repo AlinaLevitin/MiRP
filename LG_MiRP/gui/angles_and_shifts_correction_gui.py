@@ -4,7 +4,7 @@ Date: 17/04/24
 Updated: 17/07/24
 
 Two GUI classes (master and frame) to correct PHI/Rot and shifts
-The method of angle smoothing is in and extraction is located in LG_MiRP/methods/angle_shifts_correction
+The method of angle smoothing is in and extraction is located in LG_MiRP/methods/angle_shifts_correction.py
 
 """
 from ..gui_base import LgFrameBase, LgMasterGui, check_parameters
@@ -61,5 +61,9 @@ class AngleShiftsCorrectionFrame(LgFrameBase):
 
     @check_parameters(['input_star_file', 'pf_number', 'output_directory'])
     def run_function(self):
+        """
+        Setting up the class, checking if the parameters are all filled (prints in the terminal if something is missing)
+        and running the function with the parameters
+        """
         function = AnglesAndShiftsCorrection(self.input_star_file, self.pf_number, self.output_directory)
         self.output, self.input = function.adjust_angles_and_translations()

@@ -53,11 +53,18 @@ class SegmentAverageFrame(LgFrameBase):
 
     @check_parameters(['input_directory', 'output_directory', 'input_star_file'])
     def run_function(self):
+        """
+        Setting up the class, checking if the parameters are all filled (prints in the terminal if something is missing)
+        and running the function with the parameters
+        """
         function = SegmentAverageGenerator(self.input_directory, self.output_directory, self.input_star_file)
-
         function.generate_segment_averages()
 
     def show_mt_segment_histogram(self, input_star_file):
+        """
+        Displays a histogram of the distribution of the segment number of the MTs
+        :param input_star_file: star file input with the particles after particle extraction
+        """
         fig = mt_segment_histogram(input_star_file)
         histogram_window = LGTopLevelBase(self)
         histogram_window.title("Histogram of number of segments per MT")

@@ -4,7 +4,7 @@ Date: 17/04/24
 Updated: 17/07/24
 
 Two GUI classes (master and frame) to unifi PHI/Rot (angle smoothing)
-The method of angle smoothing is in and extraction is located in LG_MiRP/methods/angle_smoothing
+Using SmoothAnglesOrShifts at angle_and_shifts_smoothing.py
 
 """
 from ..gui_base import LgFrameBase, LgMasterGui, check_parameters
@@ -59,16 +59,28 @@ class SmoothingFrame(LgFrameBase):
 
     @check_parameters(['input_star_file', 'output_directory', 'method'])
     def run_function(self):
-
+        """
+        Setting up the class, checking if the parameters are all filled (prints in the terminal if something is missing)
+        and running the function with the parameters
+        """
         function = SmoothAnglesOrShifts(self.input_star_file, self.output_directory, self.method, cutoff=None)
 
         # Setting the input and output for
         self.input, self.output = function.smooth_angles_or_shifts()
 
-    def on_method_change(self, event):
+    def on_combobox_select(self, event):
+        """
+        Changing the image according to the type of the mask (wedge or cylindrical cutout)
+        Using ttk.Combobox.bind("<<ComboboxSelected>>", self.on_method_change)
+
+        :param event: the event on which to perform the change
+        """
         self.add_image_by_name()
 
     def add_image_by_name(self):
+        """
+        The function that changes the theme image according to the selected method
+        """
         image_name = ""
         if self.method.get() == 'angles':
             image_name = "rot_unification.jpg"

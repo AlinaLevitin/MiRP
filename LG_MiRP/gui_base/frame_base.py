@@ -306,11 +306,11 @@ class LgFrameBase(ttk.Frame):
 
         if on_method_change:
             # Bind the combobox selection change to the add_image_by_name method
-            method_combobox.bind("<<ComboboxSelected>>", self.on_method_change)
+            method_combobox.bind("<<ComboboxSelected>>", self.on_combobox_select)
 
         return selected_option
 
-    def on_method_change(self, event):
+    def on_combobox_select(self, event):
         """
         This is used to change the displayed image or method (or both)as a result of changing options in the dropdown
         menu.

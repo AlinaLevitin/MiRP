@@ -4,7 +4,7 @@ Date: 14/03/24
 Updated: 17/07/24
 
 Two GUI classes (master and frame) for class unification and extraction
-The method of class unification and extraction is located in LG_MiRP/methods/class_unifier_extractor
+The method of class unification and extraction is located in LG_MiRP/methods/class_unifier_extractor.py
 """
 import tkinter as tk
 
@@ -14,7 +14,6 @@ from ..methods import ClassUnifierExtractor
 
 class ClassUnificationExtractionGui(LgMasterGui):
     """
-    ...
     Inherits from LgMasterGui
     """
     def __init__(self, name):
@@ -59,6 +58,10 @@ class ClassUnificationFrame(LgFrameBase):
 
     @check_parameters(['input_star_file0', 'input_star_file1', 'output_directory'])
     def run_function(self):
+        """
+        Setting up the class, checking if the parameters are all filled (prints in the terminal if something is missing)
+        and running the function with the parameters
+        """
         function = ClassUnifierExtractor(self.input_star_file0, self.input_star_file1, self.output_directory, self.step.get())
         function.class_unifier_extractor()
 
