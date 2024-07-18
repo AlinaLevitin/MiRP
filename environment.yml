@@ -1,24 +1,27 @@
 name: LG_MiRP
 dependencies:
-    - python=3.10
-    - pip
-    - cycler
-    - openmpi
-    - mpi4py
-    - matplotlib
-    - numpy
-    - pandas
-    - olefile
-    - Pillow
-    - pyparsing
-    - python-dateutil
-    - scipy
-    - six
-    - pytz
-    - tqdm
-    - pip:
-            - mrcfile
-            - starfile
-            - tensorflow
-            - Bio
+  - python=3.10
+  - pip
+  - cycler
+  - openmpi
+  - mpi4py
+  - matplotlib
+  - numpy
+  - pandas
+  - olefile
+  - Pillow
+  - pyparsing
+  - python-dateutil
+  - scipy
+  - six
+  - pytz
+  - tqdm
+#  - -c schrodinger pymol
+  - pip:
+      - mrcfile
+      - starfile
+      - tensorflow
+      - Bio
+      - MDAnalysis
+
             

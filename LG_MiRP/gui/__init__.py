@@ -8,3 +8,4 @@ from .rescale_mask_gui import *
 from .mask_generator_gui import *
 # from .microtubule_subtract_gui import *
 from .method_menu_gui import *
+from .kinesin_mask_gui import *

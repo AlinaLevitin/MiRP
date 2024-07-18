@@ -9,7 +9,7 @@ The GUI is located in LG_MiRP/gui/method_menu_gui
 
 """
 
-from LG_MiRP import MethodMenuGui, RescaleReferenceFrame, MaskGeneratorFrame
+from LG_MiRP import MethodMenuGui, RescaleReferenceFrame, MaskGeneratorFrame, KinesinMaskFrame
 
 
 def main():
@@ -17,6 +17,7 @@ def main():
     gui = MethodMenuGui('Initial Seam Assignment')
     gui.add_frame(RescaleReferenceFrame, 'Rescale References', step=gui.get_file_name(__file__))
     gui.add_frame(MaskGeneratorFrame, 'Mask generator')
+    gui.add_frame(KinesinMaskFrame, 'Kinesin Mask Generator')
     gui.mainloop()
 
 
