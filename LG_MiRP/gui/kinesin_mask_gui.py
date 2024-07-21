@@ -57,5 +57,5 @@ class KinesinMaskFrame(LgFrameBase):
         """
         function = KinesinMaskGenerator(self.pdb_file, self.output_directory, self.input_pixel_size, self.input_box_size)
 
-        function.pdb_to_mrc()
+        function.generate_spherical_volume()
 

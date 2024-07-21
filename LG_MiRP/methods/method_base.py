@@ -166,7 +166,7 @@ class MethodBase:
     # structural functions:
 
     @staticmethod
-    def spherical_cosmask(n, mask_radius, edge_width, origin=None):
+    def spherical_cosmask(n, mask_radius=20, edge_width=5, origin=None):
         """
         Creates a spherical cosine mask.
 
