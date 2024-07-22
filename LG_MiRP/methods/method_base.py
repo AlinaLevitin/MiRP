@@ -166,11 +166,11 @@ class MethodBase:
     # structural functions:
 
     @staticmethod
-    def spherical_cosmask(n, mask_radius=20, edge_width=5, origin=None):
+    def spherical_cosmask(box_size, mask_radius=20, edge_width=5):
         """
         Creates a spherical cosine mask.
 
-        :param n: (int or array-like): The size of the mask. If an integer, a cube of size n is assumed.
+        :param box_size: (int or array-like): The size of the mask. If an integer, a cube of size n is assumed.
         :param mask_radius: (float): The radius of the mask where the value is 1.
         :param edge_width: (float): The width of the edge where the mask transitions from 1 to 0.
         :param origin: (array-like, optional): The origin of the mask. If None, the center is used.
@@ -179,12 +179,12 @@ class MethodBase:
         """
 
         # Ensure n is an array
-        if isinstance(n, int):
-            n = np.array([n])
+        if isinstance(box_size, int):
+            box_size = np.array([box_size])
 
         # Initialize size of the mask
         sz = np.array([1, 1, 1])
-        sz[:len(n)] = n
+        sz[:len(box_size)] = box_size
 
         # Determine lower and upper bounds for the mask grid
         szl = -np.floor(sz / 2)

@@ -16,7 +16,7 @@ def main():
     # Generating the gui
     gui = MethodMenuGui('Initial Seam Assignment')
     gui.add_frame(RescaleReferenceFrame, 'Rescale References', step=gui.get_file_name(__file__))
-    gui.add_frame(MaskGeneratorFrame, 'Mask generator')
+    gui.add_frame(MaskGeneratorFrame, 'Protofilament Mask generator')
     gui.add_frame(KinesinMaskFrame, 'Kinesin Mask Generator')
     gui.mainloop()
 
