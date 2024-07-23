@@ -1,26 +1,28 @@
 import numpy as np
 import mrcfile
 import os
-from Bio.PDB import PDBParser, Structure
+from Bio.PDB import PDBParser
 from .method_base import MethodBase, print_done_decorator
 from .volume_mrc import VolumeMrc
 
+
 class KinesinMaskGenerator(MethodBase):
-    def __init__(self, fit_tubulin_pdb, microtubule_volume, output_path, sphere_radius):
+    def __init__(self, fit_tubulin_pdb, microtubule_volume, output_path, sphere_radius, x_interval):
         self.fit_tubulin_pdb = fit_tubulin_pdb.get()
         self.microtubule_volume = microtubule_volume.get()
         self.output_path = output_path.get()
         self.pixel_size = None
         self.sphere_radius = float(sphere_radius.get())
+        self.x_interval = float(x_interval.get())  # 8 nm or any other value
 
     @print_done_decorator
-    def generate_spherical_mask(self):
+    def generate_multiple_spheres(self):
         try:
             # Parse the PDB file to get the tubulin structure
             parser = PDBParser(QUIET=True)
             structure = parser.get_structure('structure', self.fit_tubulin_pdb)
 
-            # Extract chain K
+            # Extract chain K and residue 427
             chain_K = None
             for model in structure:
                 for chain in model:
@@ -33,34 +35,38 @@ class KinesinMaskGenerator(MethodBase):
             if chain_K is None:
                 raise ValueError("Chain K not found in the structure")
 
-            # Calculate geometric center of chain K
-            com = self.calc_geometric_center(chain_K)
-            print(f"Geometric center of chain K: {com}")
-
-            # Load microtubule volume and mask
+            # Load microtubule volume
             vol = VolumeMrc(self.microtubule_volume)
             vol_dim = np.asarray(vol.shape)
             self.pixel_size = vol.pixel
+            print(f"Pixel size: {self.pixel_size}")
 
-            # Convert geometric center to voxel coordinates
-            com_voxel = np.round(com / self.pixel_size).astype(int)
-            print(f"Geometric center in voxel coordinates (before clipping): {com_voxel}")
+            # Create an empty volume
+            combined_mask = np.zeros(vol_dim, dtype=np.float32)
 
-            # Adjust the geometric center if it is too close to the edge
-            com_voxel = np.clip(com_voxel, self.sphere_radius, vol_dim - self.sphere_radius - 1)
-            print(f"Adjusted geometric center in voxel coordinates: {com_voxel}")
+            # Iterate through x-coordinates
+            min_x = 0
+            max_x = vol_dim[0]
+            x_positions = np.arange(min_x, max_x, self.x_interval / self.pixel_size)
 
-            # Create a spherical mask
-            sphere_radius_vox = self.sphere_radius / self.pixel_size
-            spherical_mask = self.create_spherical_mask(vol_dim, com_voxel, sphere_radius_vox)
-            print(f"Spherical mask stats: min={np.min(spherical_mask)}, max={np.max(spherical_mask)}, mean={np.mean(spherical_mask)}")
+            for x in x_positions:
+                # Calculate the center for each sphere
+                center = np.array([int(x), vol_dim[1] // 2, vol_dim[2] // 2])
+                print(f"Creating sphere at x={x} (voxel coordinates: {center})")
+
+                # Create a spherical mask
+                sphere_radius_vox = self.sphere_radius / self.pixel_size
+                spherical_mask = self.create_spherical_mask(vol_dim, center, sphere_radius_vox)
+
+                # Combine masks
+                combined_mask = np.maximum(combined_mask, spherical_mask)
 
             # Apply cosine mask filter
-            edge_resolution = 40
+            edge_resolution = 20
             edge_width = self.pixel_size * np.ceil(edge_resolution / (2 * self.pixel_size))
             cosmask_filter = np.fft.fftshift(self.spherical_cosmask(vol_dim, 0, edge_width / self.pixel_size))
             cosmask_filter_fft = np.fft.fftn(cosmask_filter) / np.sum(cosmask_filter)
-            soft_m = np.real(np.fft.ifftn(cosmask_filter_fft * np.fft.fftn(spherical_mask)))
+            soft_m = np.real(np.fft.ifftn(np.fft.fftn(combined_mask) * cosmask_filter_fft))
             soft_m[soft_m < 0] = 0
             print(f"Softened mask stats: min={np.min(soft_m)}, max={np.max(soft_m)}, mean={np.mean(soft_m)}")
 
@@ -70,26 +76,14 @@ class KinesinMaskGenerator(MethodBase):
                 os.makedirs(output_directory)
             else:
                 self.delete_folder_contents(output_directory)
-            output_mrc = os.path.join(output_directory, 'spherical_mask.mrc')
+            output_mrc = os.path.join(output_directory, 'multiple_spheres_x_axis.mrc')
             with mrcfile.new(output_mrc, overwrite=True) as mrc:
                 mrc.set_data(soft_m.astype(np.float32))
                 mrc.voxel_size = vol.voxel_size
 
-            print(f'Saved spherical mask at {output_mrc}')
+            print(f'Saved spherical mask with multiple spheres along x-axis at {output_mrc}')
         except Exception as e:
-            print(f"Error in generate_spherical_mask: {e}")
-
-    @staticmethod
-    def calc_geometric_center(chain):
-        """
-        Calculates the geometric center of a chain.
-
-        :param chain: (Bio.PDB.Chain): A chain containing residues and atoms.
-        :return center: (numpy array): The coordinates of the geometric center.
-        """
-        atom_coords = [atom.get_coord() for residue in chain for atom in residue]
-        center = np.mean(atom_coords, axis=0)
-        return center
+            print(f"Error in generate_multiple_spheres: {e}")
 
     @staticmethod
     def create_spherical_mask(grid_size, center, radius):

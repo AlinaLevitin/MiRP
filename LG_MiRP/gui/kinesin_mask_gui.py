@@ -35,22 +35,20 @@ class KinesinMaskFrame(LgFrameBase):
         self.add_sub_job_name("Kinesin Mask Generator", row=0)
 
         # Adding entry for mask mrc file
-        self.pdb_file = self.add_file_entry(entry_type='pdb', entry_name='Choose a kinein .pdb file', row=1)
+        self.fit_tubulin_pdb = self.add_file_entry(entry_type='pdb', entry_name='Choose a kinein .pdb file', row=1)
 
-        # Adding a numerical entry for pixel size in angstrom, default is 3.56A
-        # self.input_pixel_size = self.add_number_entry("Pixel size (Angstrom)", default_value=3.56, row=2)
-
-        self.microtubule_volume = self.add_file_entry('mrc', 'Select microtubule volume .mrc file', row=3)
-
-        # self.microtubule_mask = self.add_file_entry('mrc', 'Select microtubule mask .mrc file', row=4)
+        self.microtubule_volume = self.add_file_entry('mrc', 'Select microtubule volume .mrc file', row=2)
 
         # Adding an output directory entry
-        self.output_directory = self.add_directory_entry('Select output directory', row=5)
+        self.output_directory = self.add_directory_entry('Select output directory', row=3)
 
-        self.sphere_radius = self.add_number_entry("Sphere radius is pixels", default_value=20, row=6)
+        self.sphere_radius = self.add_number_entry("Sphere radius is pixels", default_value=20, row=4)
+
+        # Adding a numerical entry for interval of the spheres in angstrom, default is 82A
+        self.x_interval = self.add_number_entry("Interval (Angstrom)", default_value=82, row=5)
 
         # Creates a "Run" button that uses the segment average method
-        self.add_run_button(row=7)
+        self.add_run_button(row=6)
 
     # @check_parameters(['pdb_file', 'output_directory', 'input_pixel_size', 'input_box_size'])
     def run_function(self):
@@ -58,10 +56,11 @@ class KinesinMaskFrame(LgFrameBase):
         Setting up the class, checking if the parameters are all filled (prints in the terminal if something is missing)
         and running the function with the parameters
         """
-        function = KinesinMaskGenerator(fit_tubulin_pdb=self.pdb_file,
+        function = KinesinMaskGenerator(fit_tubulin_pdb=self.fit_tubulin_pdb,
                                         microtubule_volume=self.microtubule_volume,
                                         output_path=self.output_directory,
-                                        sphere_radius=self.sphere_radius)
+                                        sphere_radius=self.sphere_radius,
+                                        x_interval=self.x_interval)
 
-        function.generate_spherical_mask()
+        function.generate_multiple_spheres()
 
