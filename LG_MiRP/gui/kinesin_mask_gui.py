@@ -38,11 +38,11 @@ class KinesinMaskFrame(LgFrameBase):
         self.pdb_file = self.add_file_entry(entry_type='pdb', entry_name='Choose a kinein .pdb file', row=1)
 
         # Adding a numerical entry for pixel size in angstrom, default is 3.56A
-        self.input_pixel_size = self.add_number_entry("Pixel size (Angstrom)", default_value=3.56, row=2)
+        # self.input_pixel_size = self.add_number_entry("Pixel size (Angstrom)", default_value=3.56, row=2)
 
         self.microtubule_volume = self.add_file_entry('mrc', 'Select microtubule volume .mrc file', row=3)
 
-        self.microtubule_mask = self.add_file_entry('mrc', 'Select microtubule mask .mrc file', row=4)
+        # self.microtubule_mask = self.add_file_entry('mrc', 'Select microtubule mask .mrc file', row=4)
 
         # Adding an output directory entry
         self.output_directory = self.add_directory_entry('Select output directory', row=5)
@@ -60,9 +60,7 @@ class KinesinMaskFrame(LgFrameBase):
         """
         function = KinesinMaskGenerator(fit_tubulin_pdb=self.pdb_file,
                                         microtubule_volume=self.microtubule_volume,
-                                        microtubule_mask=self.microtubule_mask,
                                         output_path=self.output_directory,
-                                        pixel_size=self.input_pixel_size,
                                         sphere_radius=self.sphere_radius)
 
         function.generate_spherical_mask()
