@@ -1,14 +1,21 @@
 import numpy as np
 import mrcfile
 import os
-from Bio.PDB import PDBParser
 from .method_base import MethodBase, print_done_decorator
 from .volume_mrc import VolumeMrc
 
 
 class KinesinMaskGenerator(MethodBase):
-    def __init__(self, fit_tubulin_pdb, microtubule_volume, output_path, sphere_radius, x_interval):
-        self.fit_tubulin_pdb = fit_tubulin_pdb.get()
+    """
+    Takes the input microtubule_volume to generate spherical masks in the selected radius at the selected intervals.
+    Extracts the dimensions and pixel size from the microtubule_volume
+
+    :param microtubule_volume: run_class00x.mrc after high resolution reconstruction (5th 3D-Refine)
+    :param output_path: output path
+    :param sphere_radius: selected sphere radius in Angstrom
+    :param x_interval: intervals of the centers of the spheres
+    """
+    def __init__(self, microtubule_volume, output_path, sphere_radius, x_interval):
         self.microtubule_volume = microtubule_volume.get()
         self.output_path = output_path.get()
         self.pixel_size = None
@@ -17,24 +24,13 @@ class KinesinMaskGenerator(MethodBase):
 
     @print_done_decorator
     def generate_multiple_spheres(self):
+        """
+        Generates spherical masks in the selected radius at the selected intervals using the dimensions and pixel size
+        of the microtubule_volume.
+        Outputs the mrc file at the selected output path in a new folder named spherical_masks
+        output_path/spherical_masks/multiple_spheres_x_axis.mrc
+        """
         try:
-            # Parse the PDB file to get the tubulin structure
-            parser = PDBParser(QUIET=True)
-            structure = parser.get_structure('structure', self.fit_tubulin_pdb)
-
-            # Extract chain K and residue 427
-            chain_K = None
-            for model in structure:
-                for chain in model:
-                    if chain.get_id() == 'K':
-                        chain_K = chain
-                        break
-                if chain_K is not None:
-                    break
-
-            if chain_K is None:
-                raise ValueError("Chain K not found in the structure")
-
             # Load microtubule volume
             vol = VolumeMrc(self.microtubule_volume)
             vol_dim = np.asarray(vol.shape)
@@ -87,6 +83,14 @@ class KinesinMaskGenerator(MethodBase):
 
     @staticmethod
     def create_spherical_mask(grid_size, center, radius):
+        """
+        Creates a single spherical mask with a selected radius at a selected coordinate position as the center
+
+        :param grid_size: The dimensions of the microtubule_volume box
+        :param center: The center coordinates of the sphere
+        :param radius: the selected radius of the sphere
+        :return:
+        """
         center = np.round(center).astype(int)
         center = np.clip(center, 0, np.array(grid_size) - 1)
 

@@ -249,41 +249,6 @@ class MethodBase:
         center_of_gravity = np.array([x_sum / total_weight, y_sum / total_weight, z_sum / total_weight])
 
         return center_of_gravity
-
-    @staticmethod
-    def create_spherical_mask(grid_size, center, radius):
-        """
-        Create a spherical mask.
-
-        :param grid_size: (tuple): The size of the grid (nx, ny, nz).
-        :param center: (tuple): The center of the sphere (cx, cy, cz).
-        :param radius: (float): The radius of the sphere.
-        :return mask: (numpy array): The spherical mask.
-        """
-        # Convert center to integer and ensure it is within bounds
-        center = np.round(center).astype(int)
-        center = np.clip(center, 0, np.array(grid_size) - 1)  # Clip to avoid out-of-bounds issues
-
-        # Create a grid of coordinates
-        x = np.arange(grid_size[0])
-        y = np.arange(grid_size[1])
-        z = np.arange(grid_size[2])
-        xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
-
-        # Calculate distances from the center
-        distance = np.sqrt((xx - center[0]) ** 2 + (yy - center[1]) ** 2 + (zz - center[2]) ** 2)
-
-        # Create mask based on distance
-        mask = np.zeros(grid_size, dtype=np.float32)
-        mask[distance <= radius] = 1
-
-        # Debugging: print statistics and a slice of the mask
-        print(f"Distance array stats: min={np.min(distance)}, max={np.max(distance)}, mean={np.mean(distance)}")
-        print(f"Mask stats: min={np.min(mask)}, max={np.max(mask)}, mean={np.mean(mask)}")
-        print(f"Spherical mask created with center: {center} and radius: {radius} Angstrom")
-
-        return mask
-
     # ======================================================================================================================
     # Lazy functions:
     @staticmethod

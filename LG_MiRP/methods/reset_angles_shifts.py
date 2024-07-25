@@ -5,8 +5,11 @@ Updated: 15/07/24
 
 Methods for angles and shifts manipulation during initial seam assignment step
 
-shifts: rlnAngleRot, rlnOriginX, rlnOriginY, rlnOriginZ are set to 0
-angles: rlnAnglePsi, rlnAngleTilt are set to priors: rlnAnglePsiPrior, rlnAngleTiltPrior
+shifts: rlnOriginX, rlnOriginY, rlnOriginZ (I'm not sure if Z exists)
+angles: rlnAngleRot, rlnAnglePsi, rlnAngleTilt
+
+If set to 0 then the values are set to 0, if set to prior then are set to priors (rlnAnglePsiPrior, rlnAngleTiltPrior)
+if none, then untouched.
 
 """
 import os
