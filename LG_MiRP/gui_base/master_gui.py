@@ -6,7 +6,7 @@ Updated: 11/3/24
 Class to generate GUIs LG-style.
 """
 import tkinter as tk
-
+from tkinter import ttk
 from .top_level_base import LGTopLevelBase
 
 
@@ -24,14 +24,24 @@ class LgMasterGui(tk.Tk):
         # Sets the name of the gui
         self.title(name)
 
+        # Make the window resizable
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(1, weight=1)
+
         # Sets an empty dictionary for frames in menu-style gui
         self.frames = {}
 
         # Add menu frame on the left
-        self.menu_frame = None
+        self.menu_frame = ttk.Frame(self)
+        self.menu_frame.grid(row=1, column=0, sticky="NS")
+        self.menu_frame.grid_columnconfigure(0, weight=1)
 
         # Main content frame
-        self.main_frame = None
+        self.main_frame = ttk.Frame(self)
+        self.main_frame.grid(row=1, column=1, sticky="NSEW")
+        self.main_frame.grid_columnconfigure(0, weight=1)
+        self.main_frame.grid_rowconfigure(0, weight=1)
+
         # Frame to be displayed in the main frame
         self.current_frame = None
 
@@ -47,7 +57,7 @@ class LgMasterGui(tk.Tk):
         :param name: desired name
         """
         label = tk.Label(self, text=name, font=('Ariel', 18))
-        label.grid(row=0, column=0, columnspan=3, padx=5, pady=5)
+        label.grid(row=0, column=0, columnspan=3, padx=5, pady=5, sticky="EW")
 
     def add_exit_button(self, row: int = 15):
         """
@@ -55,7 +65,7 @@ class LgMasterGui(tk.Tk):
         :param row: should always be on the bottom left, therefore the row and the column are set to a high number
         """
         button = tk.Button(self, text='Exit', command=self.destroy)
-        button.grid(row=row, column=5, columnspan=1, padx=5, pady=5)
+        button.grid(row=row, column=5, columnspan=1, padx=5, pady=5, sticky="SE")
 
     def add_complete_pipeline_button(self, row: int = 15):
         """
@@ -90,11 +100,13 @@ class LgMasterGui(tk.Tk):
 
     def raise_frame(self, frame_name):
         """
-        Raise the specified frame wen user is pressing the corresponding button in the menu
+        Raise the specified frame when user is pressing the corresponding button in the menu
 
         :param frame_name: name of the frame to raise
         """
         if self.current_frame:
             self.current_frame.grid_remove()
         self.current_frame = self.frames[frame_name]
-        self.current_frame.grid()
+        self.current_frame.grid(sticky="NSEW")
+        self.update_idletasks()
+        self.geometry(f"{self.winfo_width()}x{self.winfo_height()}")

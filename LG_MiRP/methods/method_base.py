@@ -214,41 +214,18 @@ class MethodBase:
         return cosmask
 
     @staticmethod
-    def calc_center_of_gravity(structure):
+    def calc_geometric_center(structure):
         """
-        Calculates the center of gravity of a molecular structure.
+        Calculates the geometric center of a molecular structure.
 
-        :param structure: (Structure): A molecular structure containing models, chains, residues, and atoms (use biopython)
-
-        :return center_of_gravity: (numpy array): The coordinates of the center of gravity.
+        :param structure: (Bio.PDB.Structure.Structure): A molecular structure containing models, chains, residues, and atoms.
+        :return center: (numpy array): The coordinates of the geometric center.
         """
-        # Initialize sums for coordinates and total weight
-        x_sum, y_sum, z_sum = 0, 0, 0
-        total_weight = 0
+        atom_coords = [atom.get_coord() for model in structure for chain in model for residue in chain for atom in
+                       residue]
+        center = np.mean(atom_coords, axis=0)
+        return center
 
-        # Iterate over all models in the structure
-        for model in structure:
-            # Iterate over all chains in each model
-            for chain in model:
-                # Iterate over all residues in each chain
-                for residue in chain:
-                    # Iterate over all atoms in each residue
-                    for atom in residue:
-                        # Get the atom coordinates
-                        atom_coord = atom.get_coord()
-                        # Get the atom weight (assuming it's stored in B-factor)
-                        atom_weight = atom.get_bfactor()
-                        # Accumulate the weighted sum of coordinates
-                        x_sum += atom_coord[0] * atom_weight
-                        y_sum += atom_coord[1] * atom_weight
-                        z_sum += atom_coord[2] * atom_weight
-                        # Accumulate the total weight
-                        total_weight += atom_weight
-
-        # Calculate the center of gravity
-        center_of_gravity = np.array([x_sum / total_weight, y_sum / total_weight, z_sum / total_weight])
-
-        return center_of_gravity
     # ======================================================================================================================
     # Lazy functions:
     @staticmethod

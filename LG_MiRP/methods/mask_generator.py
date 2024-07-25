@@ -60,7 +60,7 @@ class MaskGenerator(MethodBase):
         structure: Structure = parser.get_structure('tubulin', self.fit_tubulin_pdb)
 
         # Calculate the center of gravity for the structure
-        com = self.calc_center_of_gravity(structure)
+        com = self.calc_geometric_center(structure)
 
         # Load microtubule volume and mask
         vol = mrcfile.mmap(self.microtubule_volume, 'r', permissive=True)
@@ -146,7 +146,7 @@ class MaskGenerator(MethodBase):
         structure: Structure = parser.get_structure('tubulin', self.fit_tubulin_pdb)
 
         # Calculate the center of gravity for the structure
-        com = self.calc_center_of_gravity(structure)
+        com = self.calc_geometric_center(structure)
 
         # Load microtubule volume and mask
         vol = mrcfile.mmap(self.microtubule_volume, 'r', permissive=True)
