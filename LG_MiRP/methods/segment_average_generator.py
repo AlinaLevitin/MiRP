@@ -13,7 +13,7 @@ import tensorflow as tf
 import starfile
 import mrcfile
 
-from .method_base import MethodBase, print_done_decorator
+from LG_MiRP.methods_base.method_base import MethodBase, print_done_decorator
 
 
 class SegmentAverageGenerator(MethodBase):

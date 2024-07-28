@@ -8,7 +8,8 @@ The method of segment averaging is located in LG_MiRP/methods/segment_average_ge
 """
 
 from ..gui_base import LgFrameBase, LgMasterGui, LGTopLevelBase, check_parameters
-from ..methods import SegmentAverageGenerator, mt_segment_histogram
+from ..methods import SegmentAverageGenerator
+from LG_MiRP.methods_base import ParticlesStarfile, mt_segment_histogram
 
 
 class SegmentAverageGui(LgMasterGui):
@@ -38,7 +39,7 @@ class SegmentAverageFrame(LgFrameBase):
         # Creates an entry for particles.star file
         self.input_star_file = self.add_file_entry('star', 'Select a particles.star file', row=1)
         # Creates a Show segments histogram to show the distribution of number of segments
-        self.add_show_results_button(command=lambda: self.show_mt_segment_histogram(self.input_star_file),
+        self.add_show_results_button(command=self.show_mt_segment_histogram,
                                      row=2, text="Show segments histogram")
         # Creates an entry for input directory with mrcs stack files in Extract folder (after particle picking)
         self.input_directory = self.add_directory_entry('Select directory containing extracted particles in Extract', row=4)
@@ -60,12 +61,12 @@ class SegmentAverageFrame(LgFrameBase):
         function = SegmentAverageGenerator(self.input_directory, self.output_directory, self.input_star_file)
         function.generate_segment_averages()
 
-    def show_mt_segment_histogram(self, input_star_file):
+    def show_mt_segment_histogram(self):
         """
         Displays a histogram of the distribution of the segment number of the MTs
-        :param input_star_file: star file input with the particles after particle extraction
         """
-        fig = mt_segment_histogram(input_star_file)
+        input_starfile = ParticlesStarfile(self.input_star_file.get())
+        fig = mt_segment_histogram(input_starfile.particles_dataframe)
         histogram_window = LGTopLevelBase(self)
         histogram_window.title("Histogram of number of segments per MT")
         histogram_window.add_plot(fig)

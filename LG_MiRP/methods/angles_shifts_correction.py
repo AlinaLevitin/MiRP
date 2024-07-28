@@ -12,7 +12,8 @@ import math
 import pandas as pd
 import starfile
 
-from .method_base import MethodBase, print_done_decorator
+from LG_MiRP.methods_base.method_base import MethodBase, print_done_decorator
+from LG_MiRP.methods_base.particles_starfile import *
 
 
 class AnglesAndShiftsCorrection(MethodBase):
@@ -42,13 +43,13 @@ class AnglesAndShiftsCorrection(MethodBase):
 
         :return: original dataframe and corrected dataframe
         """
-        # Read the STAR file and convert it to a pandas DataFrame
-        data = starfile.read(self.star_file_input)
 
         # Getting the optics and particles data blocks
-        input_particles_dataframe = data['particles']
+        file = ParticlesStarfile(self.star_file_input)
+
+        input_particles_dataframe = file.particles_dataframe
         corrected_particles_dataframe = pd.DataFrame()
-        data_optics_dataframe = data['optics']
+        data_optics_dataframe = file.optics_dataframe
 
         # Getting the pixel size from the optics data block
         pixel_size = float(data_optics_dataframe['rlnImagePixelSize'])
@@ -97,4 +98,4 @@ class AnglesAndShiftsCorrection(MethodBase):
 
         print(f"Updated STAR file saved as: {new_star_file} at {self.output_directory}")
 
-        return corrected_particles_dataframe, input_particles_dataframe
+        return ParticlesStarfile(self.star_file_input).particles_dataframe, corrected_particles_dataframe

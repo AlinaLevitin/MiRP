@@ -14,8 +14,8 @@ import numpy as np
 from scipy.ndimage import zoom
 import mrcfile
 
-from .method_base import MethodBase, print_done_decorator
-from .volume_mrc import VolumeMrc
+from LG_MiRP.methods_base.method_base import MethodBase, print_done_decorator
+from LG_MiRP.methods_base.volume_mrc import VolumeMrc
 
 
 class ReferenceScaler(MethodBase):

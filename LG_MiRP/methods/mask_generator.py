@@ -12,7 +12,7 @@ import starfile
 from Bio.PDB import PDBParser
 from Bio.PDB.Structure import Structure
 
-from .method_base import MethodBase, print_done_decorator
+from LG_MiRP.methods_base.method_base import MethodBase, print_done_decorator
 
 
 class MaskGenerator(MethodBase):

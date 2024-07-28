@@ -15,7 +15,7 @@ import os
 
 import starfile
 import matplotlib.pyplot as plt
-from .method_base import MethodBase, print_done_decorator
+from LG_MiRP.methods_base.method_base import MethodBase, print_done_decorator
 
 
 class ClassUnifierExtractor(MethodBase):

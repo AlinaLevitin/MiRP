@@ -8,12 +8,11 @@ BROKEN!! NOT WORKING!!
 import os
 import subprocess
 
-import numpy as np
 import starfile
 import mrcfile
 
-from .method_base import MethodBase, print_done_decorator, print_command_decorator
-from .volume_mrc import VolumeMrc
+from LG_MiRP.methods_base.method_base import MethodBase, print_done_decorator, print_command_decorator
+from LG_MiRP.methods_base.volume_mrc import VolumeMrc
 
 
 class MicrotubuleSubtract(MethodBase):

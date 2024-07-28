@@ -9,6 +9,7 @@ Using SmoothAnglesOrShifts at angle_and_shifts_smoothing.py
 """
 from ..gui_base import LgFrameBase, LgMasterGui, check_parameters
 from ..methods import SmoothAnglesOrShifts
+from ..methods_base import ParticlesStarfile
 
 
 class SmoothingGui(LgMasterGui):
@@ -51,8 +52,8 @@ class SmoothingFrame(LgFrameBase):
         self.add_run_button(row=4)
 
         # Adding entry and button to show results
-        result_number = self.add_number_entry(entry_name='Results to show (random):', row=5, default_value=10)
-        self.add_show_results_button(lambda: self.show_angle_and_shifts_plot(int(result_number.get())), row=5, text="Show results")
+        self.result_number = self.add_number_entry(entry_name='Results to show (random):', row=5, default_value=10)
+        self.add_show_results_button(self.show_plots, row=5, text="Show results")
 
         # Imports a themed image at the bottom
         self.add_image_by_name()
@@ -67,6 +68,19 @@ class SmoothingFrame(LgFrameBase):
 
         # Setting the input and output for
         self.input, self.output = function.smooth_angles_or_shifts()
+
+    def show_plots(self):
+
+        if not self.input_star_file.get():
+            print('No star file was chosen, please select a run_it0xx_data.star file')
+        elif self.output.empty:
+            print('Showing input only')
+            input_starfile = ParticlesStarfile(self.input_star_file.get())
+            self.input = input_starfile.particles_dataframe
+            self.show_input_angle_and_shifts_plot(int(self.result_number.get()))
+        else:
+            print('Showing input and output')
+            self.show_angle_and_shifts_plot(int(self.result_number.get()))
 
     def on_combobox_select(self, event):
         """

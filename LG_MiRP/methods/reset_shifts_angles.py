@@ -16,7 +16,8 @@ import os
 
 import starfile
 
-from .method_base import MethodBase, print_done_decorator
+from ..methods_base.method_base import MethodBase, print_done_decorator
+from ..methods_base.particles_starfile import ParticlesStarfile, groupby_micrograph_and_helical_id
 
 
 class ResetAnglesAndShifts(MethodBase):
@@ -68,10 +69,10 @@ class ResetAnglesAndShifts(MethodBase):
               f"rlnAnglePsi = {psi}")
 
         # Read the STAR file and convert it to a pandas DataFrame
-        data = starfile.read(self.star_file_input)
+        file = ParticlesStarfile(self.star_file_input)
 
-        particles_dataframe = data['particles']
-        data_optics_dataframe = data['optics']
+        particles_dataframe = file.particles_dataframe
+        data_optics_dataframe = file.optics_dataframe
 
         # Set an empty list to use as parameters in the name of the final star file
         name = []
@@ -121,3 +122,5 @@ class ResetAnglesAndShifts(MethodBase):
         starfile.write(new_particles_star_file_data, new_star_file)
 
         print(f"Updated STAR file saved as: {new_star_file} at {self.output_directory}")
+
+        return ParticlesStarfile(self.star_file_input).particles_dataframe, particles_dataframe

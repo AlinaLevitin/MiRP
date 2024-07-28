@@ -280,24 +280,6 @@ class MethodBase:
     # ======================================================================================================================
     # Lazy functions:
     @staticmethod
-    def filter_microtubules_by_length(data, cutoff):
-        """
-        Removes MTs in which the number of segments is lower than the cutoff
-
-        :param data: data block from data star file
-        :param cutoff: minimal number of segments to include
-        :return: data where MTs with number of segments lower than in the cutoff are excluded
-        """
-        # Group the DataFrame by micrograph name and helical tube ID
-        grouped = data.groupby(['rlnMicrographName', 'rlnHelicalTubeID'])
-
-        # Filter out microtubules with lengths below the cutoff
-        filtered_data = data[grouped.size() >= cutoff]
-
-        # Write the updated DataFrame to a new STAR file
-        return filtered_data
-
-    @staticmethod
     def delete_folder_contents(folder_path):
         """
         Deletes all content in a selected folder

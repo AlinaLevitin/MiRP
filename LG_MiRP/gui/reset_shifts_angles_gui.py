@@ -11,6 +11,7 @@ angles: _rlnAnglePsi, _rlnAngleTilt are set to priors: _rlnAnglePsiPrior, _rlnAn
 """
 from ..gui_base import LgFrameBase, LgMasterGui, check_parameters
 from ..methods import ResetAnglesAndShifts
+from ..methods_base import ParticlesStarfile
 
 
 class ResetShiftsAnglesGui(LgMasterGui):
@@ -56,8 +57,11 @@ class ResetShiftsAnglesFrame(LgFrameBase):
         # Creates a "Run" button that uses the class unification and extraction method
         self.add_run_button(row=9)
 
+        self.result_number = self.add_number_entry(entry_name='Results to show (random):', row=10, default_value=10)
+        self.add_show_results_button(self.show_plots, row=10, text="Show results")
+
         # Imports a themed image at the bottom
-        self.add_image(new_size=600, row=10)
+        self.add_image(new_size=600, row=11)
 
     @check_parameters(['input_star_file', 'output_directory', 'rot', 'x', 'y', 'z', 'psi', 'tilt'])
     def run_function(self):
@@ -66,4 +70,22 @@ class ResetShiftsAnglesFrame(LgFrameBase):
         and running the function with the parameters
         """
         function = ResetAnglesAndShifts(self.input_star_file, self.output_directory)
-        function.reset_angles_and_translations(rot=self.rot, x=self.x, y=self.y, z=self.z, psi=self.psi, tilt=self.tilt)
+        self.input, self.output = function.reset_angles_and_translations(rot=self.rot,
+                                                                         x=self.x,
+                                                                         y=self.y,
+                                                                         z=self.z,
+                                                                         psi=self.psi,
+                                                                         tilt=self.tilt)
+
+    def show_plots(self):
+
+        if not self.input_star_file.get():
+            print('No star file was chosen, please select a run_it0xx_data.star file')
+        elif self.output.empty:
+            print('Showing input only')
+            input_starfile = ParticlesStarfile(self.input_star_file.get())
+            self.input = input_starfile.particles_dataframe
+            self.show_input_angle_and_shifts_plot(int(self.result_number.get()))
+        else:
+            print('Showing input and output')
+            self.show_angle_and_shifts_plot(int(self.result_number.get()))

@@ -66,4 +66,4 @@ class AngleShiftsCorrectionFrame(LgFrameBase):
         and running the function with the parameters
         """
         function = AnglesAndShiftsCorrection(self.input_star_file, self.pf_number, self.output_directory)
-        self.output, self.input = function.adjust_angles_and_translations()
+        self.input, self.output = function.adjust_angles_and_translations()

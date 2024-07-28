@@ -8,10 +8,10 @@ assignment.
 
 """
 import os
-
 import starfile
 
-from .method_base import MethodBase, print_done_decorator
+from LG_MiRP.methods_base.method_base import MethodBase, print_done_decorator
+from LG_MiRP.methods_base.particles_starfile import ParticlesStarfile, groupby_micrograph_and_helical_id
 
 
 class SmoothAnglesOrShifts(MethodBase):
@@ -50,17 +50,15 @@ class SmoothAnglesOrShifts(MethodBase):
         tuple: A tuple containing the original particles dataframe and the smoothed particles dataframe.
         """
         # Read data from the input STAR file
-        data = starfile.read(self.star_file_input)
+        file = ParticlesStarfile(self.star_file_input)
 
-        # Extract particles and optics dataframes
-        input_particles_dataframe = data['particles']
-        data_optics_dataframe = data['optics']
+        data = file.particles_dataframe
 
         # Filter microtubules by length if a cutoff is provided
         if self.cutoff:
-            particles_dataframe = self.filter_microtubules_by_length(input_particles_dataframe, self.cutoff)
+            particles_dataframe = data.filter_microtubules_by_length(self.cutoff)
         else:
-            particles_dataframe = input_particles_dataframe
+            particles_dataframe = data
 
         # Smooth the data based on the specified method
         if self.method == 'angles':
@@ -70,7 +68,7 @@ class SmoothAnglesOrShifts(MethodBase):
             particles_dataframe = self.smooth_data(particles_dataframe, id_label='rlnOriginYAngst')
 
         # Create a dictionary with the updated optics and particles dataframes
-        new_particles_star_file_data = {'optics': data_optics_dataframe, 'particles': particles_dataframe}
+        new_particles_star_file_data = {'optics': file.optics_dataframe, 'particles': particles_dataframe}
 
         # Change to the output directory
         os.chdir(self.output_path)
@@ -85,7 +83,7 @@ class SmoothAnglesOrShifts(MethodBase):
         print("=" * 50)
         print(f"Updated STAR file saved as: {output_file} at {self.output_path}")
 
-        return input_particles_dataframe, particles_dataframe
+        return ParticlesStarfile(self.star_file_input).particles_dataframe, particles_dataframe
 
     def smooth_data(self, particles_dataframe, id_label):
         """
@@ -106,7 +104,7 @@ class SmoothAnglesOrShifts(MethodBase):
         print('=' * 50)
 
         bad_mts = [] # List to keep track of microtubules that cannot be fitted
-        grouped_data = particles_dataframe.groupby(['rlnMicrographName', 'rlnHelicalTubeID'])
+        grouped_data = groupby_micrograph_and_helical_id(particles_dataframe)
 
         for (micrograph, MT), MT_dataframe in grouped_data:
             # Create masks for current micrograph and helical tube

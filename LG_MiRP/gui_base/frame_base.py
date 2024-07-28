@@ -15,7 +15,7 @@ from functools import wraps
 
 from .utils import *
 from .top_level_base import LGTopLevelBase
-from LG_MiRP.methods import plot_angles_and_shifts
+from ..methods_base import groupby_micrograph_and_helical_id, plot_angles_and_shifts
 
 
 class LgFrameBase(ttk.Frame):
@@ -179,10 +179,10 @@ class LgFrameBase(ttk.Frame):
         :param n: number of MTs to display plots for
         """
         # Assuming 'grouped_data' is the grouped data from a DataFrame
-        grouped_data = self.output.groupby(['rlnMicrographName', 'rlnHelicalTubeID'])
+        grouped_data_output = groupby_micrograph_and_helical_id(self.output)
 
         # Convert the grouped data into a list of tuples (key, grouped DataFrame)
-        grouped_data_list = list(grouped_data)
+        grouped_data_list = list(grouped_data_output)
         num_groups = len(grouped_data_list)
 
         selected_indices = random.sample(range(num_groups), n)
@@ -195,22 +195,19 @@ class LgFrameBase(ttk.Frame):
             # Plot the output data
             fig_output = plot_angles_and_shifts(MT_dataframe)
 
-            if not self.input.empty:
-                # Assuming 'grouped_data_input' is the grouped data from the input DataFrame
-                grouped_data_input = self.input.groupby(['rlnMicrographName', 'rlnHelicalTubeID'])
-                grouped_data_list_input = list(grouped_data_input)
+            # Assuming 'grouped_data_input' is the grouped data from the input DataFrame
+            grouped_data_input = groupby_micrograph_and_helical_id(self.input)
+            grouped_data_list_input = list(grouped_data_input)
 
-                # Find the corresponding input DataFrame
-                input_dataframe = pd.DataFrame()
-                for (micrograph_input, MT_input), df in grouped_data_list_input:
-                    if micrograph_input == micrograph and MT_input == MT:
-                        input_dataframe = df
-                        break
+            # Find the corresponding input DataFrame
+            input_dataframe = pd.DataFrame()
+            for (micrograph_input, MT_input), df in grouped_data_list_input:
+                if micrograph_input == micrograph and MT_input == MT:
+                    input_dataframe = df
+                    break
 
-                if not input_dataframe.empty:
-                    fig_input = plot_angles_and_shifts(input_dataframe)
-                else:
-                    fig_input = None
+            if not input_dataframe.empty:
+                fig_input = plot_angles_and_shifts(input_dataframe)
             else:
                 fig_input = None
 
@@ -224,6 +221,53 @@ class LgFrameBase(ttk.Frame):
                 plot_window.add_plot(fig_input, row=2)
                 plot_window.add_title(text='After smoothing/correcting', row=3)
             plot_window.add_plot(fig_output, row=4)
+
+    def show_input_angle_and_shifts_plot(self, n=10):
+        """
+        Generates a matplot lib fig with 4 subplots for rot, tilt, psi and X/Y shifts as a function of segment number
+        for n random microtubules in the data set in new sub-windows (tk.TopLevel)
+        Uses plot_angles_and_shifts method from plost_functions.py in methods folder
+
+        :param n: number of MTs to display plots for
+        """
+        # Assuming 'grouped_data' is the grouped data from a DataFrame
+        grouped_data = groupby_micrograph_and_helical_id(self.input)
+
+        # Convert the grouped data into a list of tuples (key, grouped DataFrame)
+        grouped_data_list = list(grouped_data)
+        num_groups = len(grouped_data_list)
+
+        selected_indices = random.sample(range(num_groups), n)
+
+        # Iterate through the selected items in the grouped data list
+        for index in selected_indices:
+            # Unpack the key and the grouped DataFrame
+            (micrograph, MT), MT_dataframe = grouped_data_list[index]
+
+            # Assuming 'grouped_data_input' is the grouped data from the input DataFrame
+            grouped_data_input = groupby_micrograph_and_helical_id(self.input)
+            grouped_data_list_input = list(grouped_data_input)
+
+            # Find the corresponding input DataFrame
+            input_dataframe = pd.DataFrame()
+            for (micrograph_input, MT_input), df in grouped_data_list_input:
+                if micrograph_input == micrograph and MT_input == MT:
+                    input_dataframe = df
+                    break
+
+            if not input_dataframe.empty:
+                fig_input = plot_angles_and_shifts(input_dataframe)
+            else:
+                fig_input = None
+
+            # Create a new window for each plot
+            plot_window = LGTopLevelBase(self)
+            plot_window.title("Plot of angles")
+            plot_window.add_title(text=f"MT {MT} in {micrograph}")
+
+            if fig_input:
+                plot_window.add_title(text='Before smoothing/correcting', row=1)
+                plot_window.add_plot(fig_input, row=2)
 
     def display_multiple_mrc_files(self, path, row, max_columns=6):
         """
