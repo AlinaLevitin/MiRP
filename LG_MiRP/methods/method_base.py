@@ -119,6 +119,57 @@ class MethodBase:
 
         return top_cluster, low_weight_cluster
 
+    def flatten_and_cluster_shifts(self, shifts, cutoff):
+        """
+        Flattens the shifts and clusters them based on the flatness score.
+
+        Parameters:
+        shifts (array-like): An array of shift values.
+        cutoff (float): The range within which flattening factors are generated.
+
+        Returns:
+        top_cluster (list): The cluster with the maximum length of flattened shifts.
+        low_weight_cluster (list): The outliers from the flattened shifts.
+        """
+        # Generate flattening factors within the specified cutoff range
+        flattening_factors = np.arange(-cutoff, cutoff, 0.25)
+        flatness_score = []
+        b = []
+
+        # Initialize arrays to store flattened shifts and flatness scores
+        flattened_shifts = np.zeros((len(flattening_factors), len(shifts)))
+        flatness_scores = np.zeros(len(flattening_factors))
+
+        # Iterate over each flattening factor
+        for i, factor in enumerate(flattening_factors):
+            # Flatten shifts using broadcasting; adjust each shift by a linearly increasing factor
+            flattened_shifts[i] = shifts - np.arange(1, len(shifts) + 1) * factor
+
+            # Calculate flatness score as the sum of absolute differences between consecutive flattened shifts
+            flatness_scores[i] = np.sum(np.abs(np.diff(flattened_shifts[i])))
+
+        # Find the index of the minimum flatness score
+        min_flatness_idx = np.argmin(flatness_scores)
+
+        # Compute histogram bins using numpy's automatic bin selection
+        try:
+            hist, bins = np.histogram(flattened_shifts[min_flatness_idx], bins='auto')
+        except MemoryError:
+            # Fallback to a fixed number of bins in case of memory error
+            hist, bins = np.histogram(flattened_shifts[min_flatness_idx], bins=5)
+
+        # Cluster shift values based on histogram bins
+        clusters = self.cluster_numpy_bins(flattened_shifts[min_flatness_idx], bins)
+
+        # Sort clusters by size in descending order and get the largest cluster
+        sorted_clusters = sorted(clusters.items(), key=lambda item: len(item[1]), reverse=True)
+        top_cluster_key, top_cluster = sorted_clusters.pop(0)
+
+        # Collect all other clusters as low-weight clusters (outliers)
+        low_weight_cluster = [value for sublist in sorted_clusters for value in sublist[1]]
+
+        return top_cluster, low_weight_cluster
+
     @staticmethod
     def cluster_numpy_bins(data, bins):
         bin_ids = np.digitize(data, bins)
