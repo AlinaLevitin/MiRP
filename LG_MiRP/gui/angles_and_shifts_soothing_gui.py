@@ -1,7 +1,7 @@
 """
 Author: Alina Levitin
 Date: 17/04/24
-Updated: 17/07/24
+Updated: 28/07/24
 
 Two GUI classes (master and frame) to unifi PHI/Rot (angle smoothing)
 Using SmoothAnglesOrShifts at angle_and_shifts_smoothing.py

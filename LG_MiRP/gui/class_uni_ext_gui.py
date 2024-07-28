@@ -1,7 +1,7 @@
 """
 Author: Alina Levitin
 Date: 14/03/24
-Updated: 17/07/24
+Updated: 28/07/24
 
 Two GUI classes (master and frame) for class unification and extraction
 The method of class unification and extraction is located in LG_MiRP/methods/class_unifier_extractor.py
@@ -50,7 +50,7 @@ class ClassUnificationFrame(LgFrameBase):
         # Creates a "Run" button that uses the class unification and extraction method
         self.add_run_button(row=5)
         # Creates a button to show the distribution of classes according to 3D classification
-        result_button = tk.Button(self, text="Show Classes Distribution", command=lambda: self.show_class_distribution(self.input_star_file1))
+        result_button = tk.Button(self, text="Show Classes Distribution", command=self.show_class_distribution)
         result_button.grid(row=6, column=0)
 
         # Imports a themed image at the bottom
@@ -65,13 +65,12 @@ class ClassUnificationFrame(LgFrameBase):
         function = ClassUnifierExtractor(self.input_star_file0, self.input_star_file1, self.output_directory, self.step.get())
         function.class_unifier_extractor()
 
-    def show_class_distribution(self, input_star_file):
+    def show_class_distribution(self):
         """
         Opening an additional window with class distribution in %
-        :param input_star_file: star file after 3D classification run_it001_data.star
         """
         # Generating a pie chart with percentages of MTs classified in each class
-        fig = ClassUnifierExtractor.classes_distribution(input_star_file)
+        fig = ClassUnifierExtractor.classes_distribution(self.input_star_file1.get())
         # Generating a Tkinter Top level window
         pie_window = LGTopLevelBase(self)
         # Adding a title to the figure

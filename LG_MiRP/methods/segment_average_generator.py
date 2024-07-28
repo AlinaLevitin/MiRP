@@ -1,7 +1,7 @@
 """
 Author: Alina Levitin
 Date: 05/03/24
-Updated: 18/04/24
+Updated: 28/07/24
 
 Method to generate averages of segments of MTs, ATM used only to assess the quality of the data
 Could be broken to several methods instead of spaghetti, but I'm too lazy
@@ -13,7 +13,8 @@ import tensorflow as tf
 import starfile
 import mrcfile
 
-from LG_MiRP.methods_base.method_base import MethodBase, print_done_decorator
+from ..methods_base.method_base import MethodBase, print_done_decorator
+from ..methods_base.particles_starfile import ParticlesStarfile
 
 
 class SegmentAverageGenerator(MethodBase):
@@ -35,9 +36,9 @@ class SegmentAverageGenerator(MethodBase):
         # Initializing:
 
         # Reading the particles.star file
-        particles_star_file_data = starfile.read(self.particles_star_file)
-        particles_dataframe = particles_star_file_data['particles']
-        data_optics_dataframe = particles_star_file_data['optics']
+        particles_star_file_data = ParticlesStarfile(self.particles_star_file)
+        particles_dataframe = particles_star_file_data.particles_dataframe
+        data_optics_dataframe = particles_star_file_data.optics_dataframe
 
         # Calculating background radius box for normalization by relion
         box_size = data_optics_dataframe['rlnImageSize']
@@ -84,7 +85,7 @@ class SegmentAverageGenerator(MethodBase):
                             # Generates a path for each star file of each mrcs file
                             star_file_path = micrograph_stack_path.replace(".mrcs", "_extract.star")
                             # Using starfile library reads the star file and converts it to pandas DataFrame
-                            star_data = starfile.read(star_file_path)
+                            star_data = ParticlesStarfile(star_file_path).particles_dataframe
                             # Finds the maximum number of MTs in each star file using rlnHelicalTubeID
                             number_of_MTs_in_stack = star_data['rlnHelicalTubeID'].max()
                             print(f'{micrograph_stack_file} contains {number_of_MTs_in_stack} MTs\n', '-' * 100)
@@ -187,12 +188,7 @@ class SegmentAverageGenerator(MethodBase):
 
                     print(f'Finished working on {micrograph_stack_file} \n', '=' * 100)
 
-        # particles_dataframe['filename'] = particles_dataframe['rlnImageName'].apply(lambda x: x.split('/')[-1])
-        #
-        # particles_dataframe_no_duplicates = particles_dataframe.drop_duplicates(subset=['filename'])
-
         # Generating a new star file named segment_average.star in the output directory
-        # particles_dataframe['rlnImageName'] = new_avg_norm_images_names
         new_particles_star_file_data = {'optics': data_optics_dataframe, 'particles': particles_dataframe}
 
         os.chdir(output_path)
@@ -202,7 +198,5 @@ class SegmentAverageGenerator(MethodBase):
         except NameError:
             print(f"File names {output_file} already exists, delete old file and try again")
             raise NameError("File already exists")
-
-        print("Processing complete.")
 
         return particles_dataframe

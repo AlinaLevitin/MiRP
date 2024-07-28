@@ -6,5 +6,4 @@ from .reset_shifts_angles import *
 from .angles_shifts_correction import *
 from .angles_and_shifts_smoothing import *
 from .mask_generator import *
-# from .microtubule_subtractor import *
 from .kinesin_mask_generator import *

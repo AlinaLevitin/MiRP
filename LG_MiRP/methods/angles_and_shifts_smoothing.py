@@ -10,8 +10,8 @@ assignment.
 import os
 import starfile
 
-from LG_MiRP.methods_base.method_base import MethodBase, print_done_decorator
-from LG_MiRP.methods_base.particles_starfile import ParticlesStarfile, groupby_micrograph_and_helical_id
+from ..methods_base.method_base import MethodBase, print_done_decorator
+from ..methods_base.particles_starfile import ParticlesStarfile, groupby_micrograph_and_helical_id
 
 
 class SmoothAnglesOrShifts(MethodBase):

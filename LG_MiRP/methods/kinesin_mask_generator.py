@@ -1,8 +1,8 @@
 import numpy as np
 import mrcfile
 import os
-from LG_MiRP.methods_base.method_base import MethodBase, print_done_decorator
-from LG_MiRP.methods_base.volume_mrc import VolumeMrc
+from ..methods_base.method_base import MethodBase, print_done_decorator
+from ..methods_base.volume_mrc import VolumeMrc
 
 
 class KinesinMaskGenerator(MethodBase):

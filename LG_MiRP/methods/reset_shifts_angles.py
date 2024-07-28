@@ -1,7 +1,7 @@
 """
 Author: Alina Levitin
 Date: 15/04/24
-Updated: 15/07/24
+Updated: 28/07/24
 
 Methods for angles and shifts manipulation during initial seam assignment step
 
@@ -17,7 +17,7 @@ import os
 import starfile
 
 from ..methods_base.method_base import MethodBase, print_done_decorator
-from ..methods_base.particles_starfile import ParticlesStarfile, groupby_micrograph_and_helical_id
+from ..methods_base.particles_starfile import ParticlesStarfile
 
 
 class ResetAnglesAndShifts(MethodBase):

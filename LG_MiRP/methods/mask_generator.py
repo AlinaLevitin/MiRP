@@ -1,18 +1,18 @@
 """
 Author: Alina Levitin
 Date: 02/07/24
-Updated: 10/07/24
+Updated: 28/07/24
 
 Method to generate masks volume .mrc file in the form of a wedge or a cylindrical cutout
 """
 import os
 import numpy as np
 import mrcfile
-import starfile
 from Bio.PDB import PDBParser
 from Bio.PDB.Structure import Structure
 
-from LG_MiRP.methods_base.method_base import MethodBase, print_done_decorator
+from ..methods_base.method_base import MethodBase, print_done_decorator
+from ..methods_base.particles_starfile import ParticlesStarfile
 
 
 class MaskGenerator(MethodBase):
@@ -37,10 +37,10 @@ class MaskGenerator(MethodBase):
         protofilament number (pf_number), helical_twist and a helical_rise at a selected output_path.
         """
 
-        particles_star_file_data = starfile.read(input_star_file.get())
-        self.particles_dataframe = particles_star_file_data['particles']
-        self.data_optics_dataframe = particles_star_file_data['optics']
-        self.pixel_size = self.data_optics_dataframe['rlnImagePixelSize'].iloc[0]
+        particles_star_file_data = ParticlesStarfile(input_star_file.get())
+        self.particles_dataframe = particles_star_file_data.particles_dataframe
+        self.data_optics_dataframe = particles_star_file_data.particles_dataframe
+        self.pixel_size = particles_star_file_data.pixel_size
         self.microtubule_volume = microtubule_volume.get()
         self.microtubule_mask = microtubule_mask.get()
         self.fit_tubulin_pdb = fit_tubulin_pdb.get()

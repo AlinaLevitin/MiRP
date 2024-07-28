@@ -12,8 +12,8 @@ import math
 import pandas as pd
 import starfile
 
-from LG_MiRP.methods_base.method_base import MethodBase, print_done_decorator
-from LG_MiRP.methods_base.particles_starfile import *
+from ..methods_base.method_base import MethodBase, print_done_decorator
+from ..methods_base.particles_starfile import ParticlesStarfile
 
 
 class AnglesAndShiftsCorrection(MethodBase):

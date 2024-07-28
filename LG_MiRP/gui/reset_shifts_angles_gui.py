@@ -1,7 +1,7 @@
 """
 Author: Alina Levitin
 Date: 15/04/24
-Updated: 17/07/24
+Updated: 28/07/24
 
 Two GUI classes (master and frame) for shifts and angle reset
 The method of shifts and angle reset is in and extraction is located in LG_MiRP/methods/reset_angles_shifts

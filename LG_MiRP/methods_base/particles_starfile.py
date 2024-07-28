@@ -1,13 +1,11 @@
 """
 Author: Alina Levitin
-Date: 27/05/24
+Date: 28/07/24
 Updated: 28/07/24
 
 This contains a collection of plotting functions
 
 """
-import random
-
 import matplotlib.pyplot as plt
 import starfile
 
@@ -17,6 +15,7 @@ class ParticlesStarfile:
     def __init__(self, particles_starfile_path):
         self.particles_dataframe = None
         self.optics_dataframe = None
+        self.pixel_size = None
         try:
             self.read_particles_starfile(particles_starfile_path)
         except FileNotFoundError:
@@ -29,6 +28,7 @@ class ParticlesStarfile:
         particles_star_file_data = starfile.read(path)
         self.particles_dataframe = particles_star_file_data['particles']
         self.optics_dataframe = particles_star_file_data['optics']
+        self.pixel_size = self.optics_dataframe['rlnImagePixelSize'].iloc[0]
 
 
 def groupby_micrograph_and_helical_id(particles_dataframe):

@@ -15,7 +15,8 @@ import os
 
 import starfile
 import matplotlib.pyplot as plt
-from LG_MiRP.methods_base.method_base import MethodBase, print_done_decorator
+from ..methods_base.method_base import MethodBase, print_done_decorator
+from ..methods_base.particles_starfile import ParticlesStarfile, groupby_micrograph_and_helical_id
 
 
 class ClassUnifierExtractor(MethodBase):
@@ -34,13 +35,13 @@ class ClassUnifierExtractor(MethodBase):
     def class_unifier_extractor(self):
 
         # Read data from "run_it000_data.star" using starfile
-        data0 = starfile.read(self.star_file_input0)
-        particles_dataframe0 = data0['particles']
+        data0 = ParticlesStarfile(self.star_file_input0)
+        particles_dataframe0 = data0.particles_dataframe
 
         # Read data from "run_it0xx_data.star" using starfile
-        data1 = starfile.read(self.star_file_input1)
-        particles_dataframe1 = data1['particles']
-        data_optics_dataframe1 = data1['optics']
+        data1 = ParticlesStarfile(self.star_file_input1)
+        particles_dataframe1 = data1.particles_dataframe
+        data_optics_dataframe1 = data1.optics_dataframe
 
         # Takes only the unique micrographs from the star file
         class_unified_particles_dataframe = self.update_class_numbers(particles_dataframe0, particles_dataframe1)
@@ -100,7 +101,7 @@ class ClassUnifierExtractor(MethodBase):
         :return: updated particles dataframe with original angles and shifts
         """
         # Group by 'rlnMicrographName' and 'rlnHelicalTubeID'
-        grouped_data = particles_dataframe1.groupby(['rlnMicrographName', 'rlnHelicalTubeID'])
+        grouped_data = groupby_micrograph_and_helical_id(particles_dataframe1)
 
         for (micrograph, MT), MT_dataframe in grouped_data:
             # Get the most common class number in the current MT segment
@@ -130,19 +131,11 @@ class ClassUnifierExtractor(MethodBase):
         :return: matplotlib pie % fig
         """
 
-        try:
-            # Try to read the STAR file
-            particles_star_file_data = starfile.read(star_file_input.get())
-            particles_dataframe = particles_star_file_data['particles']
+        file = ParticlesStarfile(star_file_input)
+        particles_dataframe = file.particles_dataframe
 
-            # Access the 'rlnClassNumber' column and get unique values
-            classes_value_counts = particles_dataframe['rlnClassNumber'].value_counts()
-
-        except FileNotFoundError:
-            # Handle the case where the specified STAR file does not exist
-            print("Error: The specified STAR file does not exist.")
-            # Optionally, you can raise the error again if needed
-            raise
+        # Access the 'rlnClassNumber' column and get unique values
+        classes_value_counts = particles_dataframe['rlnClassNumber'].value_counts()
 
         # The classes and the nuber of their appearances (values)
         classes = classes_value_counts.index

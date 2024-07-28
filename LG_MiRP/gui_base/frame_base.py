@@ -1,7 +1,7 @@
 """
 Author: Alina Levitin
 Date: 26/02/24
-Updated: 17/07/24
+Updated: 28/07/24
 
 Class to generate ttk.Frames LG-style.
 """
