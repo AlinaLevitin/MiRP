@@ -173,7 +173,8 @@ class ReferenceScaler(MethodBase):
         new_pixel_size_name = str(self.new_pixel_size).replace(".", "_")
 
         # Setting up the basename string to use in the final file name
-        output_file = os.path.basename(input_mrc).replace(original_pixel_size_name, new_pixel_size_name)
+        original_name = os.path.basename(input_mrc).replace('-', '_')
+        output_file = original_name.replace(original_pixel_size_name, new_pixel_size_name)
         cropped_output_file = output_file.replace('.mrc', f'_{self.new_box_size}px_boxed.mrc')
 
         # Setting up the output file paths
