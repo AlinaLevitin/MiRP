@@ -47,22 +47,26 @@ class ClassUnificationFrame(LgFrameBase):
         # Creates an entry for output directory
         self.output_directory = self.add_directory_entry('Select output directory', row=4)
 
+        # Adds a number entry for portion cutoff (if the most common class is less than that portion then th MT is
+        # discarded
+        self.cutoff = self.add_number_entry(entry_name='Portion cutoff:', row=5, default_value=0.7)
+
         # Creates a "Run" button that uses the class unification and extraction method
-        self.add_run_button(row=5)
+        self.add_run_button(row=6)
         # Creates a button to show the distribution of classes according to 3D classification
         result_button = tk.Button(self, text="Show Classes Distribution", command=self.show_class_distribution)
-        result_button.grid(row=6, column=0)
+        result_button.grid(row=7, column=0)
 
         # Imports a themed image at the bottom
-        self.add_image(new_size=600, row=7)
+        self.add_image(new_size=600, row=8)
 
-    @check_parameters(['input_star_file0', 'input_star_file1', 'output_directory'])
+    @check_parameters(['input_star_file0', 'input_star_file1', 'output_directory', 'cutoff'])
     def run_function(self):
         """
         Setting up the class, checking if the parameters are all filled (prints in the terminal if something is missing)
         and running the function with the parameters
         """
-        function = ClassUnifierExtractor(self.input_star_file0, self.input_star_file1, self.output_directory, self.step.get())
+        function = ClassUnifierExtractor(self.input_star_file0, self.input_star_file1, self.output_directory, self.cutoff, self.step.get())
         function.class_unifier_extractor()
 
     def show_class_distribution(self):
@@ -70,7 +74,7 @@ class ClassUnificationFrame(LgFrameBase):
         Opening an additional window with class distribution in %
         """
         # Generating a pie chart with percentages of MTs classified in each class
-        fig = ClassUnifierExtractor.classes_distribution(self.input_star_file1.get())
+        fig = ClassUnifierExtractor.classes_distribution_fig(self.input_star_file1.get())
         # Generating a Tkinter Top level window
         pie_window = LGTopLevelBase(self)
         # Adding a title to the figure
