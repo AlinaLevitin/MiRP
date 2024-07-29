@@ -137,19 +137,15 @@ class ClassUnifierExtractor(MethodBase):
         return self.particles_dataframe0
 
     @staticmethod
-    def classes_distribution_fig(star_file_input):
+    def classes_distribution_fig(input_particles_dataframe):
         """
         A method to generate a histogram from number of segments per MT
 
-        :param star_file_input: particles star file from entry
         :return: matplotlib pie % fig
         """
 
-        file = ParticlesStarfile(star_file_input)
-        particles_dataframe = file.particles_dataframe
-
         # Access the 'rlnClassNumber' column and get unique values
-        classes_value_counts = particles_dataframe['rlnClassNumber'].value_counts()
+        classes_value_counts = input_particles_dataframe['rlnClassNumber'].value_counts()
 
         # The classes and the nuber of their appearances (values)
         classes = classes_value_counts.index
@@ -177,6 +173,7 @@ class ClassUnifierExtractor(MethodBase):
         report_path = os.path.join(self.output_path, 'class_unification_report.txt')
         total_segments = len(class_unified_particles_dataframe)
         total_MTs = len(groupby_micrograph_and_helical_id(class_unified_particles_dataframe))
+        total_MTs_before_cutoff = len(groupby_micrograph_and_helical_id(self.particles_dataframe1))
 
         with open(report_path, 'w') as report_file:
             report_file.write(f"Class Unification Report\n")
@@ -186,7 +183,8 @@ class ClassUnifierExtractor(MethodBase):
             report_file.write(f"Input file 1: {self.star_file_input1}\n")
             report_file.write(f"Output path: {self.output_path}\n")
             report_file.write(f"Cutoff: {self.cutoff}\n")
-            report_file.write(f"Number of MTs: {total_MTs}\n")
+            report_file.write(f"Number of MTs (before cutoff): {total_MTs_before_cutoff}\n")
+            report_file.write(f"Number of MTs (after cutoff): {total_MTs}\n")
             report_file.write(f"Number of segments: {total_segments}\n")
             report_file.write(f"Optics Dataframe:\n{self.data_optics_dataframe1.to_string()}\n\n")
 
@@ -196,10 +194,10 @@ class ClassUnifierExtractor(MethodBase):
                 mt_count = len(groupby_micrograph_and_helical_id(class_unified_particles_dataframe[
                                                                      class_unified_particles_dataframe[
                                                                          'rlnClassNumber'] == class_number]))
-                report_file.write(f"Class {class_number}: {count} segments ({mt_count} MTs)\n")
+                report_file.write(f"Class {class_number}: {count} segments, {mt_count}/{total_MTs} MTs "
+                                  f"[({round((mt_count/total_MTs)*100, 2)}]%)\n")
 
-            report_file.write(f"\n{self.bad_mts} MTs out of "
-                              f"{len(groupby_micrograph_and_helical_id(self.particles_dataframe1))} total MTs "
+            report_file.write(f"\n{self.bad_mts} MTs out of {total_MTs_before_cutoff} total MTs "
                               f"did not meet the cutoff ({self.cutoff}):\n")
             for (micrograph, MT), MT_dataframe in groupby_micrograph_and_helical_id(self.particles_dataframe1):
                 most_common_class = MT_dataframe['rlnClassNumber'].mode().iloc[0]

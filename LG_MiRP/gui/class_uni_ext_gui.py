@@ -67,14 +67,14 @@ class ClassUnificationFrame(LgFrameBase):
         and running the function with the parameters
         """
         function = ClassUnifierExtractor(self.input_star_file0, self.input_star_file1, self.output_directory, self.cutoff, self.step.get())
-        function.class_unifier_extractor()
+        self.output = function.class_unifier_extractor()
 
     def show_class_distribution(self):
         """
         Opening an additional window with class distribution in %
         """
         # Generating a pie chart with percentages of MTs classified in each class
-        fig = ClassUnifierExtractor.classes_distribution_fig(self.input_star_file1.get())
+        fig = ClassUnifierExtractor.classes_distribution_fig(self.output)
         # Generating a Tkinter Top level window
         pie_window = LGTopLevelBase(self)
         # Adding a title to the figure

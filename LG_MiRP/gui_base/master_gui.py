@@ -76,6 +76,9 @@ class LgMasterGui(tk.Tk):
         button.grid(row=row, column=0, columnspan=2, padx=5, pady=5, sticky="SE")
 
     def open_complete_pipeline(self):
+        """
+        Opens a secondary window with image of the complete pipeline
+        """
         complete_pipeline_top_level = LGTopLevelBase(self)
         complete_pipeline_top_level.title("Complete Pipeline")
         complete_pipeline_top_level.add_image("complete_pipeline.jpg", 400)
