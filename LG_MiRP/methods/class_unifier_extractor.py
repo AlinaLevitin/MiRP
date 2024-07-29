@@ -166,7 +166,7 @@ class ClassUnifierExtractor(MethodBase):
     def generate_report(self, class_unified_particles_dataframe):
         """
         Generates a report file with details about the input files, date, optics dataframe, number of MTs, number of segments,
-        distribution of the classes, the cutoff, and the numbers that didn't reach the cutoff.
+        distribution of the classes, the cutoff, and the MTs that didn't reach the cutoff.
 
         :param class_unified_particles_dataframe: Dataframe with unified class numbers
         """
