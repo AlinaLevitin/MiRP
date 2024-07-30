@@ -47,19 +47,18 @@ class AnglesAndShiftsCorrection(MethodBase):
         # Getting the optics and particles data blocks
         file = ParticlesStarfile(self.star_file_input)
 
-        input_particles_dataframe = file.particles_dataframe
-        corrected_particles_dataframe = pd.DataFrame()
+        particles_dataframe = file.particles_dataframe
         data_optics_dataframe = file.optics_dataframe
 
         # Getting the pixel size from the optics data block
-        pixel_size = float(data_optics_dataframe['rlnImagePixelSize'])
+        pixel_size = file.pixel_size
 
         # Calculate helical twist and rise
         helical_twist = 360 / self.pf_number
         helical_rise = (3 * 41) / self.pf_number
 
         # iterates over the rows in the particles data block
-        for index, row in input_particles_dataframe.iterrows():
+        for index, row in particles_dataframe.iterrows():
             # Skipped row that don't have rlnAnglePsi
             if pd.isnull(row['rlnAnglePsi']):
                 print('No angels to correct!')
@@ -82,20 +81,19 @@ class AnglesAndShiftsCorrection(MethodBase):
                     new_x = row['rlnOriginXAngst'] + -41 * math.cos(-helical_shift) + math.cos(-helical_shift) * (row['rlnClassNumber'] * helical_rise_pixels)
                     new_y = row['rlnOriginYAngst'] + -41 * math.sin(-helical_shift) + math.sin(-helical_shift) * (row['rlnClassNumber'] * helical_rise_pixels)
                     new_phi = row['rlnAngleRot'] + helical_twist
-                print('Finished correcting angles and shifts!')
 
                 # Update the DataFrame with adjusted coordinates
-                corrected_particles_dataframe.loc[index, 'rlnOriginXAngst'] = new_x
-                corrected_particles_dataframe.loc[index, 'rlnOriginYAngst'] = new_y
-                corrected_particles_dataframe.loc[index, 'rlnAngleRot'] = new_phi
+                particles_dataframe.loc[index, 'rlnOriginXAngst'] = new_x
+                particles_dataframe.loc[index, 'rlnOriginYAngst'] = new_y
+                particles_dataframe.loc[index, 'rlnAngleRot'] = new_phi
 
         # Write the modified DataFrame back to a new STAR file
         os.makedirs(self.output_directory, exist_ok=True)
         os.chdir(self.output_directory)
-        new_particles_star_file_data = {'optics': data_optics_dataframe, 'particles': corrected_particles_dataframe}
+        new_particles_star_file_data = {'optics': data_optics_dataframe, 'particles': particles_dataframe}
         new_star_file = self.star_file_name.replace('.star', '_angles_shifts_corrected.star')
         starfile.write(new_particles_star_file_data, new_star_file)
 
         print(f"Updated STAR file saved as: {new_star_file} at {self.output_directory}")
 
-        return ParticlesStarfile(self.star_file_input).particles_dataframe, corrected_particles_dataframe
+        return ParticlesStarfile(self.star_file_input).particles_dataframe, particles_dataframe
