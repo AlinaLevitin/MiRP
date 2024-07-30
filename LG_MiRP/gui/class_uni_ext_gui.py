@@ -10,6 +10,7 @@ import tkinter as tk
 
 from ..gui_base import LgFrameBase, LgMasterGui, LGTopLevelBase, check_parameters
 from ..methods import ClassUnifierExtractor
+from ..methods_base import ParticlesStarfile
 
 
 class ClassUnificationExtractionGui(LgMasterGui):
@@ -74,7 +75,12 @@ class ClassUnificationFrame(LgFrameBase):
         Opening an additional window with class distribution in %
         """
         # Generating a pie chart with percentages of MTs classified in each class
-        fig = ClassUnifierExtractor.classes_distribution_fig(self.output)
+        if self.output.empty:
+            input_file = ParticlesStarfile(self.input_star_file1)
+            self.input = input_file.particles_dataframe
+            fig = ClassUnifierExtractor.classes_distribution_fig(self.input)
+        else:
+            fig = ClassUnifierExtractor.classes_distribution_fig(self.output)
         # Generating a Tkinter Top level window
         pie_window = LGTopLevelBase(self)
         # Adding a title to the figure

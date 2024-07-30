@@ -88,7 +88,7 @@ class ClassUnifierExtractor(MethodBase):
             output_file = f'{original_data_star_name}_class_corrected.star'
             try:
                 starfile.write(new_particles_star_file_data, output_file)
-                print(f'Saved STAR file {output_file} at {self.output_path.get()}')
+                print(f'Saved STAR file {output_file} at {self.output_path}')
             except NameError:
                 print(f"File names {output_file} already exists, delete old file and try again")
                 raise NameError("File already exists")

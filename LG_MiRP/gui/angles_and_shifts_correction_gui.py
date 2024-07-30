@@ -45,7 +45,7 @@ class AngleShiftsCorrectionFrame(LgFrameBase):
         self.output_directory = self.add_directory_entry('Select output directory', row=2)
 
         # Adding a number entry for protofilament number
-        self.pf_number = self.add_number_entry("Number of proto-filaments", row=3)
+        self.pf_number = self.add_number_entry("Number of proto-filaments", row=3, default_value=13)
 
         # Adding a "Run" button that runs self.run_function
         self.add_run_button(row=4)
