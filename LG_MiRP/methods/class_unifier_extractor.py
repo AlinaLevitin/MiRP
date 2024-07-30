@@ -84,7 +84,7 @@ class ClassUnifierExtractor(MethodBase):
             # EXTRACTING THE SEGMENTS TO A SINGLE STAR FILES WITH CORRECTED CLASSES
             new_particles_star_file_data = {'optics': self.data_optics_dataframe1, 'particles': class_unified_particles_dataframe}
 
-            os.chdir(self.output_path.get())
+            os.chdir(self.output_path)
             output_file = f'{original_data_star_name}_class_corrected.star'
             try:
                 starfile.write(new_particles_star_file_data, output_file)
