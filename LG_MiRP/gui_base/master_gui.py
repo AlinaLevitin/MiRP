@@ -81,7 +81,7 @@ class LgMasterGui(tk.Tk):
         """
         complete_pipeline_top_level = LGTopLevelBase(self)
         complete_pipeline_top_level.title("Complete Pipeline")
-        complete_pipeline_top_level.add_image("complete_pipeline.jpg", 400)
+        complete_pipeline_top_level.add_image("complete_pipeline.png", 600)
 
     # ==================================================================================================================
     # Methods for menu-style gui
