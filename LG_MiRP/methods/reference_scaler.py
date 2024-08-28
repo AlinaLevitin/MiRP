@@ -98,7 +98,7 @@ class ReferenceScaler(MethodBase):
         output_resampled_path = os.path.join(self.output_directory, "resampled_references")
 
         # Changing the parameters to integers and float64 accordingly
-        new_box_size = int(self.new_box_size)
+        new_box_size = (int(self.new_box_size), int(self.new_box_size), int(self.new_box_size))
         new_pixel_size = float(self.new_pixel_size)
 
         # Reading the .mrc file using custom VolumeMrc class located in volume_mrc.py - this is based on mrcfile library
@@ -115,18 +115,28 @@ class ReferenceScaler(MethodBase):
         # Calculate the crop or pad sizes to achieve the desired final box size
         crop_pad_sizes = (np.array(new_box_size) - np.array(resampled_data.shape)) // 2
 
-        # Crop or pad the resampled data to achieve the desired final box size
+        # # Crop or pad the resampled data to achieve the desired final box size
+        # if np.any(crop_pad_sizes < 0):
+        #     # If crop is needed
+        #     cropped_data = np.zeros(new_box_size, dtype=resampled_data.dtype)
+        #     crop_sizes = np.array(resampled_data.shape) - np.array(new_box_size)
+        #     crop_slices = [slice(max(0, size // 2), max(0, size // 2 + dim)) for size, dim in
+        #                    zip(crop_sizes, new_box_size)]
+        #     cropped_data[tuple(crop_slices)] = resampled_data
+        #     final_data = cropped_data
+        # else:
+        #     # If pad is needed
+        #     pad_widths = [(max(0, size), max(0, size)) for size in crop_pad_sizes]
+        #     final_data = np.pad(resampled_data, pad_widths, mode='constant')
+
         if np.any(crop_pad_sizes < 0):
             # If crop is needed
-            cropped_data = np.zeros(new_box_size, dtype=resampled_data.dtype)
             crop_sizes = np.array(resampled_data.shape) - np.array(new_box_size)
-            crop_slices = [slice(max(0, size // 2), max(0, size // 2 + dim)) for size, dim in
-                           zip(crop_sizes, new_box_size)]
-            cropped_data[tuple(crop_slices)] = resampled_data
-            final_data = cropped_data
+            crop_slices = [slice(size // 2, size // 2 + dim) for size, dim in zip(crop_sizes, new_box_size)]
+            final_data = resampled_data[tuple(crop_slices)]
         else:
             # If pad is needed
-            pad_widths = [(max(0, size), max(0, size)) for size in crop_pad_sizes]
+            pad_widths = [(size // 2, size // 2) for size in crop_pad_sizes]
             final_data = np.pad(resampled_data, pad_widths, mode='constant')
 
         # Rounding the pixel size to 4 decimal numbers
@@ -138,7 +148,7 @@ class ReferenceScaler(MethodBase):
 
         # Setting up the basename string to use in the final file name
         output_file = os.path.basename(input_mrc).replace(original_pixel_size_name, new_pixel_size_name)
-        output_mrc = output_file.replace('.mrc', f'_{new_box_size}_pix_resampled.mrc')
+        output_mrc = output_file.replace('.mrc', f'_{self.new_box_size}_pix_resampled.mrc')
         output_resampled_path_mrc = os.path.join(output_resampled_path, output_mrc)
 
         # Save the resampled data to a new MRC file
